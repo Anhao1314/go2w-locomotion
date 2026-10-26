@@ -1,54 +1,50 @@
 # 进度看板
 
-> **最后更新**：2026-10-23
-> **当前阶段**：W1（基线 + C++ 运动学）
-> **单一入口**：所有里程碑状态、当前任务、阻塞项都以此页为准；细节见 [项目计划](PLAN.md) 与 [每日日志](journal/)。
+> **最后更新**：2026-10-24
+> **当前阶段**：毕设收尾（实验主线已完成，剩补种子 / L2 / 论文）
+> **单一入口**：状态以此页为准；计划见 [PLAN.md](PLAN.md)，研究问题见 [RESEARCH.md](RESEARCH.md)。
 
-## 里程碑
+## 研究主线状态
 
-| 里程碑 | 计划日期 | 状态 | 证据卡（产物 + 验证） |
+| 研究问题 | 状态 | 结论 |
+| --- | --- | --- |
+| RQ1 样本效率 | ✅ | L1：分层快 3 倍（50 vs 150 迭代）；L3：分层 100 迭代收敛，单层 1500 不收敛 |
+| RQ2 成功率 | ✅ | L1 双方 100%；**L3：分层 20/20 vs 单层 0/20（成败分离）** |
+| RQ3 泛化 | ⏸ 未做 | 可选加分项（O1） |
+| RQ4 失败可归因 | ✅ 方法已验证 | 单层 L3 失败全部定位到阶段 1（行走→转向切换）；分层无需学转向步态 |
+
+## 已完成里程碑
+
+| 里程碑 | 日期 | 证据卡 |
+| --- | --- | --- |
+| M0 环境 / 协议 / 证据束 / 面板 | 10/23 | `eval_protocol --verify` 6/6；自动报告与证据束全链路 |
+| M1 S0 三种子基线 | 10/23 | `vx 0.0569±0.0011`、零摔倒；[报告](../reports/locomotion/m1_evaluation.md) |
+| M2 任务环境 + 难度阶梯（L1/L3） | 10/23–24 | `locomotion/sequence/`；L3 经三次关键修复（heading 锚定 / 闭环指令 / 漂移停止） |
+| M3 L1 受控对比 | 10/23 | 双方 100%；分层收敛快 3 倍；[报告](../reports/training/ab_comparison.md) |
+| **M4 L3 主结果** | **10/24** | **B 20/20（100 迭代，173 s）vs A 0/20（1500 迭代，全摔）**；[报告](../reports/training/l3_ab_comparison.md)；[成功视频](../media/training/robot_motion_l3_layered.mp4) / [失败视频](../media/training/robot_motion_l3_single_fail.mp4) |
+| M5 仓库毕设化 | 10/24 | README 首屏重写（中英）、Phase-1 归档、318 链接校验（`d4d1986`） |
+
+## 剩余任务（详见 [PLAN.md §3](PLAN.md#3-剩余必做答辩前)）
+
+| ID | 任务 | 状态 | 预算 |
 | --- | --- | --- | --- |
-| M0 环境 / 协议 / 证据束就绪 | 10/23 | ✅ 完成 | [locomotion/README](../locomotion/README.md)；`python scripts/eval_protocol.py --verify` 全 PASS；2-iteration 冒烟通过 |
-| M1 三种子基线 + C++ 运动学 | 10/29 | ✅ 基线达标（运动学第一版已进 CI） | 三份证据束；评估 `vx 0.0569±0.0011` / `ωz 0.0872±0.0017` / `fall 0`；[报告](../reports/locomotion/m1_evaluation.md) |
-| M2 C++ 完整仲裁核心 + 集成 | 11/05 | ⏳ 未开始 | — |
-| M3 A/B/C 实验 + 归因 | 11/12 | ⏳ 未开始 | — |
-| M4 报告 + 演示 | 11/19 | ⏳ 未开始 | — |
-
-## 本周任务（W1）
-
-| ID | 任务 | 状态 | 备注 |
-| --- | --- | --- | --- |
-| W1.0 | 计划、记录规范、ADR 骨架 | ✅ | [PLAN.md](PLAN.md)、[decisions/](decisions/) |
-| W1.1 | S1 三种子训练（seed 0/1/2）+ 评估 | ✅ 完成（1205 / 1232 / 1194 s，全部 rc=0） | 三份证据束（各 31 checkpoints / 37 文件哈希）；三种子评估全部达标，报告见 `reports/locomotion/m1_evaluation.md` |
-| W1.1b | 训练记录视频（指标动画） | ✅ | `media/training/m1_training_progress.mp4`（4500 条记录 / 45 秒） |
-| W1.1c | 策略行为录像 | ⚠️ 失败，待修 | `render_policy_video.py` 触发 Kit access violation，见 journal |
-| W1.2 | Go2 模型参数导出 | ✅ | `locomotion/guardrail/go2_model.json`（19 bodies / 12 joints / 14.971 kg / SHA-256 `12b78af4`） |
-| W1.3 | C++ 浮基 FK + CoM + 支撑多边形 | 🟡 第一版完成 | `cpp/guardrail/`（model/kinematics/tests）；CI cpp job 编译与测试通过 |
-| W1.4 | 数值对比报告 | ⏳ | 与 Isaac 的 FK/CoM 对比 |
-| W1.5 | 命令序列任务环境（P1） | 🟡 L1 版本 | `locomotion/sequence/`，53 维观测；L1 = 前进 1.2 m + 停止 0.5 s |
-| W1.6 | **单层基线 A（L1）** | ✅ **20/20 成功** | `success_rate 1.00`，平均 564 步（11.3 s），零摔倒；运动视频 `robot_motion_l1_success.mp4` |
+| T1 | 补训练种子（L3，A/B 各 +2） | ⏳ | ~1.5 h |
+| T2 | L2 中间难度 | ⏳ | ~1.5 h |
+| T3 | README 边界更新（种子补齐后） | ⏳ | 10 min |
+| T4 | 论文初稿 | ⏳ | 2–3 周 |
 
 ## 阻塞与风险
 
-| 项 | 状态 | 说明 |
-| --- | --- | --- |
-| 无 | — | 当前无阻塞 |
+| 项 | 状态 |
+| --- | --- |
+| 无阻塞 | T2 若两组都失败，按计划转为负结果报告，不追加超过 2 轮重试 |
 
-## 最近产物
+## 产物索引
 
-| 日期 | 产物 | 路径 |
-| --- | --- | --- |
-| 10/23 | Go2 刚体模型（C++ 用） | `locomotion/guardrail/go2_model.json` + `.sha256` |
-| 10/23 | 实时训练面板（快照 + 视频入口） | `scripts/monitor_training.py` → `http://127.0.0.1:8777` |
-| 10/23 | 训练过程 MP4 生成器 | `scripts/render_training_video.py`（已验证可生成） |
-| 10/23 | 策略行为 MP4 录制器 | `scripts/render_policy_video.py`（待训练结束后验证） |
-| 10/23 | 架构 v0.2 提案（C++ 仲裁层） | `docs/ARCHITECTURE_V2.md` |
-| 10/23 | 执行计划 + 记录规范 | `docs/PLAN.md` |
-| 10/23 | 每 run 证据束（自动） | `logs/rsl_rl/go2_loco_s1_flat/<stamp>/run_config.json` |
-| 10/23 | 2048 envs 吞吐基准 | `docs/ROADMAP.md` §3（34.36 s / 20 iters，峰值 4208 MiB） |
-
-## 使用约定
-
-1. 每完成一项任务：更新本页对应行 + 写当日 journal + 提交推送。
-2. 每完成一个里程碑：在"证据卡"列补一条可复现命令与产物路径。
-3. 有阻塞：立即写入"阻塞与风险"，并记录在当天 journal。
+| 类型 | 位置 |
+| --- | --- |
+| 对比报告 | `reports/training/l3_ab_comparison.md`、`ab_comparison.md` |
+| S0 基线报告 | `reports/locomotion/m1_evaluation.md` |
+| 全部训练报告（自动生成，11 份） | `reports/training/<run-id>.md` |
+| 关键视频 | `media/training/`（L3 成功/失败、L1 成功、M1 曲线、效率图） |
+| 每日日志（含失败与修正） | `docs/journal/` |

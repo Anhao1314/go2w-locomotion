@@ -17,6 +17,7 @@
 | [PLAN.md](PLAN.md) | **执行计划**：WBS（逐任务产出与验收）、过程记录规范（日志 / ADR / 证据卡）、质量门、止损规则 |
 | [PROGRESS.md](PROGRESS.md) | **进度看板（单一入口）**：里程碑状态、本周任务、阻塞项、最近产物 |
 | [ARCHITECTURE_V2.md](ARCHITECTURE_V2.md) | **架构 v0.2 提案 + 研究计划**：在 MoRA 的 S1 与 S0 之间引入**C++ 可验证仲裁层**（浮基 FK、CoM/支撑多边形、摩擦锥、RNID；ALLOW/CLAMP/FALLBACK/HALT），研究干预率与性能损失的权衡、失败可预判性、批量实时性 |
+| [PHASE1_REPORT.md](PHASE1_REPORT.md) | 🧊 Phase-1 完整研究报告（Go2W 轮足导航，2026-10-22 归档）：分层 adapter 的首个完整证据链 |
 | [ROADMAP.md](ROADMAP.md) | **Q4 项目目标与四周路线图**：岗位能力模型、P0–P4 优先级、四周时间表、验收标准、风险预案、讲述要点 |
 | [MVP.md](MVP.md) | 🧊 历史：跨引擎迁移 MVP（已被 ARCHITECTURE_V2 取代，三种子基线仍继承） |
 | [EXPERIMENT_DESIGN.md](EXPERIMENT_DESIGN.md) | **M1/M2 预注册实验协议**（v1.0，2026-10-22 冻结）：研究问题、冻结种子与指标、验收阈值、场景阶梯 S1–S4、基线。Phase-2 的执行契约，changelog 记录一切冻结后变更 |
