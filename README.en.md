@@ -8,18 +8,25 @@
 
 ## One-line result
 
-> Under identical task, observation and training budget, an **end-to-end single-layer policy fails completely on a four-stage long-horizon task (0/20, falls in every episode) after 1500 iterations, while a hierarchical architecture converges to 100% (20/20) within 100 iterations**. On an easy task both succeed, with the hierarchical agent converging 3x faster. Failures are attributable: the single-layer policy dies at the walk-to-turn gait switch.
+> Under identical task, observation and training budget, the **hierarchical architecture reached 100% success on all 3 training seeds within 100 iterations on a four-stage long-horizon task; the end-to-end single-layer policy succeeded on only 1 of 3 seeds (450 iterations), failing completely on the other two after 1500 iterations**. The hierarchy lifts training success from 1/3 to 3/3 and compresses convergence from "450 iterations at best / never at worst" to a stable 100. On an easy task both succeed, with the hierarchical agent converging 3x faster. Failures are attributable: non-converging single-layer seeds die at the walk-to-turn gait switch.
 
 ## Key numbers
 
-### L3 (hard): forward 2 m -> turn 90 deg in place -> forward 2 m -> stop 1 s
+### L3 (hard): forward 2 m -> turn 90 deg in place -> forward 2 m -> stop 1 s (3 training seeds per group)
 
-| Metric | Single layer (12-dim joints) | Layered (2-dim commands -> frozen S0) |
+| Training seed | Single-layer success | Single-layer convergence | Layered success | Layered convergence |
+| --- | --- | --- | --- | --- |
+| 0 | 0% (no convergence in 1500, fell every episode) | — | 100% | 100 iters |
+| 1 | 0% (no convergence in 1500) | — | 100% | 100 iters |
+| 2 | 100% | 450 iters | 100% | 100 iters |
+
+> Methodological note: running only seed 2 would conclude "the single layer works, just 4.5x slower"; running only seeds 0/1 would conclude "the single layer cannot work at all". Both would be wrong. Multiple seeds are not a nicety — they are a precondition for a correct conclusion.
+
+### L1 (easy): forward 1.2 m -> stop 0.5 s
+
+| Metric | Single layer | Layered |
 | --- | --- | --- |
-| Success rate (frozen 20 episodes) | **0/20** (fell every episode) | **20/20** |
-| Convergence iteration | not converged at 1500 | **100** |
-| Training wall-clock | 1665 s (no usable policy) | **173 s** (early stop) |
-| Failure point | falls 3-5 s into stage 1 (turning) | — |
+| Success rate | 100% (converged at 150 iters) | 100% (**50 iters**) |
 
 ### L1 (easy): forward 1.2 m -> stop 0.5 s
 
@@ -64,9 +71,9 @@ S0 locomotion policy (PPO, frozen, reused) --------------+
 ## Honest boundaries
 
 - **Simulation only**: no real-robot experiments; conclusions hold for Isaac Sim 5.1
-- **One training seed per group**: cross-seed variance is pending (planned thesis work)
-- **S0 pretraining cost**: the layered S0 took ~1200 s to pretrain; even counting it, the layered total (1374 s) is below the single layer (1665 s, and it failed) — but part of the layered advantage comes from action abstraction and S0 reuse rather than S1 learning faster
+- **S0 pretraining cost**: the layered S0 took ~1200 s to pretrain; part of the layered advantage comes from action abstraction and S0 reuse (an untrained S1 already scores 75%) rather than S1 learning faster — attributed in the report
 - **Closed-loop commands encode task knowledge**: the rule layer's heading correction embeds part of the task prior — this is a deliberate hierarchical trade-off, discussed in the report
+- **3 training seeds per group** (S0 fixed to the M1 seed-0 policy; the seed varies the upper-level training); more seeds and real-robot validation are listed as future work
 
 ## Repository layout
 
