@@ -16,6 +16,7 @@
 | [notes/literature-survey.md](notes/literature-survey.md) | **开题文献清单**：按六条主题线组织（并行 RL 运动控制 / 分层 RL 理论 / 奖励设计 / 安全约束 / sim2real / 工具平台），含链接、与课题的关系及综述论证主线 |
 | [notes/deepseek-architecture-notes.md](notes/deepseek-architecture-notes.md) | **DeepSeek 2026 架构调研**：Engram 条件记忆（查 vs 算、U 型缩放律）、mHC 流形约束；与 MoRA 分层/"查表层 vs 学习层"的对应关系及可借鉴点 |
 | [PLAN.md](PLAN.md) | **执行计划**：WBS（逐任务产出与验收）、过程记录规范（日志 / ADR / 证据卡）、质量门、止损规则 |
+| [thesis/proposal.md](thesis/proposal.md) | **毕业设计开题报告底稿**：选题背景、四线文献综述、研究内容与技术路线、预期成果、进度安排、16 篇参考文献（交前按学校模板套版） |
 | [PROGRESS.md](PROGRESS.md) | **进度看板（单一入口）**：里程碑状态、本周任务、阻塞项、最近产物 |
 | [ARCHITECTURE_V2.md](ARCHITECTURE_V2.md) | **架构 v0.2 提案 + 研究计划**：在 MoRA 的 S1 与 S0 之间引入**C++ 可验证仲裁层**（浮基 FK、CoM/支撑多边形、摩擦锥、RNID；ALLOW/CLAMP/FALLBACK/HALT），研究干预率与性能损失的权衡、失败可预判性、批量实时性 |
 | [PHASE1_REPORT.md](PHASE1_REPORT.md) | 🧊 Phase-1 完整研究报告（Go2W 轮足导航，2026-10-22 归档）：分层 adapter 的首个完整证据链 |
