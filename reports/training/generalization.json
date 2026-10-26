@@ -1,0 +1,30 @@
+{
+  "note": "layered group completed; single-layer evaluation was stopped after ~35 min on the baseline config with no result (deferred)",
+  "results": [
+    {
+      "group": "layered",
+      "config": "baseline(+90deg,2m)",
+      "seen": "seen",
+      "success_rate": 1.0
+    },
+    {
+      "group": "layered",
+      "config": "right-turn(-90deg,2m)",
+      "seen": "UNSEEN",
+      "success_rate": 1.0
+    },
+    {
+      "group": "layered",
+      "config": "long-leg(+90deg,3m)",
+      "seen": "UNSEEN",
+      "success_rate": 1.0
+    },
+    {
+      "group": "layered",
+      "config": "right+long(-90deg,3m)",
+      "seen": "UNSEEN",
+      "success_rate": 1.0
+    }
+  ],
+  "single_layer": "incomplete (timeout, deferred)"
+}
