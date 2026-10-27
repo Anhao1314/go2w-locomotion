@@ -1,6 +1,6 @@
 # 分层强化学习让四足机器人长程任务从不可能变为可靠：一项受控对比研究
 
-**基于分层强化学习的四足机器人运动控制系统设计与实现**（毕业设计项目仓库）
+**基于分层强化学习的四足机器人运动控制系统设计与仿真验证**（毕业设计项目仓库）
 
 [English](README.en.md) · [文档索引](docs/README.md) · [完整研究报告](docs/PHASE1_REPORT.md) · [实验协议](docs/EXPERIMENT_DESIGN.md) · [过程日志](docs/journal/)
 

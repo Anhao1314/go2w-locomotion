@@ -1,6 +1,6 @@
 # Hierarchical RL turns an impossible long-horizon quadruped task into a reliable one: a controlled comparison
 
-**Design and Implementation of a Quadruped Robot Locomotion Control System Based on Hierarchical Reinforcement Learning** (undergraduate thesis project repository)
+**Design and Simulation Validation of a Quadruped Robot Locomotion Control System Based on Hierarchical Reinforcement Learning** (undergraduate thesis project repository)
 
 [中文版](README.md) · [Docs index](docs/README.md) · [Full Phase-1 research report](docs/PHASE1_REPORT.md) · [Experiment protocol](docs/EXPERIMENT_DESIGN.md) · [Daily journal](docs/journal/)
 
