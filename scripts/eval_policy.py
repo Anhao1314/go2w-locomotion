@@ -37,6 +37,7 @@ isaaclab, so unresolved imports are expected there.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import pathlib
@@ -83,6 +84,125 @@ def _as_float(value: Any) -> np.ndarray:
     if hasattr(value, "cpu"):
         value = value.cpu().numpy()
     return np.asarray(value, dtype=np.float64)
+
+
+def _obs_policy(obs: Any) -> Any:
+    """The RSL-RL wrapper may return a TensorDict; capture its 'policy' group."""
+    if hasattr(obs, "keys"):
+        try:
+            if "policy" in obs.keys():
+                return obs["policy"]
+        except Exception:
+            pass
+    return obs
+
+
+_CAPTURE_WARNINGS: set[str] = set()
+
+
+def _stage_cmd(inner: Any) -> np.ndarray:
+    """Authoritative closed-loop [vx, wz] command, padded to [vx, vy=0, wz]."""
+    from locomotion.sequence import mdp as seq_mdp
+
+    cmd = _as_float(seq_mdp.stage_command(inner))
+    out = np.zeros((cmd.shape[0], 3), dtype=np.float32)
+    out[:, 0] = cmd[:, 0]
+    out[:, 2] = cmd[:, 1]
+    return out
+
+
+def _foot_contact_force(inner: Any) -> np.ndarray:
+    """Per-foot net contact-force magnitude [num_envs, 4] (zeros if unavailable)."""
+    robot = inner.scene["robot"]
+    body_names = [str(name) for name in robot.body_names]
+    foot_ids = [index for index, name in enumerate(body_names) if "FOOT" in name.upper()]
+    try:
+        sensor = inner.scene.sensors["contact_forces"]
+        sensor_names = [str(name) for name in (sensor.body_names or body_names)]
+        ids = [sensor_names.index(body_names[index]) for index in foot_ids]
+        forces = sensor.data.net_forces_w[:, ids, :].norm(dim=-1)
+        return _as_float(forces).astype(np.float32)
+    except Exception as error:  # dataset capture must not kill the evaluation
+        if "foot" not in _CAPTURE_WARNINGS:
+            _CAPTURE_WARNINGS.add("foot")
+            print(f"[eval] foot contact capture unavailable ({error}); zeros written", flush=True)
+        return np.zeros((inner.num_envs, len(foot_ids) or 4), dtype=np.float32)
+
+
+def _applied_torque(inner: Any) -> np.ndarray:
+    """Joint torques applied during the last step [num_envs, 12] (zeros if unavailable)."""
+    torque = getattr(inner.scene["robot"].data, "applied_torque", None)
+    if torque is None:
+        if "torque" not in _CAPTURE_WARNINGS:
+            _CAPTURE_WARNINGS.add("torque")
+            print("[eval] applied_torque unavailable; zeros written", flush=True)
+        return np.zeros((inner.num_envs, 12), dtype=np.float32)
+    return _as_float(torque).astype(np.float32)
+
+
+def _make_recorder(args: argparse.Namespace, checkpoint: pathlib.Path, inner: Any) -> Any:
+    """Build the go2-sequence-v1 EpisodeRecorder with run-level metadata."""
+    import subprocess
+    from importlib.metadata import version as _package_version
+
+    from locomotion.eval.dataset import EpisodeRecorder
+    from locomotion.sequence import mdp as seq_mdp
+
+    if not args.dataset_group:
+        raise SystemExit("--record-dataset requires --dataset-group")
+    robot = inner.scene["robot"]
+    try:
+        commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        ).stdout.strip()
+    except Exception:
+        commit = "unknown"
+    try:
+        stack = {"isaaclab": _package_version("isaaclab")}
+    except Exception:
+        stack = {}
+    return EpisodeRecorder(
+        args.record_dataset,
+        args.dataset_group,
+        run_meta={
+            "task": args.task,
+            "checkpoint": str(checkpoint),
+            "checkpoint_sha256": hashlib.sha256(pathlib.Path(checkpoint).read_bytes()).hexdigest(),
+            "layered": bool(args.layered),
+            "interface": (
+                {"high_output": "velocity_2d", "low_output": "joint_target"}
+                if args.layered
+                else {
+                    "high_output": None,
+                    "low_output": "joint_target",
+                    "note": "end_to_end_joint",
+                }
+            ),
+            "config": {
+                "turn_radians": float(seq_mdp.TURN_RADIANS),
+                "forward_distance_m": float(seq_mdp.FORWARD_DISTANCE_M),
+                "patched": args.turn_radians is not None or args.forward_distance_m is not None,
+            },
+            "joint_names": [str(name) for name in robot.joint_names],
+            "body_names": [str(name) for name in robot.body_names],
+            "foot_names": [name for name in map(str, robot.body_names) if "FOOT" in name.upper()],
+            "obs_layout": [
+                {"slice": "[0:9]", "meaning": "base terms (ang_vel, gravity, ...)"},
+                {"slice": "[9:11]", "meaning": "stage command (vx, wz)"},
+                {"slice": "[11:35]", "meaning": "joint pos + joint vel (12+12)"},
+                {"slice": "[35:47]", "meaning": "last joint target (12)"},
+                {"slice": "[47:51]", "meaning": "stage one-hot (4)"},
+                {"slice": "[51:53]", "meaning": "target delta (2)"},
+            ],
+            "git_commit": commit,
+            "dt": float(inner.step_dt),
+            "stack": stack,
+        },
+    )
 
 
 def evaluate_parallel(
@@ -265,6 +385,19 @@ def evaluate_sequence(
     OnPolicyRunner = modules["OnPolicyRunner"]
     load_cfg_from_registry = modules["load_cfg_from_registry"]
 
+    from locomotion.sequence import mdp as seq_mdp
+
+    if args.turn_radians is not None or args.forward_distance_m is not None:
+        if args.turn_radians is not None:
+            seq_mdp.TURN_RADIANS = float(args.turn_radians)
+        if args.forward_distance_m is not None:
+            seq_mdp.FORWARD_DISTANCE_M = float(args.forward_distance_m)
+        print(
+            f"[eval] patched geometry: turn={seq_mdp.TURN_RADIANS:.4f},"
+            f" forward={seq_mdp.FORWARD_DISTANCE_M:.2f}",
+            flush=True,
+        )
+
     num_envs = len(seeds)
     env_cfg = parse_env_cfg(args.task, device="cuda:0", num_envs=num_envs, use_fabric=True)
     env_cfg.seed = 0
@@ -290,6 +423,10 @@ def evaluate_sequence(
     runner.load(str(checkpoint))
     policy = runner.get_inference_policy(device="cuda:0")
 
+    recorder = None
+    if args.record_dataset is not None:
+        recorder = _make_recorder(args, checkpoint, inner)
+
     obs, _ = vec_env.reset()
     inner._seq_success_log = set()  # the MDP appends env ids that finish all stages
     steps_max = int(inner.max_episode_length)
@@ -308,8 +445,36 @@ def evaluate_sequence(
             if record and active[0]:
                 body_track.append(_as_float(inner.scene["robot"].data.body_pos_w[0]).copy())
                 stage_track.append(int(stage[0]))
+            if recorder is not None:
+                robot = inner.scene["robot"]
+                recorder.add(
+                    obs=_as_float(_obs_policy(obs)).astype(np.float32),
+                    stage=stage.astype(np.int8),
+                    base_pos=_as_float(robot.data.root_pos_w).astype(np.float32),
+                    base_quat=_as_float(robot.data.root_quat_w).astype(np.float32),
+                    base_lin_vel_b=_as_float(robot.data.root_lin_vel_b).astype(np.float32),
+                    base_ang_vel_b=_as_float(robot.data.root_ang_vel_b).astype(np.float32),
+                    joint_pos=_as_float(robot.data.joint_pos).astype(np.float32),
+                    joint_vel=_as_float(robot.data.joint_vel).astype(np.float32),
+                    body_pos=_as_float(robot.data.body_pos_w).astype(np.float32),
+                    cmd=_stage_cmd(inner),
+                    foot_contact_force=_foot_contact_force(inner),
+                )
             actions = policy(obs)
-            obs, _, dones, _ = vec_env.step(actions)
+            if recorder is not None:
+                recorder.add(
+                    action=_as_float(actions).reshape(len(seeds), -1).astype(np.float32)
+                )
+            obs, reward, dones, _ = vec_env.step(actions)
+            if recorder is not None:
+                recorder.add(
+                    reward=_as_float(reward).reshape(-1).astype(np.float32),
+                    joint_target=_as_float(inner.action_manager.action)
+                    .reshape(len(seeds), -1)
+                    .astype(np.float32),
+                    joint_torque=_applied_torque(inner),
+                    done=_as_bool(dones),
+                )
             newly_done = _as_bool(dones) & active
             if newly_done.any():
                 done_step[newly_done] = step + 1
@@ -330,6 +495,32 @@ def evaluate_sequence(
         print(f"[eval] trajectory saved: {args.record_trajectory} ({len(body_track)} steps)")
 
     succeeded = {int(index) for index in getattr(inner, "_seq_success_log", set())}
+
+    if recorder is not None:
+        for index, seed in enumerate(seeds):
+            success = index in succeeded
+            outcome = (
+                "success"
+                if success
+                else ("fall" if int(done_step[index]) < steps_max else "timeout")
+            )
+            final_stage = 4 if success else int(max_stage[index])
+            path = recorder.finalize(
+                index,
+                eval_seed=seed,
+                done_step=int(done_step[index]),
+                outcome=outcome,
+                final_stage=final_stage,
+            )
+            if path is not None:
+                print(f"[eval] episode saved: {path.name} ({outcome})", flush=True)
+        manifest = recorder.flush()
+        print(
+            f"[eval] dataset manifest: {manifest['total_episodes']} episodes,"
+            f" {manifest['total_steps']} steps",
+            flush=True,
+        )
+
     vec_env.close()
 
     rows: list[dict[str, Any]] = []
@@ -385,6 +576,29 @@ def main(argv: list[str] | None = None) -> int:
         help="save env 0's body positions and stage per step to this .npz (sequence tasks)",
     )
     parser.add_argument(
+        "--record-dataset",
+        type=pathlib.Path,
+        default=None,
+        help="write a go2-sequence-v1 trajectory dataset to this directory (sequence tasks)",
+    )
+    parser.add_argument(
+        "--dataset-group",
+        default=None,
+        help="condition label for --record-dataset, e.g. l3_layered_seed0",
+    )
+    parser.add_argument(
+        "--turn-radians",
+        type=float,
+        default=None,
+        help="runtime-patch the task's TURN_RADIANS (generalisation collection)",
+    )
+    parser.add_argument(
+        "--forward-distance-m",
+        type=float,
+        default=None,
+        help="runtime-patch the task's FORWARD_DISTANCE_M (generalisation collection)",
+    )
+    parser.add_argument(
         "--layered",
         action="store_true",
         help="evaluate a layered policy: 2-dim commands executed by a frozen S0",
@@ -426,6 +640,8 @@ def main(argv: list[str] | None = None) -> int:
     run_dir = args.run_dir or latest_run_dir(PROJECT_ROOT / "logs" / "rsl_rl" / "go2_loco_s1_flat")
     checkpoint = args.checkpoint or latest_checkpoint(run_dir)
 
+    if args.record_dataset is not None and "sequence" not in args.task.lower():
+        raise SystemExit("--record-dataset is only supported for sequence tasks")
     started = time.time()
     is_sequence = "sequence" in args.task.lower()
     extra: dict[str, Any] = {}
