@@ -1,0 +1,1341 @@
+{
+  "date": "2026-11-15",
+  "catalog": {
+    "total": 48,
+    "available": 44,
+    "missing": 4,
+    "groups": {
+      "tracking": [
+        {
+          "name": "track_vx_rmse",
+          "level": "rollout",
+          "unit": "m/s",
+          "direction": "lower",
+          "definition": "前向速度跟踪均方根误差（相对指令）",
+          "source": "evaluation.json: episodes[].vx_rmse",
+          "gate": 0.15,
+          "available": true
+        },
+        {
+          "name": "track_wz_rmse",
+          "level": "rollout",
+          "unit": "rad/s",
+          "direction": "lower",
+          "definition": "偏航角速度跟踪均方根误差",
+          "source": "evaluation.json: episodes[].wz_rmse",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "track_vx_bias",
+          "level": "rollout",
+          "unit": "m/s",
+          "direction": "neutral",
+          "definition": "实际平均速度减指令速度（有符号；负=系统性跟不上）",
+          "source": "evaluation.json: mean_vx - mean_cmd_vx",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "track_vx_rmse_cv",
+          "level": "run",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "vx_rmse 的种子间变异系数（标准差/均值）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "track_wz_rmse_cv",
+          "level": "run",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "wz_rmse 的种子间变异系数",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "track_axis_ratio_wz_vx",
+          "level": "run",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "wz_rmse / vx_rmse：转向相对直行的跟踪难度倍数",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        }
+      ],
+      "stability": [
+        {
+          "name": "stab_fall",
+          "level": "rollout",
+          "unit": "0/1",
+          "direction": "lower",
+          "definition": "该 episode 是否摔倒",
+          "source": "evaluation.json: episodes[].fall",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "stab_fall_rate",
+          "level": "run",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "摔倒比例（门禁 ≤0.10）",
+          "source": "派生",
+          "gate": 0.1,
+          "available": true
+        },
+        {
+          "name": "stab_no_fall_rate",
+          "level": "run",
+          "unit": "1",
+          "direction": "higher",
+          "definition": "无摔倒比例（S2 门禁 ≥0.90）",
+          "source": "派生",
+          "gate": 0.9,
+          "available": true
+        },
+        {
+          "name": "stab_recovery_time_s",
+          "level": "rollout",
+          "unit": "s",
+          "direction": "lower",
+          "definition": "扰动后恢复到直立的时间（未恢复记 None）",
+          "source": "evaluation.json: episodes[].recovery_time_s",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "stab_fall_after_push_s",
+          "level": "rollout",
+          "unit": "s",
+          "direction": "lower",
+          "definition": "推力施加后到摔倒的延迟（失效时间窗）",
+          "source": "派生：steps 差 × control_dt",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "stab_max_tilt_deg",
+          "level": "rollout",
+          "unit": "deg",
+          "direction": "lower",
+          "definition": "机身最大倾角（需要逐步姿态日志）",
+          "source": "未采集：需记录 root quaternion",
+          "gate": null,
+          "available": false
+        },
+        {
+          "name": "stab_slip_ratio",
+          "level": "rollout",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "接触滑动步数占比（需要逐步接触状态）",
+          "source": "未采集：需记录 contact",
+          "gate": null,
+          "available": false
+        }
+      ],
+      "task": [
+        {
+          "name": "task_success",
+          "level": "rollout",
+          "unit": "0/1",
+          "direction": "higher",
+          "definition": "该 episode 是否判定成功",
+          "source": "evaluation.json: episodes[].success",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "task_success_rate",
+          "level": "run",
+          "unit": "1",
+          "direction": "higher",
+          "definition": "成功率（预注册门禁 ≥0.90）",
+          "source": "派生",
+          "gate": 0.9,
+          "available": true
+        },
+        {
+          "name": "task_steps",
+          "level": "rollout",
+          "unit": "steps",
+          "direction": "lower",
+          "definition": "完成所需控制步数",
+          "source": "evaluation.json: episodes[].steps",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "task_time_s",
+          "level": "rollout",
+          "unit": "s",
+          "direction": "lower",
+          "definition": "完成所需时间 = 步数 × 控制周期",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "task_terminal_miss_m",
+          "level": "rollout",
+          "unit": "m",
+          "direction": "lower",
+          "definition": "终点到目标的平面距离",
+          "source": "evaluation.json: |terminal_pos - target_p2|",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "task_miss_ratio",
+          "level": "rollout",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "终点残差 / 位置容差（成功预算的消耗比例）",
+          "source": "派生：miss / 0.30",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "task_stage_reached",
+          "level": "rollout",
+          "unit": "stage",
+          "direction": "higher",
+          "definition": "达到的最大阶段（0-4）",
+          "source": "evaluation.json: episodes[].max_stage",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "task_steps_cv",
+          "level": "run",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "完成步数的变异系数（指标分辨率；0 = 测不出改进）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "task_path_efficiency",
+          "level": "rollout",
+          "unit": "1",
+          "direction": "higher",
+          "definition": "直线距离 / 实际路径长度（需要轨迹日志）",
+          "source": "未采集：需记录逐步位置",
+          "gate": null,
+          "available": false
+        },
+        {
+          "name": "task_stage_time_s",
+          "level": "rollout",
+          "unit": "s",
+          "direction": "lower",
+          "definition": "各阶段耗时（需要阶段切换时间戳）",
+          "source": "未采集：需记录 stage transition",
+          "gate": null,
+          "available": false
+        }
+      ],
+      "generalization": [
+        {
+          "name": "gen_success_variant",
+          "level": "semantic",
+          "unit": "1",
+          "direction": "higher",
+          "definition": "某几何变体上的成功率",
+          "source": "generalization: per_variant",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "gen_steps_variant",
+          "level": "semantic",
+          "unit": "steps",
+          "direction": "lower",
+          "definition": "某几何变体上的平均完成步数",
+          "source": "generalization: per_variant",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "gen_fixed_overhead_steps",
+          "level": "run",
+          "unit": "steps",
+          "direction": "lower",
+          "definition": "拟合的任务固定开销（起停 + 转向段），steps = a + b·distance",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "gen_per_metre_steps",
+          "level": "run",
+          "unit": "steps/m",
+          "direction": "lower",
+          "definition": "每多 1 米路程增加的步数（拟合斜率）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "gen_turn_cost_per_deg",
+          "level": "run",
+          "unit": "steps/deg",
+          "direction": "lower",
+          "definition": "每多 1 度转向增加的步数",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        }
+      ],
+      "vla_openloop": [
+        {
+          "name": "vla_ol_mse",
+          "level": "run",
+          "unit": "action²",
+          "direction": "lower",
+          "definition": "开环动作预测 MSE",
+          "source": "openloop_summary.json: mse",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_mse_ratio",
+          "level": "run",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "MSE / 平均动作基线 MSE（<1 表示优于常数预测）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_mae_dim",
+          "level": "semantic",
+          "unit": "action",
+          "direction": "lower",
+          "definition": "逐维 MAE（7 维：3 位移 + 3 旋转 + 1 夹爪）",
+          "source": "openloop records",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_nmae_dim",
+          "level": "semantic",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "逐维归一化 MAE = MAE / GT 标准差（跨量纲可比）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_bias_dim",
+          "level": "semantic",
+          "unit": "action",
+          "direction": "neutral",
+          "definition": "逐维有符号偏置（区分系统性偏差与噪声）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_corr_dim",
+          "level": "semantic",
+          "unit": "1",
+          "direction": "higher",
+          "definition": "逐维预测-真值相关系数",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_mae_progress",
+          "level": "semantic",
+          "unit": "action",
+          "direction": "lower",
+          "definition": "按 episode 进度分箱的动作 MAE",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_mae_gripper_closed",
+          "level": "semantic",
+          "unit": "action",
+          "direction": "lower",
+          "definition": "夹爪闭合（搬运）段的臂部 MAE",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_mae_gripper_open",
+          "level": "semantic",
+          "unit": "action",
+          "direction": "lower",
+          "definition": "夹爪张开（接近/释放）段的臂部 MAE",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_gripper_sign_acc",
+          "level": "run",
+          "unit": "1",
+          "direction": "higher",
+          "definition": "夹爪开合符号判断准确率",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_ol_vision_delta",
+          "level": "run",
+          "unit": "action",
+          "direction": "higher",
+          "definition": "遮住图像后的动作偏移 L2（视觉依赖强度，太低=不看图）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        }
+      ],
+      "vla_closed": [
+        {
+          "name": "vla_closed_success_rate",
+          "level": "run",
+          "unit": "1",
+          "direction": "higher",
+          "definition": "闭环评测成功率（参考区间：LIBERO 文献 66–87%）",
+          "source": "libero_eval_summary.json: success_rate",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "vla_control_freq_ratio",
+          "level": "run",
+          "unit": "1",
+          "direction": "neutral",
+          "definition": "环境控制频率 / 数据集元数据帧率；A/B 实测 2.0 有效（7/10）而 1.0 全败（0/10）→ 元数据 fps 不是控制契约",
+          "source": "analysis/protocol.py: LIBERO_ENV_FPS / LIBERO_DATASET_FPS",
+          "gate": null,
+          "available": true
+        }
+      ],
+      "training": [
+        {
+          "name": "train_smp_per_s",
+          "level": "train_step",
+          "unit": "samples/s",
+          "direction": "higher",
+          "definition": "样本吞吐",
+          "source": "train log: smp/s",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "train_step_s",
+          "level": "train_step",
+          "unit": "s",
+          "direction": "lower",
+          "definition": "每优化步墙钟时间",
+          "source": "train log: step_s",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "train_mem_gb",
+          "level": "train_step",
+          "unit": "GB",
+          "direction": "lower",
+          "definition": "训练显存占用",
+          "source": "train log: mem_gb",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "train_loss_decay_per_10k",
+          "level": "run",
+          "unit": "loss/10k steps",
+          "direction": "higher",
+          "definition": "每 1 万步的 loss 降幅（收敛速率）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "train_plateau_ratio",
+          "level": "run",
+          "unit": "1",
+          "direction": "lower",
+          "definition": "后段收敛速率 / 前段收敛速率（越小越接近平台）",
+          "source": "派生",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "train_grad_norm",
+          "level": "train_step",
+          "unit": "1",
+          "direction": "neutral",
+          "definition": "梯度范数",
+          "source": "train log: grdn",
+          "gate": null,
+          "available": true
+        },
+        {
+          "name": "train_lr_end",
+          "level": "run",
+          "unit": "1",
+          "direction": "neutral",
+          "definition": "训练结束时的学习率（判断退火是否走完）",
+          "source": "train log: lr",
+          "gate": null,
+          "available": true
+        }
+      ]
+    }
+  },
+  "runs": [
+    {
+      "run_id": "s4_velocity_s0",
+      "n": 20,
+      "factors": {
+        "track_vx_rmse": 0.07730777333872875,
+        "track_wz_rmse": 0.139092730776277,
+        "track_vx_bias": 0.0005227916156000254,
+        "track_vx_rmse_cv": 0.36805310591133683,
+        "track_wz_rmse_cv": 0.4969607100424989,
+        "track_axis_ratio_wz_vx": 1.7992075669652738,
+        "stab_fall_rate": 0.05,
+        "stab_no_fall_rate": 0.95
+      },
+      "detail": {
+        "track_vx_rmse": {
+          "n": 20,
+          "mean": 0.07730777333872875,
+          "std": 0.028453366088408753,
+          "min": 0.03212146921983534,
+          "max": 0.16268160705404847,
+          "p10": 0.053346719127144684,
+          "p90": 0.11532601870411027,
+          "cv": 0.36805310591133683,
+          "ci95": 0.012470237509424376
+        },
+        "track_wz_rmse": {
+          "n": 20,
+          "mean": 0.139092730776277,
+          "std": 0.06912362224832877,
+          "min": 0.05053382002009885,
+          "max": 0.31583271004301455,
+          "p10": 0.06731316896144114,
+          "p90": 0.22752232555048332,
+          "cv": 0.4969607100424989,
+          "ci95": 0.030294763166862877
+        },
+        "track_vx_bias": {
+          "n": 20,
+          "mean": 0.0005227916156000254,
+          "std": 0.04957155697433124,
+          "min": -0.09129082929136095,
+          "max": 0.08225367633537184,
+          "p10": -0.05949373071151441,
+          "p90": 0.06250947645339773,
+          "cv": 94.8208722082054,
+          "ci95": 0.021725692744441256
+        }
+      },
+      "meta": {
+        "engine": "mujoco",
+        "task": "Go2Loco-S1-Flat-Blind-v0"
+      }
+    },
+    {
+      "run_id": "s4_sequence_layered",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0,
+        "task_success_rate": 1.0,
+        "task_steps": 474.0,
+        "task_steps_cv": 0.0,
+        "task_time_s": 9.48,
+        "task_terminal_miss_m": 0.2316453719649168,
+        "task_miss_ratio": 0.7721512398830559,
+        "task_stage_reached": 4.0
+      },
+      "detail": {
+        "task_steps": {
+          "n": 20,
+          "mean": 474.0,
+          "std": 0.0,
+          "min": 474.0,
+          "max": 474.0,
+          "p10": 474.0,
+          "p90": 474.0,
+          "cv": 0.0,
+          "ci95": 0.0
+        },
+        "task_terminal_miss_m": {
+          "n": 20,
+          "mean": 0.2316453719649168,
+          "std": 1.2621218369077976e-08,
+          "min": 0.23164532270182026,
+          "max": 0.2316453922238152,
+          "p10": 0.23164537234903546,
+          "p90": 0.23164537852685504,
+          "cv": 5.4485087537123284e-08,
+          "ci95": 5.531492837496967e-09
+        }
+      },
+      "meta": {
+        "engine": "mujoco",
+        "task": "Go2Loco-Sequence-v0"
+      }
+    },
+    {
+      "run_id": "s4_sequence_single",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 1.0,
+        "stab_no_fall_rate": 0.0,
+        "task_success_rate": 0.0,
+        "task_terminal_miss_m": 2.4842977791028735,
+        "task_stage_reached": 0.0
+      },
+      "detail": {
+        "task_terminal_miss_m": {
+          "n": 20,
+          "mean": 2.4842977791028735,
+          "std": 1.203760306405659e-15,
+          "min": 2.4842977791028713,
+          "max": 2.484297779102876,
+          "p10": 2.484297779102872,
+          "p90": 2.484297779102875,
+          "cv": 4.845475113858369e-16,
+          "ci95": 5.275712152528497e-16
+        }
+      },
+      "meta": {
+        "engine": "mujoco",
+        "task": "Go2Loco-Sequence-v0"
+      }
+    },
+    {
+      "run_id": "gen_layered_trained_2m_90deg",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0,
+        "task_success_rate": 1.0,
+        "task_steps": 474.0,
+        "task_steps_cv": 0.0,
+        "task_time_s": 9.48,
+        "task_stage_reached": 4.0
+      },
+      "detail": {
+        "task_steps": {
+          "n": 20,
+          "mean": 474.0,
+          "std": 0.0,
+          "min": 474.0,
+          "max": 474.0,
+          "p10": 474.0,
+          "p90": 474.0,
+          "cv": 0.0,
+          "ci95": 0.0
+        }
+      },
+      "meta": {
+        "variant": "trained_2m_90deg",
+        "group": "layered"
+      }
+    },
+    {
+      "run_id": "gen_layered_unseen_2m_120deg",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0,
+        "task_success_rate": 1.0,
+        "task_steps": 502.0,
+        "task_steps_cv": 0.0,
+        "task_time_s": 10.040000000000001,
+        "task_stage_reached": 4.0
+      },
+      "detail": {
+        "task_steps": {
+          "n": 20,
+          "mean": 502.0,
+          "std": 0.0,
+          "min": 502.0,
+          "max": 502.0,
+          "p10": 502.0,
+          "p90": 502.0,
+          "cv": 0.0,
+          "ci95": 0.0
+        }
+      },
+      "meta": {
+        "variant": "unseen_2m_120deg",
+        "group": "layered"
+      }
+    },
+    {
+      "run_id": "gen_layered_unseen_2m_60deg",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0,
+        "task_success_rate": 1.0,
+        "task_steps": 447.0,
+        "task_steps_cv": 0.0,
+        "task_time_s": 8.94,
+        "task_stage_reached": 4.0
+      },
+      "detail": {
+        "task_steps": {
+          "n": 20,
+          "mean": 447.0,
+          "std": 0.0,
+          "min": 447.0,
+          "max": 447.0,
+          "p10": 447.0,
+          "p90": 447.0,
+          "cv": 0.0,
+          "ci95": 0.0
+        }
+      },
+      "meta": {
+        "variant": "unseen_2m_60deg",
+        "group": "layered"
+      }
+    },
+    {
+      "run_id": "gen_layered_unseen_3m_90deg",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0,
+        "task_success_rate": 1.0,
+        "task_steps": 655.0,
+        "task_steps_cv": 0.0,
+        "task_time_s": 13.1,
+        "task_stage_reached": 4.0
+      },
+      "detail": {
+        "task_steps": {
+          "n": 20,
+          "mean": 655.0,
+          "std": 0.0,
+          "min": 655.0,
+          "max": 655.0,
+          "p10": 655.0,
+          "p90": 655.0,
+          "cv": 0.0,
+          "ci95": 0.0
+        }
+      },
+      "meta": {
+        "variant": "unseen_3m_90deg",
+        "group": "layered"
+      }
+    },
+    {
+      "run_id": "gen_single_trained_2m_90deg",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 1.0,
+        "stab_no_fall_rate": 0.0,
+        "task_success_rate": 0.0,
+        "task_stage_reached": 0.0
+      },
+      "detail": {},
+      "meta": {
+        "variant": "trained_2m_90deg",
+        "group": "single"
+      }
+    },
+    {
+      "run_id": "gen_single_unseen_2m_120deg",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 1.0,
+        "stab_no_fall_rate": 0.0,
+        "task_success_rate": 0.0,
+        "task_stage_reached": 0.0
+      },
+      "detail": {},
+      "meta": {
+        "variant": "unseen_2m_120deg",
+        "group": "single"
+      }
+    },
+    {
+      "run_id": "gen_single_unseen_2m_60deg",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 1.0,
+        "stab_no_fall_rate": 0.0,
+        "task_success_rate": 0.0,
+        "task_stage_reached": 0.0
+      },
+      "detail": {},
+      "meta": {
+        "variant": "unseen_2m_60deg",
+        "group": "single"
+      }
+    },
+    {
+      "run_id": "gen_single_unseen_3m_90deg",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 1.0,
+        "stab_no_fall_rate": 0.0,
+        "task_success_rate": 0.0,
+        "task_stage_reached": 0.0
+      },
+      "detail": {},
+      "meta": {
+        "variant": "unseen_3m_90deg",
+        "group": "single"
+      }
+    },
+    {
+      "run_id": "s2_disturbance_push100N",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 1.0,
+        "stab_no_fall_rate": 0.0,
+        "stab_recovery_time_s": 0.010999999999999987,
+        "stab_fall_after_push_s": 1.194
+      },
+      "detail": {
+        "stab_recovery_time_s": {
+          "n": 20,
+          "mean": 0.010999999999999987,
+          "std": 0.047947888378947354,
+          "min": 0.0,
+          "max": 0.21999999999999975,
+          "p10": 0.0,
+          "p90": 0.0,
+          "cv": 4.358898943540674,
+          "ci95": 0.0210140886074081
+        }
+      },
+      "meta": {
+        "push_step": 250,
+        "force_n": 100.0
+      }
+    },
+    {
+      "run_id": "baseline_c0_flat",
+      "n": 20,
+      "factors": {
+        "track_vx_rmse": 0.6063581220738874,
+        "track_vx_rmse_cv": 3.158886682823866e-14,
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0
+      },
+      "detail": {
+        "track_vx_rmse": {
+          "n": 20,
+          "mean": 0.6063581220738874,
+          "std": 1.915416596841291e-14,
+          "min": 0.6063581220738039,
+          "max": 0.6063581220738936,
+          "p10": 0.6063581220738907,
+          "p90": 0.6063581220738926,
+          "cv": 3.158886682823866e-14,
+          "ci95": 8.394683362906134e-15
+        }
+      },
+      "meta": {
+        "method": "mujoco_c0_scripted_pd"
+      }
+    },
+    {
+      "run_id": "baseline_c0_push",
+      "n": 20,
+      "factors": {
+        "track_vx_rmse": 0.5759061722717972,
+        "track_vx_rmse_cv": 4.389259038341417e-13,
+        "stab_fall_rate": 1.0,
+        "stab_no_fall_rate": 0.0
+      },
+      "detail": {
+        "track_vx_rmse": {
+          "n": 20,
+          "mean": 0.5759061722717972,
+          "std": 2.527801371880595e-13,
+          "min": 0.5759061722706961,
+          "max": 0.5759061722718731,
+          "p10": 0.5759061722718429,
+          "p90": 0.5759061722718641,
+          "cv": 4.389259038341417e-13,
+          "ci95": 1.1078577974238782e-13
+        }
+      },
+      "meta": {
+        "method": "mujoco_c0_scripted_pd"
+      }
+    },
+    {
+      "run_id": "vla_closed_fps10",
+      "n": 10,
+      "factors": {
+        "task_success_rate": 0.0
+      },
+      "detail": {},
+      "meta": {
+        "fps": 10,
+        "control_dt": 0.1,
+        "suite": "libero_spatial",
+        "task_ids": [
+          0
+        ],
+        "time_budget_s": 14.0,
+        "checkpoint": "pretrained_model"
+      }
+    },
+    {
+      "run_id": "vla_closed_fps20",
+      "n": 10,
+      "factors": {
+        "task_success_rate": 0.7,
+        "task_steps": 101.42857142857143,
+        "task_steps_cv": 0.3302809393666953,
+        "task_time_s": 5.071428571428571
+      },
+      "detail": {
+        "task_steps": {
+          "n": 7,
+          "mean": 101.42857142857143,
+          "std": 33.49992385005052,
+          "min": 70.0,
+          "max": 161.0,
+          "p10": 71.2,
+          "p90": 147.20000000000002,
+          "cv": 0.3302809393666953,
+          "ci95": 24.81709088511383
+        }
+      },
+      "meta": {
+        "fps": 20,
+        "control_dt": 0.05,
+        "suite": "libero_spatial",
+        "task_ids": [
+          0
+        ],
+        "time_budget_s": 14.0,
+        "checkpoint": "pretrained_model"
+      }
+    },
+    {
+      "run_id": "vla_openloop_060k",
+      "n": 40,
+      "factors": {
+        "vla_ol_mse": 0.06561901420713624,
+        "vla_ol_mse_ratio": 0.3099600883842135,
+        "vla_ol_gripper_sign_acc": 0.925,
+        "vla_ol_vision_delta": 0.48870593922761074
+      },
+      "detail": {},
+      "meta": {
+        "checkpoint": "060000"
+      }
+    },
+    {
+      "run_id": "gen_geometry_fit",
+      "n": 4,
+      "factors": {
+        "gen_per_metre_steps": 181.0,
+        "gen_fixed_overhead_steps": 112.0,
+        "gen_turn_cost_per_deg": 0.9166666666666666
+      },
+      "detail": {},
+      "meta": {
+        "model": "steps = fixed + per_metre * distance"
+      }
+    },
+    {
+      "run_id": "vla_libero_setup",
+      "n": 1,
+      "factors": {
+        "vla_control_freq_ratio": 2.0
+      },
+      "detail": {},
+      "meta": {
+        "dataset_fps": 10,
+        "env_fps": 20
+      }
+    },
+    {
+      "run_id": "train_teacher_bs8",
+      "n": 1,
+      "factors": {
+        "train_smp_per_s": 39.46153846153846,
+        "train_step_s": 0.20346153846153847,
+        "train_mem_gb": 3.14,
+        "train_loss_decay_per_10k": 0.014166666666666668,
+        "train_plateau_ratio": 0.1714285714285716,
+        "train_grad_norm": 0.8963076923076924,
+        "train_lr_end": 2.5e-06
+      },
+      "detail": {},
+      "meta": {
+        "log": "logs/vla/train_smolvla_002.log"
+      }
+    },
+    {
+      "run_id": "train_libero_bs8",
+      "n": 1,
+      "factors": {
+        "train_smp_per_s": 45.111111111111114,
+        "train_step_s": 0.3549259259259259,
+        "train_mem_gb": 4.166296296296296,
+        "train_loss_decay_per_10k": 0.7350877192982458,
+        "train_plateau_ratio": 0.02853769607016359,
+        "train_grad_norm": 2.2547407407407407,
+        "train_lr_end": 1.7e-05
+      },
+      "detail": {},
+      "meta": {
+        "log": "logs/vla/train_libero_003.log"
+      }
+    },
+    {
+      "run_id": "train_libero_bs32",
+      "n": 1,
+      "factors": {
+        "train_smp_per_s": 45.93023255813954,
+        "train_step_s": 0.6921162790697675,
+        "train_mem_gb": 6.809767441860465,
+        "train_loss_decay_per_10k": 0.003809523809523813,
+        "train_plateau_ratio": 0.018975332068311195,
+        "train_grad_norm": 1.0699534883720931,
+        "train_lr_end": 2.5e-06
+      },
+      "detail": {},
+      "meta": {
+        "log": "logs/vla/train_libero_005.log"
+      }
+    }
+  ],
+  "openloop_semantic": {
+    "per_dim": {
+      "0": {
+        "vla_ol_mae_dim": 0.13562585006002337,
+        "vla_ol_nmae_dim": 0.38664745661064814,
+        "vla_ol_bias_dim": 0.03633113943506032,
+        "vla_ol_corr_dim": 0.8212464463418068
+      },
+      "1": {
+        "vla_ol_mae_dim": 0.13718015684280543,
+        "vla_ol_nmae_dim": 0.3433675064920902,
+        "vla_ol_bias_dim": -0.03680535561870783,
+        "vla_ol_corr_dim": 0.9091474131537437
+      },
+      "2": {
+        "vla_ol_mae_dim": 0.17804417787119747,
+        "vla_ol_nmae_dim": 0.40371118471833417,
+        "vla_ol_bias_dim": 0.0274006892926991,
+        "vla_ol_corr_dim": 0.7845600689053478
+      },
+      "3": {
+        "vla_ol_mae_dim": 0.021261980557028437,
+        "vla_ol_nmae_dim": 0.605266287917947,
+        "vla_ol_bias_dim": 0.01039871204920928,
+        "vla_ol_corr_dim": 0.6366114229185834
+      },
+      "4": {
+        "vla_ol_mae_dim": 0.0402706437278539,
+        "vla_ol_nmae_dim": 0.7195933789300932,
+        "vla_ol_bias_dim": 0.017669976898469032,
+        "vla_ol_corr_dim": 0.5782116638284341
+      },
+      "5": {
+        "vla_ol_mae_dim": 0.03373174068983644,
+        "vla_ol_nmae_dim": 0.6271119886688107,
+        "vla_ol_bias_dim": -0.008540690067457035,
+        "vla_ol_corr_dim": 0.5811356265795399
+      },
+      "6": {
+        "vla_ol_mae_dim": 0.16617404222488402,
+        "vla_ol_nmae_dim": 0.1663821500612522,
+        "vla_ol_bias_dim": 0.04412259459495545,
+        "vla_ol_corr_dim": 0.8506684670210864
+      }
+    },
+    "progress": {
+      "10": 0.0889059227400659,
+      "30": 0.05928669878630899,
+      "50": 0.1808517096641091,
+      "70": 0.10769830046670645,
+      "90": 0.07203493403825892
+    },
+    "vla_ol_mae_gripper_closed": 0.10397293782536134,
+    "vla_ol_mae_gripper_open": 0.07670168266626556,
+    "n_frames": 40
+  },
+  "gates": {
+    "s4_velocity_s0": {
+      "track_vx_rmse": {
+        "gate": 0.15,
+        "pass": true,
+        "margin": 1.9402964737163726
+      },
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": 2.0
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.0555555555555556
+      }
+    },
+    "s4_sequence_layered": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      }
+    },
+    "s4_sequence_single": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": false,
+        "margin": 0.1
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "gen_layered_trained_2m_90deg": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      }
+    },
+    "gen_layered_unseen_2m_120deg": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      }
+    },
+    "gen_layered_unseen_2m_60deg": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      }
+    },
+    "gen_layered_unseen_3m_90deg": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      }
+    },
+    "gen_single_trained_2m_90deg": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": false,
+        "margin": 0.1
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "gen_single_unseen_2m_120deg": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": false,
+        "margin": 0.1
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "gen_single_unseen_2m_60deg": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": false,
+        "margin": 0.1
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "gen_single_unseen_3m_90deg": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": false,
+        "margin": 0.1
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "s2_disturbance_push100N": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": false,
+        "margin": 0.1
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "baseline_c0_flat": {
+      "track_vx_rmse": {
+        "gate": 0.15,
+        "pass": false,
+        "margin": 0.24737856151240245
+      },
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      }
+    },
+    "baseline_c0_push": {
+      "track_vx_rmse": {
+        "gate": 0.15,
+        "pass": false,
+        "margin": 0.26045909424497005
+      },
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": false,
+        "margin": 0.1
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "vla_closed_fps10": {
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "vla_closed_fps20": {
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.7777777777777777
+      }
+    },
+    "vla_openloop_060k": {},
+    "gen_geometry_fit": {},
+    "vla_libero_setup": {},
+    "train_teacher_bs8": {},
+    "train_libero_bs8": {},
+    "train_libero_bs32": {}
+  }
+}

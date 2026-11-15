@@ -1,0 +1,1506 @@
+{
+  "rollout": {
+    "rows": 300,
+    "factors": {
+      "track_vx_rmse": {
+        "coverage": 0.2,
+        "n": 60,
+        "std": 0.24309359204623116,
+        "unique": 22,
+        "constant": false,
+        "binary": false,
+        "min": 0.0321215,
+        "max": 0.606358,
+        "lever": "速度跟踪奖励权重 / 指令滤波",
+        "registered": true,
+        "within_run_dead": [
+          "baseline_c0_flat",
+          "baseline_c0_push"
+        ],
+        "outcome_like": false
+      },
+      "track_wz_rmse": {
+        "coverage": 0.06666666666666667,
+        "n": 20,
+        "std": 0.06912364695324946,
+        "unique": 20,
+        "constant": false,
+        "binary": false,
+        "min": 0.0505338,
+        "max": 0.315833,
+        "lever": "转向奖励权重 / 角速度限幅",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "track_vx_bias": {
+        "coverage": 0.06666666666666667,
+        "n": 20,
+        "std": 0.0495715480036753,
+        "unique": 20,
+        "constant": false,
+        "binary": false,
+        "min": -0.0912908,
+        "max": 0.0822537,
+        "lever": "执行器饱和检查 / 指令前馈",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "stab_fall": {
+        "coverage": 0.9333333333333333,
+        "n": 280,
+        "std": 0.4999872447352624,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 0.0,
+        "max": 1.0,
+        "lever": "训练分布（推力/地形 DR）",
+        "registered": true,
+        "within_run_dead": [
+          "baseline_c0_flat",
+          "baseline_c0_push",
+          "gen_layered_trained_2m_90deg",
+          "gen_layered_unseen_2m_120deg",
+          "gen_layered_unseen_2m_60deg",
+          "gen_layered_unseen_3m_90deg",
+          "gen_single_trained_2m_90deg",
+          "gen_single_unseen_2m_120deg",
+          "gen_single_unseen_2m_60deg",
+          "gen_single_unseen_3m_90deg",
+          "s2_disturbance_push100N",
+          "s4_sequence_layered",
+          "s4_sequence_single"
+        ],
+        "outcome_like": true
+      },
+      "stab_recovery_time_s": {
+        "coverage": 0.06666666666666667,
+        "n": 20,
+        "std": 0.04794788837894741,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 0.0,
+        "max": 0.22,
+        "lever": "恢复奖励 / 步态切换时机",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "stab_fall_after_push_s": {
+        "coverage": 0.06666666666666667,
+        "n": 20,
+        "std": 1.1209478132366377,
+        "unique": 13,
+        "constant": false,
+        "binary": false,
+        "min": 0.6,
+        "max": 5.78,
+        "lever": "推力 DR 档位 / 恢复策略",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "task_success": {
+        "coverage": 0.7333333333333333,
+        "n": 220,
+        "std": 0.4998140149963553,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 0.0,
+        "max": 1.0,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [
+          "gen_layered_trained_2m_90deg",
+          "gen_layered_unseen_2m_120deg",
+          "gen_layered_unseen_2m_60deg",
+          "gen_layered_unseen_3m_90deg",
+          "gen_single_trained_2m_90deg",
+          "gen_single_unseen_2m_120deg",
+          "gen_single_unseen_2m_60deg",
+          "gen_single_unseen_3m_90deg",
+          "s4_sequence_layered",
+          "s4_sequence_single",
+          "vla_closed_fps10"
+        ],
+        "outcome_like": true
+      },
+      "task_steps": {
+        "coverage": 0.3566666666666667,
+        "n": 107,
+        "std": 124.36938141812132,
+        "unique": 11,
+        "constant": false,
+        "binary": false,
+        "min": 70.0,
+        "max": 655.0,
+        "lever": "阶段命令时长 / 速度上限",
+        "registered": true,
+        "within_run_dead": [
+          "gen_layered_trained_2m_90deg",
+          "gen_layered_unseen_2m_120deg",
+          "gen_layered_unseen_2m_60deg",
+          "gen_layered_unseen_3m_90deg",
+          "s4_sequence_layered"
+        ],
+        "outcome_like": false
+      },
+      "task_time_s": {
+        "coverage": 0.3566666666666667,
+        "n": 107,
+        "std": 2.4873876283624266,
+        "unique": 11,
+        "constant": false,
+        "binary": false,
+        "min": 1.4,
+        "max": 13.1,
+        "lever": "同 task_steps（构造别名）",
+        "registered": true,
+        "within_run_dead": [
+          "gen_layered_trained_2m_90deg",
+          "gen_layered_unseen_2m_120deg",
+          "gen_layered_unseen_2m_60deg",
+          "gen_layered_unseen_3m_90deg",
+          "s4_sequence_layered"
+        ],
+        "outcome_like": false
+      },
+      "task_terminal_miss_m": {
+        "coverage": 0.13333333333333333,
+        "n": 40,
+        "std": 1.1263275000000001,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 0.231645,
+        "max": 2.4843,
+        "lever": "停止容差 / 终点收敛奖励",
+        "registered": true,
+        "within_run_dead": [
+          "s4_sequence_layered",
+          "s4_sequence_single"
+        ],
+        "outcome_like": true
+      },
+      "task_miss_ratio": {
+        "coverage": 0.06666666666666667,
+        "n": 20,
+        "std": 0.0,
+        "unique": 1,
+        "constant": true,
+        "binary": false,
+        "min": 0.772151,
+        "max": 0.772151,
+        "lever": "停止容差 / 终点收敛奖励",
+        "registered": true,
+        "within_run_dead": [
+          "s4_sequence_layered"
+        ],
+        "outcome_like": true
+      },
+      "task_stage_reached": {
+        "coverage": 0.6666666666666666,
+        "n": 200,
+        "std": 2.0,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 0.0,
+        "max": 4.0,
+        "lever": "阶段机容差 / 阶段命令",
+        "registered": true,
+        "within_run_dead": [
+          "gen_layered_trained_2m_90deg",
+          "gen_layered_unseen_2m_120deg",
+          "gen_layered_unseen_2m_60deg",
+          "gen_layered_unseen_3m_90deg",
+          "gen_single_trained_2m_90deg",
+          "gen_single_unseen_2m_120deg",
+          "gen_single_unseen_2m_60deg",
+          "gen_single_unseen_3m_90deg",
+          "s4_sequence_layered",
+          "s4_sequence_single"
+        ],
+        "outcome_like": true
+      }
+    },
+    "redundant_pairs": [
+      [
+        "stab_fall",
+        "task_terminal_miss_m",
+        1.0,
+        40,
+        "结果同源"
+      ],
+      [
+        "task_success",
+        "task_terminal_miss_m",
+        -1.0,
+        40,
+        "结果同源"
+      ],
+      [
+        "task_steps",
+        "task_time_s",
+        1.0,
+        107,
+        "构造别名"
+      ],
+      [
+        "task_terminal_miss_m",
+        "task_stage_reached",
+        -1.0,
+        40,
+        "结果同源"
+      ],
+      [
+        "stab_fall",
+        "task_success",
+        -0.9999999999999999,
+        200,
+        "结果同源"
+      ],
+      [
+        "stab_fall",
+        "task_stage_reached",
+        -0.9999999999999999,
+        200,
+        "结果同源"
+      ],
+      [
+        "task_success",
+        "task_stage_reached",
+        0.9999999999999999,
+        200,
+        "结果同源"
+      ]
+    ],
+    "discrimination_success": {
+      "track_vx_rmse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_wz_rmse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_vx_bias": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_fall": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 100,
+        "n_outcome_0": 100,
+        "confounded": true
+      },
+      "stab_recovery_time_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_fall_after_push_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_steps": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 107,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_time_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 107,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_terminal_miss_m": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 20,
+        "n_outcome_0": 20,
+        "confounded": true
+      },
+      "task_miss_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 20,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_stage_reached": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 100,
+        "n_outcome_0": 100,
+        "confounded": true
+      }
+    },
+    "discrimination_fall": {
+      "track_vx_rmse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": 0.9096252301252618,
+        "n_outcome_1": 21,
+        "n_outcome_0": 39,
+        "confounded": true
+      },
+      "track_wz_rmse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 1,
+        "n_outcome_0": 19,
+        "confounded": true
+      },
+      "track_vx_bias": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 1,
+        "n_outcome_0": 19,
+        "confounded": true
+      },
+      "stab_recovery_time_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 20,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_fall_after_push_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 20,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_success": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 100,
+        "n_outcome_0": 100,
+        "confounded": true
+      },
+      "task_steps": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 100,
+        "confounded": true
+      },
+      "task_time_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 100,
+        "confounded": true
+      },
+      "task_terminal_miss_m": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 20,
+        "n_outcome_0": 20,
+        "confounded": true
+      },
+      "task_miss_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 20,
+        "confounded": true
+      },
+      "task_stage_reached": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 100,
+        "n_outcome_0": 100,
+        "confounded": true
+      }
+    }
+  },
+  "run": {
+    "rows": 22,
+    "factors": {
+      "n": {
+        "coverage": 1.0,
+        "n": 22,
+        "std": 9.330479689687419,
+        "unique": 5,
+        "constant": false,
+        "binary": false,
+        "min": 1.0,
+        "max": 40.0,
+        "lever": "",
+        "registered": false,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "gen_fixed_overhead_steps": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 112.0,
+        "max": 112.0,
+        "lever": "阶段切换逻辑 / 起停时长",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "gen_per_metre_steps": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 181.0,
+        "max": 181.0,
+        "lever": "巡航速度命令",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "gen_turn_cost_per_deg": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.916667,
+        "max": 0.916667,
+        "lever": "转向命令时长",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "stab_fall_after_push_s": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 1.194,
+        "max": 1.194,
+        "lever": "推力 DR 档位 / 恢复策略",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "stab_fall_rate": {
+        "coverage": 0.6363636363636364,
+        "n": 14,
+        "std": 0.4965827098833608,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 0.0,
+        "max": 1.0,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "stab_no_fall_rate": {
+        "coverage": 0.6363636363636364,
+        "n": 14,
+        "std": 0.4965827098833608,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 0.0,
+        "max": 1.0,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "stab_recovery_time_s": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.011,
+        "max": 0.011,
+        "lever": "恢复奖励 / 步态切换时机",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "task_miss_ratio": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.772151,
+        "max": 0.772151,
+        "lever": "停止容差 / 终点收敛奖励",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": true
+      },
+      "task_stage_reached": {
+        "coverage": 0.45454545454545453,
+        "n": 10,
+        "std": 2.0,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 0.0,
+        "max": 4.0,
+        "lever": "阶段机容差 / 阶段命令",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": true
+      },
+      "task_steps": {
+        "coverage": 0.2727272727272727,
+        "n": 6,
+        "std": 166.84836713856552,
+        "unique": 5,
+        "constant": false,
+        "binary": false,
+        "min": 101.429,
+        "max": 655.0,
+        "lever": "阶段命令时长 / 速度上限",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "task_steps_cv": {
+        "coverage": 0.2727272727272727,
+        "n": 6,
+        "std": 0.12308846127943467,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 0.0,
+        "max": 0.330281,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "task_success_rate": {
+        "coverage": 0.5454545454545454,
+        "n": 12,
+        "std": 0.48153400710645555,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 0.0,
+        "max": 1.0,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "task_terminal_miss_m": {
+        "coverage": 0.09090909090909091,
+        "n": 2,
+        "std": 1.1263275000000001,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 0.231645,
+        "max": 2.4843,
+        "lever": "停止容差 / 终点收敛奖励",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": true
+      },
+      "task_time_s": {
+        "coverage": 0.2727272727272727,
+        "n": 6,
+        "std": 2.3468645561951376,
+        "unique": 5,
+        "constant": false,
+        "binary": false,
+        "min": 5.07143,
+        "max": 13.1,
+        "lever": "同 task_steps（构造别名）",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "track_axis_ratio_wz_vx": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 1.79921,
+        "max": 1.79921,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "track_vx_bias": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.000522792,
+        "max": 0.000522792,
+        "lever": "执行器饱和检查 / 指令前馈",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "track_vx_rmse": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 0.24253787870655494,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 0.0773078,
+        "max": 0.606358,
+        "lever": "速度跟踪奖励权重 / 指令滤波",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "track_vx_rmse_cv": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 0.1735018480905907,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 3.15889e-14,
+        "max": 0.368053,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "track_wz_rmse": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.139093,
+        "max": 0.139093,
+        "lever": "转向奖励权重 / 角速度限幅",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "track_wz_rmse_cv": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.496961,
+        "max": 0.496961,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "train_grad_norm": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 0.60362022524174,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 0.896308,
+        "max": 2.25474,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "train_loss_decay_per_10k": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 0.3423128859979732,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 0.00380952,
+        "max": 0.735088,
+        "lever": "同上",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "train_lr_end": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 6.835365551469959e-06,
+        "unique": 2,
+        "constant": false,
+        "binary": true,
+        "min": 2.5e-06,
+        "max": 1.7e-05,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "train_mem_gb": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 1.5459063211448345,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 3.14,
+        "max": 6.80977,
+        "lever": "批大小 / 精度 / 梯度检查点",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "train_plateau_ratio": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 0.06972285911867228,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 0.0189753,
+        "max": 0.171429,
+        "lever": "停训阈值 / 换数据 / 换超参",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "train_smp_per_s": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 2.875818427663486,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 39.4615,
+        "max": 45.9302,
+        "lever": "分辨率 / chunk 长度 / bf16（加 batch 无效）",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "train_step_s": {
+        "coverage": 0.13636363636363635,
+        "n": 3,
+        "std": 0.20423874132223024,
+        "unique": 3,
+        "constant": false,
+        "binary": false,
+        "min": 0.203462,
+        "max": 0.692116,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "vla_control_freq_ratio": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 2.0,
+        "max": 2.0,
+        "lever": "评测配置（必须显式指定 fps）",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "vla_ol_gripper_sign_acc": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.925,
+        "max": 0.925,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "vla_ol_mse": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.065619,
+        "max": 0.065619,
+        "lever": "",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "vla_ol_mse_ratio": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.30996,
+        "max": 0.30996,
+        "lever": "数据质量 / 损失加权",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      },
+      "vla_ol_vision_delta": {
+        "coverage": 0.045454545454545456,
+        "n": 1,
+        "std": 0.0,
+        "unique": 1,
+        "constant": false,
+        "binary": false,
+        "min": 0.488706,
+        "max": 0.488706,
+        "lever": "视觉编码器 / 相机配置",
+        "registered": true,
+        "within_run_dead": [],
+        "outcome_like": false
+      }
+    },
+    "redundant_pairs": [
+      [
+        "stab_fall_rate",
+        "stab_no_fall_rate",
+        -1.0,
+        14,
+        "真冗余"
+      ],
+      [
+        "stab_fall_rate",
+        "task_stage_reached",
+        -0.9999999999999998,
+        10,
+        "真冗余"
+      ],
+      [
+        "stab_fall_rate",
+        "task_success_rate",
+        -0.9999999999999998,
+        10,
+        "真冗余"
+      ],
+      [
+        "stab_no_fall_rate",
+        "task_stage_reached",
+        0.9999999999999998,
+        10,
+        "真冗余"
+      ],
+      [
+        "stab_no_fall_rate",
+        "task_success_rate",
+        0.9999999999999998,
+        10,
+        "真冗余"
+      ],
+      [
+        "task_stage_reached",
+        "task_success_rate",
+        0.9999999999999998,
+        10,
+        "真冗余"
+      ]
+    ],
+    "discrimination_success": {
+      "n": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "gen_fixed_overhead_steps": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "gen_per_metre_steps": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "gen_turn_cost_per_deg": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_fall_after_push_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_fall_rate": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_no_fall_rate": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_recovery_time_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_miss_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_stage_reached": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_steps": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_steps_cv": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_success_rate": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_terminal_miss_m": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_time_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_axis_ratio_wz_vx": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_vx_bias": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_vx_rmse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_vx_rmse_cv": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_wz_rmse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_wz_rmse_cv": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_grad_norm": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_loss_decay_per_10k": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_lr_end": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_mem_gb": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_plateau_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_smp_per_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_step_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_control_freq_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_ol_gripper_sign_acc": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_ol_mse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_ol_mse_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_ol_vision_delta": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      }
+    },
+    "discrimination_fall": {
+      "n": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "gen_fixed_overhead_steps": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "gen_per_metre_steps": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "gen_turn_cost_per_deg": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_fall_after_push_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_fall_rate": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_no_fall_rate": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "stab_recovery_time_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_miss_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_stage_reached": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_steps": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_steps_cv": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_success_rate": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_terminal_miss_m": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "task_time_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_axis_ratio_wz_vx": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_vx_bias": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_vx_rmse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_vx_rmse_cv": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_wz_rmse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "track_wz_rmse_cv": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_grad_norm": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_loss_decay_per_10k": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_lr_end": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_mem_gb": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_plateau_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_smp_per_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "train_step_s": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_control_freq_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_ol_gripper_sign_acc": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_ol_mse": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_ol_mse_ratio": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      },
+      "vla_ol_vision_delta": {
+        "d_within": null,
+        "runs_used": [],
+        "d_pooled": null,
+        "n_outcome_1": 0,
+        "n_outcome_0": 0,
+        "confounded": true
+      }
+    }
+  }
+}
