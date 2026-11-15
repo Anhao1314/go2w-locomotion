@@ -145,8 +145,29 @@ def c0_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
 
 
 def vla_closed_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
-    """LIBERO 闭环评测（每个控制频率一个 run）。"""
+    """LIBERO 闭环评测。
+
+    * fps10 —— 未加策略种子，作为结构性对照（全部超时）
+    * fps20 unseeded —— 单次 10 集抽样，留档用来说明测量波动
+    * fps20 seeded —— 两批各 10 集合并（20 集），**权威数字**
+    """
     out = []
+    seeded = []
+    for tag in ("a", "b"):
+        path = EVID / "vla-2026-11-15" / f"libero_seeded_{tag}.json"
+        if path.exists():
+            data = load(path)
+            seeded.extend({
+                "entity": f"seed{r['seed']}",
+                "success": r["success"],
+                "steps": r["steps"],
+            } for r in data["results"])
+    if seeded:
+        out.append(("vla_closed_fps20_seeded_n20", seeded, {
+            "fps": 20, "control_dt": 1.0 / 20, "suite": "libero_spatial",
+            "task_ids": [0], "policy_seeded": True,
+            "batch_rates": [0.7, 0.3],
+        }))
     for fps in (10, 20):
         path = EVID / "vla-2026-11-15" / f"libero_ab_fps{fps}_n10.json"
         if not path.exists():
@@ -157,7 +178,7 @@ def vla_closed_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
             "success": r["success"],
             "steps": r["steps"],
         } for r in data["results"]]
-        out.append((f"vla_closed_fps{fps}", rows, {
+        out.append((f"vla_closed_fps{fps}_unseeded", rows, {
             "fps": fps,
             "control_dt": 1.0 / fps,
             "suite": data.get("suite"),
