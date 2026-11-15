@@ -24,6 +24,9 @@
 | --- | --- | --- | --- |
 | **L3 分层 A/B 对比**（Isaac Lab 2.7，3 训练种子 × 20 冻结种子） | 分层成功率 vs 单层 | 分层 **3/3 种子 100%**（100 迭代收敛）；单层 1/3（450 迭代） | ✅ |
 | **S4 Sim2Sim**（RQ4：零策略改动 Isaac → MuJoCo） | 序列成功率 ≥ 0.90 | **20/20（1.00）**；vx_rmse 0.077 ≤ 0.15 ✅；完成步数 474 vs Isaac 406.7 | ✅ |
+| **M2 泛化矩阵**（4 几何 × 20 冻结种子） | 分层成功率 ≥ 0.90 | **80/80 = 1.00**，含 3 个训练时未见几何（3 m/90°、2 m/60°、2 m/120°）；单层 **0/80** | ✅ |
+| **S2 扰动鲁棒性**（100 N × 0.5 s 侧推） | 无摔倒率 ≥ 0.90 | **0/20**；脚本基线 C0 同样 0/20 → 该档位对无 DR 训练者普遍超限 | ❌ 负结果 |
+| **C0 脚本基线（RQ2 下界）** | 与 RL 同任务同指标 | vx_rmse **0.606** vs RL **0.077** → 误差降低 **7.8×** | ✅ |
 | **ROS2 真 DDS 闭环**（Go2 桥，ROS-R1 级） | 独立探针验证指令→状态回传 | **`ROS2_R1_PASS`**：582 消息/话题（含 TF），前进 1.24 m，转向 +1.59 rad | ✅ |
 | **VLA 模仿学习**（SmolVLA 450M，LIBERO 自洽路线） | 模型能否复现演示动作（开环检查） | **MSE 0.0656 vs 基线 0.2117（0.31×）**，七维相关 +0.58~+0.91，夹爪判断 93%，遮图后动作偏移 0.489 | ✅ |
 | **VLA 闭环成功率**（LIBERO-Spatial 任务 0） | 仿真成功率（10 episodes，14 s 预算） | **7/10 = 0.70**（fps=20）；同任务 fps=10 为 **0/10** | ✅ |
@@ -90,6 +93,29 @@ S0 locomotion 策略（PPO，冻结复用）──┘
 > **这一条来之不易**：此前闭环一直是 0，根因不是模型也不是训练，而是**观测契约**——评测把 robosuite 的 uint8 HWC `(1,360,360,3)` 图像、带 batch 维的状态和元组任务串直接喂给了按 float32 CHW `[0,1]` 训练的模型。统一格式后同一个 checkpoint 从 0/3 变成 7/10。细节见 [vla/README](vla/README.md)，数字见 [RESULTS.md](docs/RESULTS.md)，因子见 [FACTORS.md](docs/FACTORS.md)。
 
 演示：[LIBERO 抓取成功片段](media/training/libero_fps20_success.mp4)
+
+## 量化分析（可视化）
+
+所有图表由 `python scripts/make_factor_charts.py` 从 `reports/evidence/` 的原始 JSON 直接重绘。
+完整目录见 [docs/FACTORS.md](docs/FACTORS.md)（48 个因子的定义、方向、阈值、来源），
+体检结论见 [docs/RESULTS.md](docs/RESULTS.md)。
+
+**VLA 闭环 A/B**：同一个 checkpoint，只有控制频率不同 —— 20 Hz 7/10，10 Hz 0/10。
+
+![VLA 控制频率 A/B](media/analysis/vla_fps_ab.png)
+
+**泛化几何成本**：距离每多 1 米 ≈ +181 步；转向每 30° ≈ +28 步（约 6%）—— 距离贵、转向便宜。
+
+![泛化几何成本](media/analysis/generalization_cost.png)
+
+**S2 失效时间窗**：20/20 全部在侧推后 1.19 s 内摔倒（含 1 例 10.8 s 的异常晚倒）。
+
+![S2 失效时间窗](media/analysis/s2_failure_window.png)
+
+**因子体检**：12 个 rollout 因子中只有 5 个可跨配置使用，5 个"结局指标"其实是同一个二值信号。
+
+![因子体检](media/analysis/factor_health.png)
+
 
 ## 工程设施（可复现性）
 

@@ -76,7 +76,52 @@
 
 ---
 
-## 四、复现命令
+## 四、图表（`media/analysis/`，由证据直接生成）
+
+全部由 `python scripts/make_factor_charts.py` 从 `reports/evidence/` 与
+`reports/analysis/` 的原始数据重绘，不手填数字。
+
+### VLA 闭环：控制频率 A/B
+
+![VLA fps A/B](../media/analysis/vla_fps_ab.png)
+
+同一个 60K checkpoint、同一任务、同一批种子：`fps=20` **7/10**，`fps=10` **0/10**（全部卡在 140 步上限）。
+
+### VLA 开环误差分解
+
+![VLA 开环误差分解](../media/analysis/vla_openloop_decomp.png)
+
+误差不随进度单调增长，**中段（夹爪闭合、正在搬运）最高**（0.181，是前后段两倍）；
+逐维看，旋转三轴的归一化误差最大（0.61–0.72），因为该方向 GT 本身幅值很小。
+
+### 泛化几何成本
+
+![泛化几何成本](../media/analysis/generalization_cost.png)
+
+距离贵：每多 1 米 ≈ **+181 步**（固定开销 112 步）；转向便宜：每 30° ≈ **+28 步**（约 6%）。
+
+### S2 扰动失效时间窗
+
+![S2 失效时间窗](../media/analysis/s2_failure_window.png)
+
+20/20 摔倒，全部发生在侧推后 **1.19 s** 内；1 例异常晚倒（10.8 s，已在图中标注）。
+
+### 因子体检
+
+![因子体检](../media/analysis/factor_health.png)
+
+12 个 rollout 因子的覆盖/方差/组内分辨率/冗余/杠杆状态；黄色覆盖表示该因子只在 1–2 个
+run 上存在，不能跨配置比较。
+
+### 训练收敛塌陷
+
+![训练收敛塌陷](../media/analysis/training_plateau.png)
+
+前 23k 步每 10k 步 loss 降 0.735，后 42k 步只降 0.0038（**约 190 倍衰减**）——停在 62K 步的依据。
+
+---
+
+## 五、复现命令
 
 ```bash
 # 开环复现检查（WSL vla-env，离线可跑）
