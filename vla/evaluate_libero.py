@@ -34,7 +34,7 @@ if str(PROJECT_ROOT) not in sys.path:
 def _as_image(value: Any) -> Any:
     """robosuite obs → the exact tensor layout the policy was trained on."""
     import numpy as np
-    import torch
+    import torch  # pyright: ignore[reportMissingImports]
 
     arr = np.asarray(value)
     if arr.ndim == 4:          # (B, H, W, C) vectorised wrapper
@@ -48,7 +48,7 @@ def _as_image(value: Any) -> Any:
 
 def _as_state(value: Any) -> Any:
     import numpy as np
-    import torch
+    import torch  # pyright: ignore[reportMissingImports]
 
     arr = np.asarray(value, dtype=np.float32)
     if arr.ndim == 2:  # (B, D) → (D,)
@@ -97,9 +97,9 @@ def main(argv: list[str] | None = None) -> int:
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
 
     import numpy as np
-    import torch
-    from lerobot.configs.policies import PreTrainedConfig
-    from lerobot.policies import get_policy_class, make_pre_post_processors
+    import torch  # pyright: ignore[reportMissingImports]
+    from lerobot.configs.policies import PreTrainedConfig  # pyright: ignore[reportMissingImports]
+    from lerobot.policies import get_policy_class, make_pre_post_processors  # pyright: ignore[reportMissingImports]
 
     from vla.env import make_libero_env
 
@@ -186,12 +186,13 @@ def main(argv: list[str] | None = None) -> int:
               f"({steps} steps / {steps / args.fps:.1f}s sim)", flush=True)
 
     if args.video and video_frames:
-        import imageio
+        import imageio  # pyright: ignore[reportMissingImports]
 
         video_path = out / "libero_eval_episode0.mp4"
-        with imageio.get_writer(video_path, fps=args.fps, codec="libx264", quality=8) as writer:
-            for frame in video_frames:
-                writer.append_data(frame)
+        writer: Any = imageio.get_writer(video_path, fps=args.fps, codec="libx264", quality=8)
+        for frame in video_frames:
+            writer.append_data(frame)
+        writer.close()
         print(f"      video: {video_path}", flush=True)
 
     successes = sum(1 for r in results if r["success"])

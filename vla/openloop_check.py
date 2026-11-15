@@ -91,10 +91,10 @@ def main(argv: list[str] | None = None) -> int:
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
 
     import numpy as np
-    import torch
-    from lerobot.configs.policies import PreTrainedConfig
-    from lerobot.datasets.lerobot_dataset import LeRobotDataset
-    from lerobot.policies import get_policy_class, make_pre_post_processors
+    import torch  # pyright: ignore[reportMissingImports]
+    from lerobot.configs.policies import PreTrainedConfig  # pyright: ignore[reportMissingImports]
+    from lerobot.datasets.lerobot_dataset import LeRobotDataset  # pyright: ignore[reportMissingImports]
+    from lerobot.policies import get_policy_class, make_pre_post_processors  # pyright: ignore[reportMissingImports]
 
     ckpt = pathlib.Path(args.checkpoint)
     policy_config = PreTrainedConfig.from_pretrained(str(ckpt))

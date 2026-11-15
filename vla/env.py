@@ -340,8 +340,8 @@ class SO101TabletopSession:
 
 def make_libero_env(suite: str = "libero_spatial", task_ids=None, **overrides):
     """Create the LIBERO benchmark env (robosuite-based, via lerobot[libero])."""
-    from lerobot.envs.factory import make_env
-    from lerobot.envs.configs import LiberoEnvConfig
+    from lerobot.envs.factory import make_env  # pyright: ignore[reportMissingImports]
+    from lerobot.envs.configs import LiberoEnvConfig  # pyright: ignore[reportMissingImports]
 
     cfg = LiberoEnvConfig(task=suite)
     cfg.init_states = True
