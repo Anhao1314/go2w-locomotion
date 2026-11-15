@@ -1,5 +1,10 @@
 # Go2W C++ Control Core (P0)
 
+> **Scope**: this directory is a **separately validated numerical artifact** and is
+> **not** in the ROS2 closed loop. The bridge runs the ONNX actor in Python; the two
+> claims are supported by different evidence — see
+> [the bridge README](../ros2/go2_bridge/README.md#scope-boundary-the-c-stack-is-not-in-this-loop).
+
 ROS-agnostic C++17 control core for the Unitree Go2W, with:
 
 - floating-base FK, damped-least-squares IK, per-leg Jacobians;

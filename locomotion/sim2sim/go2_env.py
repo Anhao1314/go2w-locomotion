@@ -145,6 +145,8 @@ class Go2Sim2SimEnv:
         push_start_s: float = 5.0,
         push_duration_s: float = 0.5,
         payload_kg: float = 0.0,
+        friction_scale: float = 1.0,
+        friction_step_s: float | None = None,
         sequence_geometry: tuple[float, float] | None = None,
     ) -> None:
         if task not in ("velocity", "sequence"):
@@ -169,8 +171,24 @@ class Go2Sim2SimEnv:
         self.push_start_step = int(push_start_s / STEP_DT)
         self.push_steps = max(1, int(round(push_duration_s / STEP_DT)))
         self.payload_kg = float(payload_kg)
+        # S2 friction axis: scale the foot-sphere sliding friction, optionally
+        # as a mid-episode step (protocol wording) at friction_step_s
+        self.friction_scale = float(friction_scale)
+        self.friction_step = (
+            None if friction_step_s is None else int(round(friction_step_s / STEP_DT))
+        )
 
         self.model = mujoco.MjModel.from_xml_path(str(self.model_path))
+        # foot contact = sphere geoms attached to the calf bodies (r = 0.022 m)
+        self._foot_geoms = [
+            g for g in range(self.model.ngeom)
+            if (mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_BODY,
+                                  int(self.model.geom_bodyid[g])) or "").endswith("_calf")
+            and int(self.model.geom_type[g]) == int(mujoco.mjtGeom.mjGEOM_SPHERE)
+        ]
+        self._foot_friction_base = [
+            float(v) for v in self.model.geom_friction[self._foot_geoms, 0]
+        ] if self._foot_geoms else []
         self.model.opt.timestep = PHYS_DT
         self.data = mujoco.MjData(self.model)
 
@@ -389,6 +407,13 @@ class Go2Sim2SimEnv:
         self.data.ctrl[:] = 0.0
         mujoco.mj_forward(self.model, self.data)
 
+        if self._foot_geoms:
+            for g, base in zip(self._foot_geoms, self._foot_friction_base):
+                self.model.geom_friction[g, 0] = base
+            if self.friction_step is None and self.friction_scale != 1.0:
+                for g, base in zip(self._foot_geoms, self._foot_friction_base):
+                    self.model.geom_friction[g, 0] = base * self.friction_scale
+
         self._sample_velocity_command()
         heading = self._heading()
         self._stage.reset(x, y, heading)
@@ -415,6 +440,11 @@ class Go2Sim2SimEnv:
         elif self.push_force_n != 0.0:
             self.data.xfrc_applied[self._base_body_id] = 0.0
         self._apply_action(raw_action)
+        if (self.friction_step is not None and self._step_count == self.friction_step
+                and self._foot_geoms):
+            for g, base in zip(self._foot_geoms, self._foot_friction_base):
+                self.model.geom_friction[g, 0] = base * self.friction_scale
+
         self._step_count += 1
 
         if self.task == "velocity" and self._step_count % COMMAND_RESAMPLE_STEPS == 0:

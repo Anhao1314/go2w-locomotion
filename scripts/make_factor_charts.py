@@ -157,6 +157,41 @@ def chart_vla_failure_traces(out: pathlib.Path) -> None:
     plt.close(fig)
 
 
+def chart_friction(out: pathlib.Path) -> None:
+    tags = ("100", "07", "05", "03")
+    labels = [1.0, 0.7, 0.5, 0.3]
+    vx, fall = [], []
+    for tag in tags:
+        d = load(EVID / "m2-campaign-2026-11-16" / f"friction_{tag}.json")["summary"]
+        vx.append(d["vx_rmse_mean"])
+        fall.append(d["fall_rate"])
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.4, 3.7))
+    ax1.plot(labels, vx, "o-", color=BLUE, lw=2, ms=8)
+    for x, y in zip(labels, vx):
+        ax1.annotate(f"{y:.3f}", (x, y), textcoords="offset points", xytext=(0, 10),
+                     ha="center", fontsize=9)
+    ax1.set_xlabel("第 5 秒摩擦倍率（名义 0.8 → 0.64 / 0.40 / 0.24）")
+    ax1.set_ylabel("vx_rmse（m/s）")
+    ax1.invert_xaxis()
+    ax1.margins(y=0.18)
+    ax1.set_title("中等降摩擦反而更准，0.24 才退化")
+
+    ax2.plot(labels, fall, "o-", color=RED, lw=2, ms=8)
+    for x, y in zip(labels, fall):
+        ax2.annotate(f"{y:.2f}", (x, y), textcoords="offset points", xytext=(0, 10),
+                     ha="center", fontsize=9)
+    ax2.set_xlabel("第 5 秒摩擦倍率")
+    ax2.set_ylabel("摔倒率")
+    ax2.invert_xaxis()
+    ax2.set_ylim(-0.01, 0.12)
+    ax2.set_title("0.5–0.7 倍时零摔倒")
+
+    fig.suptitle("S2 摩擦阶跃轴（MuJoCo，20 种子，第 5 秒阶跃）", y=1.03, fontsize=11)
+    fig.savefig(out / "s2_friction_step.png")
+    plt.close(fig)
+
+
 def chart_tolerance(out: pathlib.Path) -> None:
     tols, miss, steps, succ = [], [], [], []
     for tag in ("030", "025", "020", "015", "010", "005"):
@@ -564,6 +599,7 @@ def main(argv: list[str] | None = None) -> int:
     chart_e1_vs_base(out)
     chart_payload(out)
     chart_tolerance(out)
+    chart_friction(out)
     chart_vla_failure_traces(out)
     chart_openloop(out)
     chart_generalization(out)

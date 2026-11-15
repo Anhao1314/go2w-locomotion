@@ -134,6 +134,8 @@ def evaluate_velocity(
     seeds: tuple[int, ...] = EVAL_SEEDS,
     checkpoint_label: str,
     payload_kg: float = 0.0,
+    friction_scale: float = 1.0,
+    friction_step_s: float | None = None,
 ) -> dict[str, Any]:
     """Velocity-task summary mirroring ``eval_policy.py``'s JSON schema.
 
@@ -143,7 +145,9 @@ def evaluate_velocity(
     started = _time.time()
     episodes: list[dict[str, Any]] = []
     for seed in seeds:
-        env = Go2Sim2SimEnv("velocity", seed=int(seed), payload_kg=payload_kg)
+        env = Go2Sim2SimEnv("velocity", seed=int(seed), payload_kg=payload_kg,
+                            friction_scale=friction_scale,
+                            friction_step_s=friction_step_s)
         result = run_velocity_episode(env, policy)
         episodes.append(result)
 

@@ -131,6 +131,21 @@ def s2_run() -> tuple[str, list[dict[str, Any]], dict[str, Any]]:
                                             "force_n": s2["summary"]["push"]["force_n"]}
 
 
+def friction_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
+    """S2 摩擦阶跃轴：第 5 秒把足部摩擦降到给定倍率。"""
+    out = []
+    for tag in ("100", "07", "05", "03"):
+        path = EVID / "m2-campaign-2026-11-16" / f"friction_{tag}.json"
+        if not path.exists():
+            continue
+        data = load(path)
+        rows = [{"entity": f"seed{e['seed']}", "vx_rmse": e.get("vx_rmse"),
+                 "wz_rmse": e.get("wz_rmse"), "fall": e.get("fall")}
+                for e in data["episodes"]]
+        out.append((f"s2_friction_{tag}", rows, {"friction_tag": tag}))
+    return out
+
+
 def tolerance_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
     """S4 序列精度轴：位置容差 0.30 → 0.05 m。"""
     out = []
@@ -422,6 +437,7 @@ def main(argv: list[str] | None = None) -> int:
     run_inputs.extend(c0_runs())
     run_inputs.extend(payload_runs())
     run_inputs.extend(tolerance_runs())
+    run_inputs.extend(friction_runs())
     run_inputs.extend(vla_closed_runs())
 
     runs: list[dict[str, Any]] = []

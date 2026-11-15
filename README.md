@@ -132,12 +132,13 @@ S0 locomotion 策略（PPO，冻结复用）──┘
 | 预注册协议 | 冻结评估种子 E={0..19}、指标与阈值先于训练冻结（[EXPERIMENT_DESIGN](docs/EXPERIMENT_DESIGN.md)） |
 | 每 run 证据束 | `run_config.json`（git SHA/依赖版本/命令行）+ 全文件 SHA-256 清单，训练结束自动生成 |
 | 收敛即停 | 训练中每 50 迭代做一次 2048 环境确定性评估，连续达标自动早停并记录收敛点 |
-| CI | 341+ 测试（Python/C++/pybind/ROS2 契约）+ **ROS2 真 DDS 门禁**（[ros2-live-r1](.github/workflows/ros2-live-r1.yml)） |
+| CI | 374 测试（Python/C++/pybind/ROS2 契约）+ **ROS2 真 DDS 门禁**（[ros2-live-r1](.github/workflows/ros2-live-r1.yml)） |
 | 过程日志 | [docs/journal/](docs/journal/)：按日记录目标、决策、失败与修正 |
 
 ## 诚实边界
 
 - **仿真限定**：无真机实验；S4 跨引擎结论适用于 Isaac Sim 5.1 与 MuJoCo 3.11 两引擎
+- **C++ 栈不在闭环内**：ROS2 节点跑的是 Python + ONNX 推理；`cpp/` 是独立数值验证产物（见 [ROS2 README](ros2/go2_bridge/README.md#scope-boundary-the-c-stack-is-not-in-this-loop)）
 - **S0 预训练成本**：分层优势部分来自动作抽象与 S0 复用（未训练的 S1 已有 75% 成功率）——已在报告中归因
 - **闭环指令含任务知识**：规则层的转向修正编码了部分任务先验——这正是分层设计的取舍，正文有讨论
 - **VLA 覆盖有限**：闭环成功率 0.50 覆盖 `libero_spatial` 的 5 个任务 × 20 种子（该 suite 共 10 个任务），不外推到其他 suite；单批 10 集会给出 0.30–0.70 的波动，跨域证据只有 1 个 episode（0/4 方块），仅作定性

@@ -63,7 +63,7 @@ A scenario that is not in here has not been executed, regardless of being listed
 | --- | --- | --- |
 | S2 · 100 N × 0.5 s push | ❌ executed, gate failed (0/20 no-fall) | `reports/evidence/m2-campaign-2026-11-14/generalization_and_s2.json` |
 | S2 · payload 0 / 1 / 2 / 3 kg | ✅ executed (MuJoCo, 20 seeds each): fall rate 0.05 → 0.20 / 0.20 / 0.25, vx_rmse 0.077 → 0.082 | `reports/evidence/m2-campaign-2026-11-16/payload_{0,1,2,3}kg.json` |
-| S2 · friction step | ❌ **not executed** | — |
+| S2 · friction step | ✅ executed (friction ×0.7/0.5/0.3 at t = 5 s): vx_rmse 0.077 → 0.062 / 0.064 / 0.102, fall rate 0.05 → 0.00 / 0.00 / 0.05 | `reports/evidence/m2-campaign-2026-11-16/friction_{100,07,05,03}.json` |
 | S2 · DR ablation A1–A3 | ⚠️ partially: the isolation study isolates passive joint damping and foot solref, but the DR-on retraining was never run | `locomotion/sim2sim/README.md` |
 | **S2b · light terrain** | ❌ **not executed**. `Go2S2bLightTerrainEnvCfg` is a placeholder that inherits the official rough-terrain generator; the promised light spec (2–5 cm noise, ≤15°) is still a `TODO(M2)` in `locomotion/isaac/disturbance_env_cfg.py`, and no training/eval log exists | — |
 | S3 · stairs | ❌ not executed (budget-gated by design) | — |

@@ -48,6 +48,10 @@ def build_parser() -> argparse.ArgumentParser:
                         help="checkpoint label recorded in the summary and report")
     parser.add_argument("--payload-kg", type=float, default=0.0,
                         help="base payload in kg (protocol S2: up to +3 kg)")
+    parser.add_argument("--friction-scale", type=float, default=1.0,
+                        help="foot sliding friction multiplier")
+    parser.add_argument("--friction-step-s", type=float, default=None,
+                        help="apply the friction change as a step at this time (s)")
     parser.add_argument("--pos-tolerance", type=float, default=None,
                         help="override the frozen 0.30 m position tolerance (P2 sweep)")
     parser.add_argument("--seeds", type=int, default=20,
@@ -75,7 +79,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.policy != "s0":
             raise SystemExit("velocity task requires --policy s0")
         result = evaluate_velocity(policy, seeds=seeds, checkpoint_label=args.label,
-                                   payload_kg=args.payload_kg)
+                                   payload_kg=args.payload_kg,
+                                   friction_scale=args.friction_scale,
+                                   friction_step_s=args.friction_step_s)
         actor_files = {"s0_flat": s0}
     else:
         if args.policy == "s0":

@@ -67,3 +67,18 @@ standard msgs, Python rclpy) and claims nothing against that plan.
 | `run_r1_acceptance.sh` | real-DDS acceptance harness (container/local Docker) |
 | `fixtures/s0_flat.onnx` | hash-pinned actor for acceptance (regenerable) |
 | `protocol.json` | machine-checked topic/frame/claim contract |
+
+## Scope boundary: the C++ stack is not in this loop
+
+The node runs the **ONNX actor in Python** (`onnxruntime`), not the C++ control
+stack. `cpp/` is a separately validated numerical artifact — FK/IK/MPC kernels
+checked against the Python reference on fixed inputs — and is **not** wired into
+the ROS2 closed loop. Treat the two as independent evidence:
+
+| Claim | Supported by |
+| --- | --- |
+| 50 Hz closed loop over real DDS, command → state | this bridge (ROS-R1, `probe_receipt.json`) |
+| C++ control kernels agree with the Python reference numerically | `cpp/` tests + `reports/cpp_stack/` |
+
+If the C++ path is ever put in the loop, that must be a new experiment with its
+own acceptance run, not an inference from the two claims above.
