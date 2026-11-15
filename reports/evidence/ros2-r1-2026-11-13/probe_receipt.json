@@ -1,0 +1,15 @@
+{
+  "status": "ROS2_ROUNDTRIP_PASS",
+  "topic_counts": {
+    "clock": 582,
+    "joint_states": 582,
+    "base_pose": 582,
+    "tf": 582,
+    "session_info": 11,
+    "cmd_vel": 0
+  },
+  "tf_verified": true,
+  "forward_displacement_m": 1.2384,
+  "turn_yaw_change_rad": 1.5853,
+  "commands_accepted": 187
+}

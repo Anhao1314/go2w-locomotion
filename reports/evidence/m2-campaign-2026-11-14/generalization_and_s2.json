@@ -1,0 +1,1517 @@
+{
+  "s2_disturbance": {
+    "summary": {
+      "episodes": 20,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "no_fall_rate": 0.0,
+      "gate_no_fall_min": 0.9,
+      "gate_pass": false,
+      "recovery_time_mean_s": 0.010999999999999987,
+      "recovery_time_max_s": 0.21999999999999975,
+      "recovery_never_count": 0,
+      "fall_rate": 1.0,
+      "checkpoint": "s0_flat_seed0",
+      "task": "S2-disturbance-velocity",
+      "method": "mujoco",
+      "push": {
+        "force_n": 100.0,
+        "duration_s": 0.5,
+        "start_s": 5.0
+      },
+      "engine": "mujoco_transfer_engine"
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "steps": 539,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 1,
+        "steps": 282,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 2,
+        "steps": 330,
+        "fall": true,
+        "recovery_time_s": 0.21999999999999975
+      },
+      {
+        "seed": 3,
+        "steps": 280,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 4,
+        "steps": 290,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 5,
+        "steps": 281,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 6,
+        "steps": 290,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 7,
+        "steps": 280,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 8,
+        "steps": 289,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 9,
+        "steps": 330,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 10,
+        "steps": 300,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 11,
+        "steps": 281,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 12,
+        "steps": 281,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 13,
+        "steps": 281,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 14,
+        "steps": 302,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 15,
+        "steps": 332,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 16,
+        "steps": 338,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 17,
+        "steps": 281,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 18,
+        "steps": 299,
+        "fall": true,
+        "recovery_time_s": 0.0
+      },
+      {
+        "seed": 19,
+        "steps": 308,
+        "fall": true,
+        "recovery_time_s": 0.0
+      }
+    ]
+  },
+  "generalization_layered": {
+    "summary": {
+      "episodes_total": 80,
+      "success_rate_overall": 1.0,
+      "per_variant": {
+        "trained_2m_90deg": {
+          "success_rate": 1.0,
+          "fall_rate": 0.0,
+          "mean_steps_to_finish": 474.0
+        },
+        "unseen_3m_90deg": {
+          "success_rate": 1.0,
+          "fall_rate": 0.0,
+          "mean_steps_to_finish": 655.0
+        },
+        "unseen_2m_60deg": {
+          "success_rate": 1.0,
+          "fall_rate": 0.0,
+          "mean_steps_to_finish": 447.0
+        },
+        "unseen_2m_120deg": {
+          "success_rate": 1.0,
+          "fall_rate": 0.0,
+          "mean_steps_to_finish": 502.0
+        }
+      },
+      "checkpoint": "layered_seed0",
+      "task": "Go2Loco-Sequence-unseen-geometry",
+      "method": "mujoco",
+      "group": "layered",
+      "engine": "mujoco_transfer_engine"
+    },
+    "episodes": [
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 0,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 1,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 2,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 3,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 4,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 5,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 6,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 7,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 8,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 9,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 10,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 11,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 12,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 13,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 14,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 15,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 16,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 17,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 18,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 19,
+        "steps": 474,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 0,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 1,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 2,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 3,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 4,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 5,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 6,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 7,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 8,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 9,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 10,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 11,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 12,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 13,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 14,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 15,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 16,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 17,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 18,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 19,
+        "steps": 655,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 0,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 1,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 2,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 3,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 4,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 5,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 6,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 7,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 8,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 9,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 10,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 11,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 12,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 13,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 14,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 15,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 16,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 17,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 18,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 19,
+        "steps": 447,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 0,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 1,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 2,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 3,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 4,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 5,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 6,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 7,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 8,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 9,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 10,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 11,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 12,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 13,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 14,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 15,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 16,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 17,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 18,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 19,
+        "steps": 502,
+        "success": true,
+        "fall": false,
+        "max_stage": 4
+      }
+    ]
+  },
+  "generalization_single": {
+    "summary": {
+      "episodes_total": 80,
+      "success_rate_overall": 0.0,
+      "per_variant": {
+        "trained_2m_90deg": {
+          "success_rate": 0.0,
+          "fall_rate": 1.0,
+          "mean_steps_to_finish": null
+        },
+        "unseen_3m_90deg": {
+          "success_rate": 0.0,
+          "fall_rate": 1.0,
+          "mean_steps_to_finish": null
+        },
+        "unseen_2m_60deg": {
+          "success_rate": 0.0,
+          "fall_rate": 1.0,
+          "mean_steps_to_finish": null
+        },
+        "unseen_2m_120deg": {
+          "success_rate": 0.0,
+          "fall_rate": 1.0,
+          "mean_steps_to_finish": null
+        }
+      },
+      "checkpoint": "single_seed0",
+      "task": "Go2Loco-Sequence-unseen-geometry",
+      "method": "mujoco",
+      "group": "single",
+      "engine": "mujoco_transfer_engine"
+    },
+    "episodes": [
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 0,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 1,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 2,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 3,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 4,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 5,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 6,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 7,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 8,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 9,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 10,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 11,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 12,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 13,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 14,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 15,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 16,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 17,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 18,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "trained_2m_90deg",
+        "seed": 19,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 0,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 1,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 2,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 3,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 4,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 5,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 6,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 7,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 8,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 9,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 10,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 11,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 12,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 13,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 14,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 15,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 16,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 17,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 18,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_3m_90deg",
+        "seed": 19,
+        "steps": 53,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 0,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 1,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 2,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 3,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 4,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 5,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 6,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 7,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 8,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 9,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 10,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 11,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 12,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 13,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 14,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 15,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 16,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 17,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 18,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_60deg",
+        "seed": 19,
+        "steps": 50,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 0,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 1,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 2,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 3,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 4,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 5,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 6,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 7,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 8,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 9,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 10,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 11,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 12,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 13,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 14,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 15,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 16,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 17,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 18,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      },
+      {
+        "variant": "unseen_2m_120deg",
+        "seed": 19,
+        "steps": 52,
+        "success": false,
+        "fall": true,
+        "max_stage": 0
+      }
+    ]
+  }
+}

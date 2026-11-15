@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11–3.13](https://img.shields.io/badge/python-3.11--3.13-blue)](pyproject.toml)
 
-**受控对比研究：分层强化学习架构 vs 端到端单层**——同一任务、同一观测、同一冻结种子，唯一变量是有没有显式分层。在此基础上延伸出三条已验证的工程线：**跨引擎迁移（S4 Sim2Sim）**、**ROS2 真 DDS 闭环**、**VLA 模仿学习**（进行中）。
+**受控对比研究：分层强化学习架构 vs 端到端单层**——同一任务、同一观测、同一冻结种子，唯一变量是有没有显式分层。在此基础上延伸出三条已验证的工程线：**跨引擎迁移（S4 Sim2Sim）**、**ROS2 真 DDS 闭环**、**VLA 模仿学习**。
 
 [English](README.en.md) · [文档索引](docs/README.md) · [实验协议](docs/EXPERIMENT_DESIGN.md) · [研究报告](docs/PHASE1_REPORT.md) · [过程日志](docs/journal/)
 
@@ -25,9 +25,10 @@
 | **L3 分层 A/B 对比**（Isaac Lab 2.7，3 训练种子 × 20 冻结种子） | 分层成功率 vs 单层 | 分层 **3/3 种子 100%**（100 迭代收敛）；单层 1/3（450 迭代） | ✅ |
 | **S4 Sim2Sim**（RQ4：零策略改动 Isaac → MuJoCo） | 序列成功率 ≥ 0.90 | **20/20（1.00）**；vx_rmse 0.077 ≤ 0.15 ✅；完成步数 474 vs Isaac 406.7 | ✅ |
 | **ROS2 真 DDS 闭环**（Go2 桥，ROS-R1 级） | 独立探针验证指令→状态回传 | **`ROS2_R1_PASS`**：582 消息/话题（含 TF），前进 1.24 m，转向 +1.59 rad | ✅ |
-| **VLA 模仿学习**（SmolVLA × 官方教师数据） | 仿真评测成功率（20+ episodes） | 🚧 SmolVLA 微调运行中（官方真机教师数据 50 episodes） | 🔄 |
+| **VLA 模仿学习**（SmolVLA 450M，LIBERO 自洽路线） | 模型能否复现演示动作（开环检查） | **MSE 0.0656 vs 基线 0.2117（0.31×）**，七维相关 +0.58~+0.91，夹爪判断 93%，遮图后动作偏移 0.489 | ✅ |
+| **VLA 闭环成功率**（LIBERO-Spatial 任务 0） | 仿真成功率（10 episodes，14 s 预算） | **7/10 = 0.70**（fps=20）；同任务 fps=10 为 **0/10** | ✅ |
 
-所有数字由冻结协议（[EXPERIMENT_DESIGN.md](docs/EXPERIMENT_DESIGN.md) v1.0，2026-10-22 预注册）判定：评估种子 `E={0..19}`、指标单一实现（[locomotion/eval/metrics.py](locomotion/eval/metrics.py)）、反樱桃采摘规则、负结果留档。
+所有数字由冻结协议（[EXPERIMENT_DESIGN.md](docs/EXPERIMENT_DESIGN.md) v1.0，2026-10-22 预注册）判定：评估种子 `E={0..19}`、指标单一实现（[locomotion/eval/metrics.py](locomotion/eval/metrics.py)）、反樱桃采摘规则、负结果留档。**逐条数字与证据文件见 [docs/RESULTS.md](docs/RESULTS.md)**。
 
 ## 演示
 
@@ -78,9 +79,17 @@ S0 locomotion 策略（PPO，冻结复用）──┘
 
 [`ros2/go2_bridge/`](ros2/go2_bridge/README.md)：双向闭环——`/go2/cmd_vel` 进（限幅 + 0.5 s deadman 安全门），`/clock + /joint_states + /base_pose + /tf + session_info` 出（50 Hz，全部标准消息类型）。**真 DDS 验收 `ROS2_R1_PASS`**（两个独立进程，582 消息/话题含 TF，前进 1.24 m，转向 +1.59 rad），CI 硬门禁 [ros2-live-r1](.github/workflows/ros2-live-r1.yml)。7 次验收尝试含 6 次负证据全部留档（[acceptance.md](ros2/go2_bridge/acceptance.md)）。
 
-## VLA 模仿学习（进行中）
+## VLA 模仿学习（闭环已验证）
 
-教师数据路线：自建脚本专家（[vla/](vla/README.md)，WIP 保留——操作臂示范生成的可靠性问题已如实记录）→ **官方真机遥操作数据集** `lerobot/svla_so101_pickplace`（50 episodes，人类教师示范）。SmolVLA（450M）微调运行于 [`so101-tabletop-mujoco`](https://huggingface.co/lerobot/so101-tabletop-mujoco) 同构任务，完成后在仿真评测成功率（≥20 episodes + 专家对照视频）。
+路线：自建脚本专家（[vla/](vla/README.md)，WIP 保留——示范生成的可靠性问题已如实记录）→ 官方真机遥操作数据集 `lerobot/svla_so101_pickplace` 微调（20K 步，loss 0.112）→ 跨域评测：**1 个 episode、3600 步、放置 0/4 方块**（sim/real gap，样本量 1 仅作定性）→ 转 LIBERO 自洽路线（`lerobot/libero`，1693 段 / 273K 帧 / 10 Hz）微调至 **62K / 100K 步**。
+
+**开环复现检查**（60K checkpoint，40 帧，8 段 × 5 帧）：动作 MSE **0.0656** vs 平均动作基线 **0.2117**（**0.31×**）；七维相关 +0.82/+0.91/+0.78/+0.64/+0.58/+0.58/+0.85；夹爪开合判断 **93%**；遮住图像后动作偏移 L2 **0.489**。
+
+**闭环评测（LIBERO-Spatial 任务 0，10 episodes，14 s 预算）**：**7/10 = 0.70 成功**，成功 episode 平均 101 步（5.1 s）。同一 checkpoint 在 `fps=10` 下 **0/10**（全部超时）——数据集元数据里的 `fps=10` 不是控制契约。
+
+> **这一条来之不易**：此前闭环一直是 0，根因不是模型也不是训练，而是**观测契约**——评测把 robosuite 的 uint8 HWC `(1,360,360,3)` 图像、带 batch 维的状态和元组任务串直接喂给了按 float32 CHW `[0,1]` 训练的模型。统一格式后同一个 checkpoint 从 0/3 变成 7/10。细节见 [vla/README](vla/README.md)，数字见 [RESULTS.md](docs/RESULTS.md)，因子见 [FACTORS.md](docs/FACTORS.md)。
+
+演示：[LIBERO 抓取成功片段](media/training/libero_fps20_success.mp4)
 
 ## 工程设施（可复现性）
 
@@ -97,7 +106,7 @@ S0 locomotion 策略（PPO，冻结复用）──┘
 - **仿真限定**：无真机实验；S4 跨引擎结论适用于 Isaac Sim 5.1 与 MuJoCo 3.11 两引擎
 - **S0 预训练成本**：分层优势部分来自动作抽象与 S0 复用（未训练的 S1 已有 75% 成功率）——已在报告中归因
 - **闭环指令含任务知识**：规则层的转向修正编码了部分任务先验——这正是分层设计的取舍，正文有讨论
-- **VLA 评测未完成**：SmolVLA 微调进行中，成功率数字以训练完成后评测为准
+- **VLA 覆盖窄**：闭环成功率 0.70 来自 `libero_spatial` 单个任务 × 10 episodes，不能外推到整个 suite；跨域证据只有 1 个 episode（0/4 方块），仅作定性
 - 每组 3 个训练种子；真机验证列为后续工作
 
 ## 仓库结构

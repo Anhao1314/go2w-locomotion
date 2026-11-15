@@ -1,0 +1,362 @@
+{
+  "c0_flat": {
+    "summary": {
+      "episodes": 20,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "vx_rmse_mean": 0.6063581220738873,
+      "vx_rmse_std": 1.9154194926468594e-14,
+      "fall_rate": 0.0,
+      "no_fall_rate": 1.0,
+      "gate_pass": true,
+      "recovery_time_mean_s": null,
+      "recovery_never_count": 20,
+      "checkpoint": "c0_scripted_trot",
+      "task": "S1-velocity + S2-push",
+      "method": "mujoco_c0_scripted_pd",
+      "push_force_n": 0.0
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738926,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 1,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738915,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 2,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738911,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 3,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.606358122073893,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 4,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738936,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 5,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738921,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 6,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738916,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 7,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.606358122073892,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 8,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738908,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 9,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738923,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 10,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738915,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 11,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738925,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 12,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738916,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 13,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738039,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 14,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738922,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 15,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738913,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 16,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738912,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 17,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738897,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 18,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738912,
+        "recovery_time_s": null
+      },
+      {
+        "seed": 19,
+        "steps": 1000,
+        "fall": false,
+        "vx_rmse": 0.6063581220738908,
+        "recovery_time_s": null
+      }
+    ]
+  },
+  "c0_push": {
+    "summary": {
+      "episodes": 20,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "vx_rmse_mean": 0.5759061722717972,
+      "vx_rmse_std": 2.5278013773662696e-13,
+      "fall_rate": 1.0,
+      "no_fall_rate": 0.0,
+      "gate_pass": false,
+      "recovery_time_mean_s": 0.4800000000000004,
+      "recovery_never_count": 0,
+      "checkpoint": "c0_scripted_trot_push",
+      "task": "S1-velocity + S2-push",
+      "method": "mujoco_c0_scripted_pd",
+      "push_force_n": 100.0
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718553,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 1,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718514,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 2,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718446,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 3,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718652,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 4,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718518,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 5,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718615,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 6,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718566,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 7,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718731,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 8,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.575906172271847,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 9,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718595,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 10,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718514,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 11,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718601,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 12,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.575906172271863,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 13,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722706961,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 14,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.575906172271864,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 15,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718578,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 16,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718566,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 17,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718284,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 18,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718508,
+        "recovery_time_s": 0.4800000000000004
+      },
+      {
+        "seed": 19,
+        "steps": 355,
+        "fall": true,
+        "vx_rmse": 0.5759061722718499,
+        "recovery_time_s": 0.4800000000000004
+      }
+    ]
+  }
+}

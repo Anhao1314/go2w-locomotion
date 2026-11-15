@@ -1,0 +1,191 @@
+{
+  "checkpoint": "logs/vla/libero_smolvla/checkpoints/060000/pretrained_model",
+  "suite": "libero_spatial",
+  "task_ids": [
+    0
+  ],
+  "fps": 10,
+  "time_budget_s": 14.0,
+  "max_steps": 140,
+  "episodes": 10,
+  "successes": 0,
+  "success_rate": 0.0,
+  "mean_steps": 140.0,
+  "results": [
+    {
+      "episode": 0,
+      "seed": 1000,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.3617,
+        0.1625,
+        0.3802,
+        0.0225,
+        0.0305,
+        0.0306,
+        1.0036
+      ],
+      "gripper_closed_fraction": 0.5785714285714286
+    },
+    {
+      "episode": 1,
+      "seed": 1001,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.3415,
+        0.1257,
+        0.4798,
+        0.022,
+        0.0369,
+        0.0349,
+        0.9927
+      ],
+      "gripper_closed_fraction": 0.5285714285714286
+    },
+    {
+      "episode": 2,
+      "seed": 1002,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.329,
+        0.1461,
+        0.4612,
+        0.0204,
+        0.0348,
+        0.0458,
+        0.9769
+      ],
+      "gripper_closed_fraction": 0.3142857142857143
+    },
+    {
+      "episode": 3,
+      "seed": 1003,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.2953,
+        0.1531,
+        0.3825,
+        0.018,
+        0.0286,
+        0.0347,
+        0.9814
+      ],
+      "gripper_closed_fraction": 0.35714285714285715
+    },
+    {
+      "episode": 4,
+      "seed": 1004,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.3185,
+        0.1523,
+        0.4272,
+        0.0257,
+        0.0386,
+        0.0378,
+        0.9765
+      ],
+      "gripper_closed_fraction": 0.4785714285714286
+    },
+    {
+      "episode": 5,
+      "seed": 1005,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.288,
+        0.1382,
+        0.3945,
+        0.0201,
+        0.0561,
+        0.0391,
+        0.9857
+      ],
+      "gripper_closed_fraction": 0.35714285714285715
+    },
+    {
+      "episode": 6,
+      "seed": 1006,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.2835,
+        0.1548,
+        0.4458,
+        0.0193,
+        0.0384,
+        0.0465,
+        0.9811
+      ],
+      "gripper_closed_fraction": 0.4
+    },
+    {
+      "episode": 7,
+      "seed": 1007,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.2852,
+        0.151,
+        0.4017,
+        0.0222,
+        0.0369,
+        0.0456,
+        0.9963
+      ],
+      "gripper_closed_fraction": 0.39285714285714285
+    },
+    {
+      "episode": 8,
+      "seed": 1008,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.3229,
+        0.1541,
+        0.4797,
+        0.0201,
+        0.0465,
+        0.0406,
+        0.982
+      ],
+      "gripper_closed_fraction": 0.3357142857142857
+    },
+    {
+      "episode": 9,
+      "seed": 1009,
+      "steps": 140,
+      "success": false,
+      "time_s": 14.0,
+      "mean_abs_action": [
+        0.3578,
+        0.1523,
+        0.4657,
+        0.0262,
+        0.0587,
+        0.0351,
+        0.9904
+      ],
+      "gripper_closed_fraction": 0.36428571428571427
+    }
+  ],
+  "obs_contract": {
+    "images": "float32 CHW [0,1] (uint8 HWC normalised)",
+    "state": "float32 (D,)",
+    "task": "str"
+  }
+}

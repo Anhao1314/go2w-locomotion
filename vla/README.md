@@ -1,44 +1,84 @@
-# vla/ — SO-101 → LeRobotDataset v3 → SmolVLA LoRA（自建全链路）
+# vla/ — SmolVLA 微调与验评链
 
-**从仿真到 VLA 的完整数据管道，无遥操硬件依赖。** 官方 [`so101-tabletop-mujoco`](https://huggingface.co/lerobot/so101-tabletop-mujoco) 环境只提供任务，不提供示范——脚本专家（状态机 + IK）、数据落盘、微调启动、评测全部自建。
+VLA（视觉-语言-动作）路线的代码与证据入口。模型：**SmolVLA 450M**（SigLIP 视觉 + SmolLM2 +
+流匹配动作专家），训练/评测栈：LeRobot 0.7。
 
-[返回首页](../README.md) · [架构总规划](../docs/CPP_ROS2_ARCHITECTURE.md) · [S4 Sim2Sim](../locomotion/sim2sim/README.md)
+当前结论一句话：**闭环评测已跑通，`libero_spatial` 任务 0 上 7/10 成功（0.70）**。
+逐条数字见 [docs/RESULTS.md](../docs/RESULTS.md)，原始证据见
+[reports/evidence/vla-2026-11-15/](../reports/evidence/vla-2026-11-15/)。
 
-## 管线
+[返回首页](../README.md) · [结果总表](../docs/RESULTS.md) · [因子库](../docs/FACTORS.md) · [S4 Sim2Sim](../locomotion/sim2sim/README.md)
+
+## 两条路线（第一条未走通，第二条进行中）
 
 ```text
-lerobot/so101-tabletop-mujoco (SO-101, front+wrist 相机, 抓方块入盒)
-        │  ground-truth geometry (cube/box/EE, 仅供专家使用)
-        ▼
-vla/expert.py  PickPlacePhaseMachine (纯逻辑状态机, 9 阶段, 失败重试)
-        │      EndEffectorIK (阻尼最小二乘, MJCF 原生)
-        ▼
-vla/record.py  LeRobotDataset v3 落盘 (add_frame + save_episode + finalize)
-        ▼      50-100 episodes, 4-5 个方块位置随机化, camera1/camera2 480x640
-vla/train.py   SmolVLA LoRA r=64 (lerobot-train, 16GB 卡实证可行)
-        ▼
-vla/evaluate.py  仿真评测: 成功率 (20+ episodes) + 专家 vs VLA 对比视频
+路线 A：真机教师数据 → 仿真孪生（跨域）
+  lerobot/svla_so101_pickplace（50 段人类遥操作，front+wrist 相机）
+        ▼  SmolVLA 微调 20 000 步（batch 8）→ final loss 0.112
+  在 so101-tabletop-mujoco 同构任务上评测
+        ▼  1 个 episode / 3 600 步 → 放置 0/4 方块（sim/real gap，n=1 仅作定性）
+
+路线 B：LIBERO 自洽（训练分布 = 评测分布）
+  lerobot/libero（1 693 段 / 273 465 帧 / 元数据标 10 Hz / 256×256）
+        ▼  SmolVLA 微调（batch 32 × accum 2，目标 100 000 步）
+  62 000 步 checkpoint（loss 0.380，lr 已退火到 2.5e-6）
+        ▼  开环复现检查：MSE 0.0656 vs 基线 0.2117（0.31×）— 通过
+        ▼  闭环评测（libero_spatial 任务 0，10 episodes，14 s 预算）
+             fps=20 → 7/10 = 0.70（成功平均 101 步）   ← 有效配置
+             fps=10 → 0/10（全部超时）
 ```
 
-## 平台与依赖
+## 闭环评测踩过的坑（值得记住）
 
-- **WSL2 `G1-RL-Ubuntu`**（Ubuntu 24.04.5, Python 3.12.3），独立 venv `/root/vla-env`
-- `lerobot[training,smolvla]`（v0.7.x, torch cu13 轮子, 驱动 621.01 满足）
-- 相机渲染：`MUJOCO_GL=egl`（mesa/llvmpipe 软渲染，与 CI 同方案）
-- Windows 主机只跑纯逻辑测试（状态机/IK，无需 lerobot）
+第一版评测把 robosuite 的原始观测**直接**喂给了策略：
+
+| 项目 | 训练时 | 评测时（错） | 修复 |
+| --- | --- | --- | --- |
+| 图像 | float32 **CHW**，0–1，256×256 | uint8 **HWC**，0–255，`(1,360,360,3)` | uint8→float、HWC→CHW、去 batch 维 |
+| 状态 | `(8,)` | `(1,8)` | squeeze |
+| 任务 | `str` | `tuple('pick up ...',)` | 取首元素 |
+
+结果：同一个 checkpoint 从 **0/3** 变成 **7/10**。**模型没错，接口错了。**
+这也是为什么 `scripts/probe_libero_obs.py` 现在作为评测前的必跑探针保留。
 
 ## 模块
 
-| 文件 | 职责 | 测试 |
-| --- | --- | --- |
-| `expert.py` | 9 阶段抓放状态机 + DLS IK（纯逻辑） | Windows CI（`tests/test_vla_expert.py`） |
-| `env.py` | EnvHub 环境封装（相机命名/几何提取，懒加载） | WSL 冒烟（`scripts/vla_smoke.py`） |
-| `record.py` | 专家 rollout → LeRobotDataset v3 | WSL 集成 |
-| `train.py` | SmolVLA LoRA 启动器 | WSL 训练 |
-| `evaluate.py` | 成功率评测 + 对比视频 | WSL 集成 |
+| 文件 | 职责 |
+| --- | --- |
+| `env.py` | 环境封装：SO-101 EnvHub 包装（指尖标定、特权几何）+ `make_libero_env` |
+| `expert.py` | 脚本专家：9 阶段抓放状态机 + DLS IK（WIP，未达可用成功率） |
+| `evaluate.py` | 教师数据策略在 SO-101 仿真上的评测（`select_action` 闭环） |
+| `evaluate_libero.py` | LIBERO 评测（`lerobot` 环境 + 官方预处理管线） |
+| `openloop_check.py` | **开环复现检查**：喂训练帧，比对预测动作与演示动作（诊断用） |
+
+相关脚本：`scripts/vla_smoke.py`（环境冒烟）、`scripts/vla_view.py`（可视化）、
+`scripts/libero_*_retry.sh`（网络抖动下的下载/训练重试）。
+
+## 数据事实（本机缓存）
+
+| 数据集 | 规模 | 规格 | 缓存体积 |
+| --- | --- | --- | --- |
+| `lerobot/libero` | 1 693 段 / 273 465 帧 | 10 Hz，256×256 双相机，state 8 维，action 7 维 | 947 MB（blobs） |
+| `lerobot/svla_so101_pickplace` | 50 段 | 真机遥操作，front + wrist 相机 | 83 MB |
+| LIBERO 场景资产 | 5 个 suite | robosuite 场景与贴图 | 403 MB |
+
+模型：教师数据 checkpoint 20K（13 GB）、LIBERO checkpoint 10K–60K（7.4 GB），均在
+`logs/vla/` 下（不入库，按 `train_config.json` 可重建）。
+
+## 已知问题
+
+| 问题 | 说明 |
+| --- | --- |
+| 结果覆盖面窄 | 0.70 来自 `libero_spatial` 任务 0 × 10 episodes，不能外推到整个 suite |
+| 控制频率必须显式指定 | 数据集元数据 `fps=10`，但实测 `fps=20` 才有效（0.70 vs 0.00）→ 评测固定传 `--fps 20` |
+| 评测链路曾长期静默失败 | 观测格式错误不会报错，只会让策略"看起来不会做事"；探针脚本 `scripts/probe_libero_obs.py` 用于事前拦截 |
+| 跨域证据样本量 | 只有 1 个 episode，不能当作成功率结论 |
+| 自建专家不可用 | 状态机 + IK 在仿真里未达到可用成功率，保留为 WIP 并如实记录 |
 
 ## 诚实边界
 
-- 仿真内数据 + 仿真内评测；无真机声明
-- 专家使用 ground-truth 几何（特权信息）——VLA 只看相机和关节，特权不进数据集
-- 训练配置与结果以 `logs/vla/` 证据束为准（复用仓库 run_config + SHA-256 约定）
+- 全部为仿真内数据与仿真内评测，无真机实验声明
+- 教师数据来自公开数据集的人类遥操作，非本仓库采集
+- 开环检查只证明"策略能复现训练演示"，**不能**替代闭环成功率
+- 训练配置、checkpoint 与日志以 `logs/vla/` 为准；进入结论的数字另存
+  [reports/evidence/](../reports/evidence/) 并登记在 [docs/RESULTS.md](../docs/RESULTS.md)

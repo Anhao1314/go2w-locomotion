@@ -1,0 +1,365 @@
+{
+  "summary": {
+    "episodes": 20,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "success_rate": 0.0,
+    "stage_reach_rate": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0
+    },
+    "mean_steps_to_finish": null,
+    "fall_rate": 1.0,
+    "episode_length_steps": 3000,
+    "checkpoint": "single_A_seed0",
+    "task": "Go2Loco-Sequence-v0",
+    "method": "mujoco",
+    "group": "single",
+    "wall_time_s": 1.292,
+    "generated_at": "2026-11-13T17:50:10+00:00"
+  },
+  "episodes": [
+    {
+      "seed": 0,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.2851646553850179,
+        -0.4005832695633294
+      ],
+      "target_p2": [
+        -1.2879063105512183,
+        -2.6735207144240607
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 1,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.2217706627395433,
+        0.05975763843292552
+      ],
+      "target_p2": [
+        0.35149546649963814,
+        -2.3574931554075897
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 2,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.4683954885005018,
+        0.1913181713827097
+      ],
+      "target_p2": [
+        -2.863096488140541,
+        0.8524857579887604
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 3,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.6116661935855499,
+        0.14703389555139346
+      ],
+      "target_p2": [
+        -2.9446994658150185,
+        1.0006680126798864
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 4,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.012032885643135137,
+        0.021843754605489565
+      ],
+      "target_p2": [
+        -1.8321282158472059,
+        -1.6690105987392343
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 5,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.7489964864189506,
+        0.4083713464913247
+      ],
+      "target_p2": [
+        2.1034484848122488,
+        2.490964739188006
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 6,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.38734884543408665,
+        -0.4487681166286375
+      ],
+      "target_p2": [
+        2.864626587158266,
+        -0.26213895059764547
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 7,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.004003569659434798,
+        0.8337341547462803
+      ],
+      "target_p2": [
+        -2.1702914992996893,
+        2.0498476614348617
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 8,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.06795725081844833,
+        0.10108670541455854
+      ],
+      "target_p2": [
+        2.4803371353406476,
+        -0.49234294332919426
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 9,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.6956966831947159,
+        0.10509463318796405
+      ],
+      "target_p2": [
+        0.7573710915191605,
+        2.5886267394054965
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 10,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.19186233197795974,
+        0.07842022136099591
+      ],
+      "target_p2": [
+        -2.2522790498516474,
+        0.523289146869996
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 11,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.04270061372501195,
+        0.3141646743857294
+      ],
+      "target_p2": [
+        0.04471419350805972,
+        2.7969240478917237
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 12,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.3640443301196549,
+        0.0062739514005062695
+      ],
+      "target_p2": [
+        0.8630336530412814,
+        -2.1538221294480167
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 13,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.14274002487745718,
+        0.752677677118227
+      ],
+      "target_p2": [
+        -2.2381738487866043,
+        1.4618917360943995
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 14,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.40834969114623604,
+        0.3095344786051813
+      ],
+      "target_p2": [
+        -0.9962790648377651,
+        2.3586204975702976
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 15,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.49267502873559255,
+        -0.02661182916567808
+      ],
+      "target_p2": [
+        2.969076447944989,
+        -0.22452965603622554
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 16,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        -0.2761387716428387,
+        -0.36847054083870173
+      ],
+      "target_p2": [
+        -0.4792364852343429,
+        -2.8444525225965194
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 17,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.74694005392027,
+        -0.1252024660543322
+      ],
+      "target_p2": [
+        1.5050508528875328,
+        2.2405962303153926
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 18,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.04242629643637098,
+        -0.21471156975744085
+      ],
+      "target_p2": [
+        2.2468358532588026,
+        -1.3602742965626566
+      ],
+      "within_target": false
+    },
+    {
+      "seed": 19,
+      "steps": 52,
+      "success": false,
+      "fall": true,
+      "max_stage": 0,
+      "terminal_pos": [
+        0.044489542575843206,
+        -0.012095383149873767
+      ],
+      "target_p2": [
+        2.196762899517415,
+        -1.2528430820213785
+      ],
+      "within_target": false
+    }
+  ]
+}

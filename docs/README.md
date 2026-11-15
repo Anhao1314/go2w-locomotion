@@ -10,6 +10,8 @@
 
 | 文档 | 内容 |
 | --- | --- |
+| [RESULTS.md](RESULTS.md) | **结果总表（单一事实源）**：四条验证线与 VLA 线的全部数字，逐条标注判据、状态与证据文件；`reports/evidence/` 为原始 JSON 副本 |
+| [FACTORS.md](FACTORS.md) | **量化因子库（自动生成）**：49 个可计算因子的定义、层级、单位、方向、阈值与数据来源；含"待补埋点"清单与当前 run 快照。改定义见 `analysis/factors.py` |
 | [PROJECT_FLOW.md](PROJECT_FLOW.md) | **项目全流程**：研究问题 → 7 个阶段（基础设施 / S0 基线 / 任务定义 / 单层 A / 分层 B / 对比归因 / 交付），每阶段的输入、动作、产出与判据，以及当前进度位置 |
 | [RESEARCH.md](RESEARCH.md) | **研究主线**：MoRA 式多层架构 vs 端到端单层的受控对比——样本效率、成功率、泛化、失败归因、接口损失；仲裁层降为层间约束子研究 |
 | [notes/training-efficiency.md](notes/training-efficiency.md) | **训练效率调研**：实测算力基线、Rudin 2021 与 Isaac Lab 官方基准、包装器开销、2 路并行与评估并行化方案、效率实验的纪律边界 |
