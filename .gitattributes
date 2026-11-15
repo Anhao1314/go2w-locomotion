@@ -3,3 +3,6 @@
 cpp/include/go2w/generated/model_constants.hpp text eol=lf
 rl/go2w_constants.py text eol=lf
 models/go2w/go2w.xml text eol=lf
+
+# Shell scripts run in WSL/CI bash: CRLF would break them
+*.sh text eol=lf
