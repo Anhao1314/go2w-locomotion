@@ -157,6 +157,40 @@ def chart_vla_failure_traces(out: pathlib.Path) -> None:
     plt.close(fig)
 
 
+def chart_payload(out: pathlib.Path) -> None:
+    kgs, vx, fall = [], [], []
+    for kg in (0, 1, 2, 3):
+        d = load(EVID / "m2-campaign-2026-11-16" / f"payload_{kg}kg.json")
+        s = d["summary"]
+        kgs.append(kg)
+        vx.append(s["vx_rmse_mean"])
+        fall.append(s["fall_rate"])
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.4, 3.7))
+    ax1.plot(kgs, fall, "o-", color=RED, lw=2, ms=8)
+    for x, y in zip(kgs, fall):
+        ax1.annotate(f"{y:.2f}", (x, y), textcoords="offset points", xytext=(0, 9),
+                     ha="center", fontsize=9)
+    ax1.set_xticks(kgs)
+    ax1.set_xlabel("基础载荷（kg）")
+    ax1.set_ylabel("摔倒率")
+    ax1.set_ylim(0, 0.35)
+    ax1.set_title("载荷吃的是稳定性，不是跟踪精度")
+
+    ax2.plot(kgs, vx, "o-", color=BLUE, lw=2, ms=8)
+    for x, y in zip(kgs, vx):
+        ax2.annotate(f"{y:.4f}", (x, y), textcoords="offset points", xytext=(0, 9),
+                     ha="center", fontsize=9)
+    ax2.set_xticks(kgs)
+    ax2.set_xlabel("基础载荷（kg）")
+    ax2.set_ylabel("vx_rmse（m/s）")
+    ax2.set_title("跟踪误差基本不变（+6% @3 kg）")
+
+    fig.suptitle("S2 载荷轴（MuJoCo，20 种子）：摔倒率 0.05 → 0.25，跟踪误差 0.077 → 0.082", y=1.03, fontsize=11)
+    fig.savefig(out / "s2_payload.png")
+    plt.close(fig)
+
+
 def chart_e1_vs_base(out: pathlib.Path) -> None:
     base = load(EVID / "vla-2026-11-15" / "libero_suite_5tasks.json")
     e1 = load(EVID / "vla-2026-11-16" / "libero_e1_n25.json")
@@ -486,6 +520,7 @@ def main(argv: list[str] | None = None) -> int:
     chart_fps_ab(out)
     chart_suite_tasks(out)
     chart_e1_vs_base(out)
+    chart_payload(out)
     chart_vla_failure_traces(out)
     chart_openloop(out)
     chart_generalization(out)

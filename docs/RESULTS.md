@@ -22,6 +22,7 @@
 | 6 | **未见几何泛化（单层）** | 对照 | **0/80**；各变体 fall 1.0 | ❌（预期内） | 同上 |
 | 7 | **S2 扰动鲁棒性** | `no_fall_rate ≥ 0.90` | **0/20**；侧推 100 N × 0.5 s（第 5 秒施加）；fall 1.0。**C0 脚本基线在同一推力下同样 0/20**（recovery 0.48 s） | ❌ | 同上 |
 | 8 | **C0 脚本小跑基线（RQ2 下界）** | 与 RL 同任务同指标 | 无推力：vx_rmse **0.6064**，fall 0；同一 100 N 推力：vx_rmse 0.5759，**no-fall 0/20** | ✅（下界已量化） | [`c0_baseline.json`](../reports/evidence/m2-campaign-2026-11-14/c0_baseline.json) |
+| 8b | **S2 载荷轴**（+1 / +2 / +3 kg，MuJoCo，20 种子） | 摔倒率不随载荷线性恶化；跟踪误差基本不变 | 摔倒率 **0.05 → 0.20 / 0.20 / 0.25**；vx_rmse **0.0773 → 0.0780 / 0.0803 / 0.0819**（+6% @3kg） | ⚠️ 负荷下不稳 |
 | 9 | **ROS2 真 DDS 闭环**（ROS-R1） | 独立探针验证指令→状态 | `ROS2_ROUNDTRIP_PASS`；clock/joint_states/base_pose/tf 各 **582** 条；TF 校验通过；前进 **1.238 m**；转向 **+1.585 rad**；接受 187 条指令 | ✅ | [`probe_receipt.json`](../reports/evidence/ros2-r1-2026-11-13/probe_receipt.json) |
 
 泛化矩阵的逐变体分解：

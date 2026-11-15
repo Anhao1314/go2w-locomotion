@@ -45,6 +45,16 @@
 
 ---
 
+## m2-campaign-2026-11-16/
+
+来源：`logs/s4/payload_{0,1,2,3}kg/evaluation.json`（MuJoCo，冻结种子 E={0..19}）
+
+| 文件 | 实验 | 关键结论 |
+|---|---|---|
+| `payload_0kg.json` … `payload_3kg.json` | S2 载荷轴（基础机身质量 + 惯性同比例缩放） | 摔倒率 **0.05 → 0.20 / 0.20 / 0.25**；vx_rmse 0.0773 → 0.0819（+6%），wz_rmse 0.139 → 0.154 |
+
+协议备注：载荷只改基础体质量与惯性，其余参数不变；与推力轴（100 N × 0.5 s）是两个独立轴。
+
 ## ros2-r1-2026-11-13/
 
 来源：`logs/s4/ros_live/attempt_007/probe_receipt.json`（真 DDS，两独立进程）

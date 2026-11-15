@@ -46,6 +46,8 @@ def build_parser() -> argparse.ArgumentParser:
                         help="s0: 48-dim velocity policy; single: 53->12; layered: S1+S0 chain")
     parser.add_argument("--label", required=True,
                         help="checkpoint label recorded in the summary and report")
+    parser.add_argument("--payload-kg", type=float, default=0.0,
+                        help="base payload in kg (protocol S2: up to +3 kg)")
     parser.add_argument("--seeds", type=int, default=20,
                         help="number of frozen seeds (default 20 = E={0..19})")
     parser.add_argument("--out", type=pathlib.Path, default=None,
@@ -70,7 +72,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.task == "velocity":
         if args.policy != "s0":
             raise SystemExit("velocity task requires --policy s0")
-        result = evaluate_velocity(policy, seeds=seeds, checkpoint_label=args.label)
+        result = evaluate_velocity(policy, seeds=seeds, checkpoint_label=args.label,
+                                   payload_kg=args.payload_kg)
         actor_files = {"s0_flat": s0}
     else:
         if args.policy == "s0":

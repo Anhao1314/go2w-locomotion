@@ -133,12 +133,17 @@ def evaluate_velocity(
     *,
     seeds: tuple[int, ...] = EVAL_SEEDS,
     checkpoint_label: str,
+    payload_kg: float = 0.0,
 ) -> dict[str, Any]:
-    """Velocity-task summary mirroring ``eval_policy.py``'s JSON schema."""
+    """Velocity-task summary mirroring ``eval_policy.py``'s JSON schema.
+
+    ``payload_kg`` implements the protocol's S2 base-payload axis (+3 kg):
+    the base body mass and its inertia scale together, nothing else changes.
+    """
     started = _time.time()
     episodes: list[dict[str, Any]] = []
     for seed in seeds:
-        env = Go2Sim2SimEnv("velocity", seed=int(seed))
+        env = Go2Sim2SimEnv("velocity", seed=int(seed), payload_kg=payload_kg)
         result = run_velocity_episode(env, policy)
         episodes.append(result)
 

@@ -54,6 +54,21 @@
 | S3 stair curriculum (cloud stretch) | official Rough composition incl. `HfPyramidStairs` 5–13 cm, perceptive 235-dim | RQ3 | budget-gated |
 | S4 Sim2Sim | S1/S2 replicated in MuJoCo (same command sequence, same seeds) | RQ4 | M2–M3 |
 
+## 5b. Execution status (updated 2026-11-16)
+
+The protocol above is frozen; this table records **what has actually been run**.
+A scenario that is not in here has not been executed, regardless of being listed above.
+
+| Scenario axis | Status | Evidence |
+| --- | --- | --- |
+| S2 · 100 N × 0.5 s push | ❌ executed, gate failed (0/20 no-fall) | `reports/evidence/m2-campaign-2026-11-14/generalization_and_s2.json` |
+| S2 · payload 0 / 1 / 2 / 3 kg | ✅ executed (MuJoCo, 20 seeds each): fall rate 0.05 → 0.20 / 0.20 / 0.25, vx_rmse 0.077 → 0.082 | `reports/evidence/m2-campaign-2026-11-16/payload_{0,1,2,3}kg.json` |
+| S2 · friction step | ❌ **not executed** | — |
+| S2 · DR ablation A1–A3 | ⚠️ partially: the isolation study isolates passive joint damping and foot solref, but the DR-on retraining was never run | `locomotion/sim2sim/README.md` |
+| **S2b · light terrain** | ❌ **not executed**. `Go2S2bLightTerrainEnvCfg` is a placeholder that inherits the official rough-terrain generator; the promised light spec (2–5 cm noise, ≤15°) is still a `TODO(M2)` in `locomotion/isaac/disturbance_env_cfg.py`, and no training/eval log exists | — |
+| S3 · stairs | ❌ not executed (budget-gated by design) | — |
+| S4 · Sim2Sim | ✅ executed (velocity + sequence + unseen geometry) | `reports/evidence/s4-sim2sim-2026-11-13/` |
+
 ## 6. Baselines
 
 - **C0 scripted PD:** standing + proportional command tracking on the same task definition (lower bound).

@@ -131,6 +131,21 @@ def s2_run() -> tuple[str, list[dict[str, Any]], dict[str, Any]]:
                                             "force_n": s2["summary"]["push"]["force_n"]}
 
 
+def payload_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
+    """S2 载荷轴：0/1/2/3 kg 各一个 run（同一批种子）。"""
+    out = []
+    for kg in (0, 1, 2, 3):
+        path = EVID / "m2-campaign-2026-11-16" / f"payload_{kg}kg.json"
+        if not path.exists():
+            continue
+        data = load(path)
+        rows = [{"entity": f"seed{e['seed']}", "vx_rmse": e.get("vx_rmse"),
+                 "wz_rmse": e.get("wz_rmse"), "fall": e.get("fall")}
+                for e in data["episodes"]]
+        out.append((f"s2_payload_{kg}kg", rows, {"payload_kg": kg}))
+    return out
+
+
 def c0_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
     data = load(EVID / "m2-campaign-2026-11-14" / "c0_baseline.json")
     out = []
@@ -387,6 +402,7 @@ def main(argv: list[str] | None = None) -> int:
     run_inputs.extend(generalization_runs())
     run_inputs.append(s2_run())
     run_inputs.extend(c0_runs())
+    run_inputs.extend(payload_runs())
     run_inputs.extend(vla_closed_runs())
 
     runs: list[dict[str, Any]] = []
