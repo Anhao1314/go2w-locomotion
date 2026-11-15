@@ -162,6 +162,17 @@ def vla_closed_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
                 "success": r["success"],
                 "steps": r["steps"],
             } for r in data["results"])
+    e1_path = EVID / "vla-2026-11-16" / "libero_e1_n25.json"
+    if e1_path.exists():
+        data = load(e1_path)
+        rows = [{"entity": f"task{r['task']}_seed{r['seed']}",
+                 "success": r["success"], "steps": r["steps"]}
+                for r in data["results"]]
+        out.append(("vla_closed_e1_n25", rows, {
+            "fps": 20, "control_dt": 1.0 / 20, "n_action_steps": 25,
+            "paired_p": data.get("paired_vs_baseline", {}).get("mcnemar_p"),
+        }))
+
     suite_path = EVID / "vla-2026-11-15" / "libero_suite_5tasks.json"
     if suite_path.exists():
         data = load(suite_path)

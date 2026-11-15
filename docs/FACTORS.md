@@ -3,7 +3,7 @@
 > 本文件由 `python analysis/extract.py` 生成，请勿手改；改定义请改 `analysis/factors.py`。
 
 - 因子总数 **48**：已可采集 **44**，待补埋点 **4**
-- 生成日期：2026-11-15
+- 生成日期：2026-11-16
 - 同一因子在所有脚本里只允许有一个实现（`analysis/factors.py`），避免口径漂移
 
 ## 速度跟踪（`tracking`）
@@ -118,6 +118,7 @@
 | `s2_disturbance_push100N` | 20 | — | — | — | 1 | — | — | — | — |
 | `baseline_c0_flat` | 20 | 0.6064 | — | — | 0 | — | — | — | — |
 | `baseline_c0_push` | 20 | 0.5759 | — | — | 1 | — | — | — | — |
+| `vla_closed_e1_n25` | 100 | — | — | — | — | 0.55 | 101.9 | 0.2157 | — |
 | `vla_closed_suite_5tasks` | 100 | — | — | — | — | 0.5 | 111.5 | 0.3667 | — |
 | `vla_closed_fps20_seeded_n20` | 20 | — | — | — | — | 0.5 | 99.1 | 0.5705 | — |
 | `vla_closed_fps10_unseeded` | 10 | — | — | — | — | 0 | — | — | — |

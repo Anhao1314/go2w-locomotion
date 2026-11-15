@@ -57,6 +57,7 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--fps", type=int, default=20)
     parser.add_argument("--time-budget-s", type=float, default=14.0)
+    parser.add_argument("--n-action-steps", type=int, default=None)
     parser.add_argument("--out", type=pathlib.Path,
                         default=PROJECT_ROOT / "logs/vla/libero_suite")
     args = parser.parse_args()
@@ -93,8 +94,10 @@ def main() -> int:
                 "--seeds", ",".join(str(s) for s in part),
                 "--fps", str(args.fps),
                 "--time-budget-s", str(args.time_budget_s),
-                "--out", str(job_dir),
             ]
+            if args.n_action_steps is not None:
+                cmd += ["--n-action-steps", str(args.n_action_steps)]
+            cmd += ["--out", str(job_dir)]
             log = (log_dir / f"task{task}_{job_dir.name}.log").open("wb")
             running.append((subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT),
                             job_dir, log))

@@ -131,6 +131,45 @@ def chart_fps_ab(out: pathlib.Path) -> None:
     plt.close(fig)
 
 
+def chart_e1_vs_base(out: pathlib.Path) -> None:
+    base = load(EVID / "vla-2026-11-15" / "libero_suite_5tasks.json")
+    e1 = load(EVID / "vla-2026-11-16" / "libero_e1_n25.json")
+    paired = e1["paired_vs_baseline"]
+    tasks = [str(t) for t in base["tasks"]]
+    b = [base["per_task"][t]["success_rate"] for t in tasks]
+    e = [e1["per_task"][t]["success_rate"] for t in tasks]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.2, 3.9),
+                                   gridspec_kw={"width_ratios": [1.6, 1]})
+    x = np.arange(len(tasks))
+    ax1.bar(x - 0.2, b, width=0.38, color=GRAY, alpha=0.85, label="基线 n_action_steps=50")
+    ax1.bar(x + 0.2, e, width=0.38, color=BLUE, alpha=0.85, label="E1 n_action_steps=25")
+    for xi, bv, ev in zip(x, b, e):
+        ax1.text(xi - 0.2, bv + 0.015, f"{bv:.2f}", ha="center", fontsize=8, color="#555")
+        ax1.text(xi + 0.2, ev + 0.015, f"{ev:.2f}", ha="center", fontsize=8, color="#2E5EAA")
+    ax1.set_xticks(x)
+    ax1.set_xticklabels([f"task {t}" for t in tasks])
+    ax1.set_ylim(0, 0.9)
+    ax1.set_ylabel("成功率")
+    ax1.set_title("逐任务：只改重规划频率")
+    ax1.legend(loc="upper left", fontsize=8)
+
+    cells = [[paired["b11"], paired["b10"]], [paired["b01"], 100 - paired["b11"] - paired["b10"] - paired["b01"]]]
+    ax2.imshow(np.array(cells), cmap="Blues", alpha=0.75)
+    labels = [["都成功", "基线成功/E1失败"], ["基线失败/E1成功", "都失败"]]
+    for i in range(2):
+        for j in range(2):
+            text = labels[i][j] + ": " + str(cells[i][j])
+            ax2.text(j, i, text, ha="center", va="center", fontsize=9)
+    ax2.set_xticks([]); ax2.set_yticks([])
+    ax2.grid(False)
+    ax2.set_title(f"配对翻转：Δ={paired['delta']:+.2f}，p={paired['mcnemar_p']:.2f}", fontsize=10)
+
+    fig.suptitle("E1 执行器消融：重规划更频繁没有可靠收益，但 49/100 集结局翻转", y=1.03, fontsize=11)
+    fig.savefig(out / "vla_e1_vs_base.png")
+    plt.close(fig)
+
+
 def chart_suite_tasks(out: pathlib.Path) -> None:
     data = load(EVID / "vla-2026-11-15" / "libero_suite_5tasks.json")
     tasks = [str(t) for t in data["tasks"]]
@@ -314,7 +353,8 @@ def chart_s2(out: pathlib.Path) -> None:
 
 
 def chart_factor_health(out: pathlib.Path) -> None:
-    audit = load(ANALYSIS / "audit_2026-11-15.json")["rollout"]
+    audit_path = sorted(ANALYSIS.glob("audit_*.json"))[-1]
+    audit = load(audit_path)["rollout"]
     factors = audit["factors"]
     redundant = {n for pair in audit["redundant_pairs"] for n in pair[:2]}
 
@@ -419,6 +459,7 @@ def main(argv: list[str] | None = None) -> int:
     setup_style()
     chart_fps_ab(out)
     chart_suite_tasks(out)
+    chart_e1_vs_base(out)
     chart_openloop(out)
     chart_generalization(out)
     chart_s2(out)

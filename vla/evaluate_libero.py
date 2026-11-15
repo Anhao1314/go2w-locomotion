@@ -85,6 +85,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="simulated seconds per episode; step cap = budget * fps")
     parser.add_argument("--max-steps", type=int, default=None,
                         help="override the derived step cap")
+    parser.add_argument("--n-action-steps", type=int, default=None,
+                        help="执行多少个预测动作后重新规划（<= chunk_size；默认沿用 checkpoint 配置 50）")
     parser.add_argument("--seed-base", type=int, default=1000)
     parser.add_argument("--seeds", type=str, default=None,
                         help="explicit comma-separated seeds (overrides --seed-base)")
@@ -110,6 +112,10 @@ def main(argv: list[str] | None = None) -> int:
     ckpt = pathlib.Path(args.checkpoint)
     policy_config = PreTrainedConfig.from_pretrained(str(ckpt))
     policy_config.pretrained_path = str(ckpt)
+    if args.n_action_steps is not None:
+        if args.n_action_steps > policy_config.chunk_size:
+            raise SystemExit(f"--n-action-steps 不能大于 chunk_size={policy_config.chunk_size}")
+        policy_config.n_action_steps = args.n_action_steps
     device = policy_config.device or "cuda"
     preprocessor, postprocessor = make_pre_post_processors(
         policy_cfg=policy_config,
@@ -236,6 +242,8 @@ def main(argv: list[str] | None = None) -> int:
         "fps": args.fps,
         "time_budget_s": args.time_budget_s,
         "max_steps": max_steps,
+        "n_action_steps": int(getattr(policy_config, "n_action_steps", 0)),
+        "chunk_size": int(getattr(policy_config, "chunk_size", 0)),
         "episodes": len(results),
         "seeds": seeds,
         "policy_seeded": True,
