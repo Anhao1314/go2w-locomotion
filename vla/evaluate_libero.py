@@ -91,6 +91,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seeds", type=str, default=None,
                         help="explicit comma-separated seeds (overrides --seed-base)")
     parser.add_argument("--video", action="store_true", help="record the first episode")
+    parser.add_argument("--trace", action="store_true",
+                        help="记录物体/目标/末端位置（仅评测用，绝不喂给策略）")
     parser.add_argument("--out", type=pathlib.Path,
                         default=PROJECT_ROOT / "logs" / "vla" / "libero_eval")
     args = parser.parse_args(argv)
@@ -133,6 +135,13 @@ def main(argv: list[str] | None = None) -> int:
     out = pathlib.Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
 
+    def _body_id(raw: Any, name: str) -> int | None:
+        model = raw.sim.model
+        for cand in (f"{name}_main", name):
+            if cand in model.body_names:
+                return int(model.body_name2id(cand))
+        return None
+
     results: list[dict[str, Any]] = []
     seeds = ([int(x) for x in args.seeds.split(",")] if args.seeds
              else [args.seed_base + i for i in range(args.episodes)])
@@ -150,6 +159,23 @@ def main(argv: list[str] | None = None) -> int:
         np.random.seed(seed)
         obs, info = env.reset(seed=[seed])
         policy.reset()
+
+        # 评测侧观测（特权信息）：物体与目标位置，只用于失败归因
+        raw_env: Any = None
+        obj_id = tgt_id = None
+        if args.trace:
+            try:
+                raw_env = env._envs[0]._env  # pyright: ignore[reportPrivateUsage]
+                names = list(getattr(raw_env, "obj_of_interest", []) or [])
+                if names:
+                    obj_id = _body_id(raw_env, names[0])
+                    tgt_id = _body_id(raw_env, names[1]) if len(names) > 1 else None
+            except Exception:  # noqa: BLE001 - 埋点失败不应中断评测
+                raw_env = None
+        obj_start_dist = obj_min = obj_end = None
+        obj_start_z = obj_max_z = None
+        ee_max_z = None
+        aperture_min_after_close = None
         task = _as_task(info if isinstance(info, dict) else {})
 
         steps = 0
@@ -195,7 +221,8 @@ def main(argv: list[str] | None = None) -> int:
             if float(action_np[0][6]) > 0.0:
                 gripper_closed_steps += 1
 
-            trace["gripper_action"].append(float(action_np[0][6]))
+            grip_cmd = float(action_np[0][6])
+            trace["gripper_action"].append(grip_cmd)
             trace["action_norm"].append(float(np.linalg.norm(action_np[0][:6])))
             obs, reward, terminated, truncated, info = env.step(action_np)
             steps += 1
@@ -209,6 +236,29 @@ def main(argv: list[str] | None = None) -> int:
                 state = np.asarray(obs["observation.state"], dtype=np.float32)
                 state = state[0] if state.ndim == 2 else state
                 trace["state_z"].append(float(state[2]))
+
+            if raw_env is not None and obj_id is not None:
+                pos = raw_env.sim.data.body_xpos
+                obj = np.asarray(pos[obj_id], dtype=np.float64)
+                state_now = np.asarray(obs["observation.state"], dtype=np.float32)
+                state_now = state_now[0] if state_now.ndim == 2 else state_now
+                aperture = float(state_now[6] - state_now[7]) if state_now.size >= 8 else None
+                dist = (float(np.linalg.norm(obj - pos[tgt_id]))
+                        if tgt_id is not None else None)
+                if obj_start_dist is None and obj_start_z is None:
+                    obj_start_z = float(obj[2])
+                    obj_start_dist = dist
+                if dist is not None:
+                    prev_min = obj_min
+                    obj_min = dist if prev_min is None else min(prev_min, dist)
+                    obj_end = dist
+                obj_max_z = float(obj[2]) if obj_max_z is None else max(obj_max_z, float(obj[2]))
+                ee_max_z = (float(state_now[2]) if ee_max_z is None
+                            else max(ee_max_z, float(state_now[2])))
+                if grip_cmd > 0 and aperture is not None:
+                    prev_ap = aperture_min_after_close
+                    aperture_min_after_close = (aperture if prev_ap is None
+                                                else min(prev_ap, aperture))
             if isinstance(info, dict) and _flag(info.get("is_success")):
                 success = True
                 break
@@ -229,6 +279,15 @@ def main(argv: list[str] | None = None) -> int:
             "video": {"front": f"video/ep{episode}_front.mp4",
                       "wrist": f"video/ep{episode}_wrist.mp4"} if args.video else None,
             "trace": trace,
+            "trace_summary": ({
+                "obj_start_dist": obj_start_dist,
+                "obj_min_dist": obj_min,
+                "obj_end_dist": obj_end,
+                "obj_lift": (obj_max_z - obj_start_z)
+                if (obj_max_z is not None and obj_start_z is not None) else None,
+                "ee_max_z": ee_max_z,
+                "aperture_min_after_close": aperture_min_after_close,
+            } if args.trace else None),
         })
         print(f"[eval] fps={args.fps} episode {episode} seed {seed}: "
               f"{'SUCCESS' if success else 'incomplete'} "

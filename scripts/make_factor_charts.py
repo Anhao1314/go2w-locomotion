@@ -131,6 +131,32 @@ def chart_fps_ab(out: pathlib.Path) -> None:
     plt.close(fig)
 
 
+def chart_vla_failure_traces(out: pathlib.Path) -> None:
+    pack = load(ROOT / "logs/vla/libero_video_pack2/libero_eval_summary.json")
+    fig, axes = plt.subplots(2, 2, figsize=(10.6, 6.0), sharex=False)
+    for ax, r in zip(axes.ravel(), pack["results"]):
+        trace = r.get("trace") or {}
+        grip = [float(v) for v in trace.get("gripper_action") or []]
+        z = [float(v) for v in trace.get("state_z") or []]
+        color = GREEN if r["success"] else RED
+        ax.plot(grip, color=color, lw=1.2)
+        ax.set_ylim(-1.25, 1.25)
+        ax.set_title(f"seed {r['seed']} · {'SUCCESS' if r['success'] else 'TIMEOUT'}"
+                     f" · {r['steps']} 步 · 开合 {sum(1 for i in range(1, len(grip)) if (grip[i] > 0) != (grip[i - 1] > 0))} 次",
+                     fontsize=9, color=color)
+        ax.set_ylabel("夹爪指令", fontsize=9)
+        ax2 = ax.twinx()
+        ax2.plot(z, color=GRAY, lw=1.0, alpha=0.8)
+        ax2.set_ylabel("末端高度 (m)", fontsize=8, color=GRAY)
+        ax2.grid(False)
+    for ax in axes[1]:
+        ax.set_xlabel("步数")
+    fig.suptitle("同一任务的成败轨迹：失败集在反复开合夹爪（22–23 次），成功集只开合 1–4 次", fontsize=11)
+    fig.tight_layout()
+    fig.savefig(out / "vla_failure_traces.png")
+    plt.close(fig)
+
+
 def chart_e1_vs_base(out: pathlib.Path) -> None:
     base = load(EVID / "vla-2026-11-15" / "libero_suite_5tasks.json")
     e1 = load(EVID / "vla-2026-11-16" / "libero_e1_n25.json")
@@ -460,6 +486,7 @@ def main(argv: list[str] | None = None) -> int:
     chart_fps_ab(out)
     chart_suite_tasks(out)
     chart_e1_vs_base(out)
+    chart_vla_failure_traces(out)
     chart_openloop(out)
     chart_generalization(out)
     chart_s2(out)
