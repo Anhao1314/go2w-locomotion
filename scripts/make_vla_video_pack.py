@@ -52,7 +52,9 @@ def load_font(size: int) -> Any:
 
 
 def load_frames(path: pathlib.Path) -> list[np.ndarray]:
-    reader = imageio.get_reader(str(path))
+    # imageio 的类型存根把 Reader 标成不可迭代，CI 的 pyright 会因此报错；
+    # 运行时它是可迭代的，这里显式标 Any 以免依赖存根行为。
+    reader: Any = imageio.get_reader(str(path))
     return [np.asarray(frame) for frame in reader]
 
 
