@@ -59,11 +59,18 @@ class SequenceStageMachine:
         *,
         forward_distance_m: float = FORWARD_DISTANCE_M,
         turn_radians: float = TURN_RADIANS,
+        position_tolerance_m: float = POSITION_TOLERANCE_M,
+        heading_tolerance_rad: float = HEADING_TOLERANCE_RAD,
     ) -> None:
         # geometry overrides for the unseen-task generalization eval (P4);
         # defaults are the frozen L3 training geometry
         self._forward_distance_m = float(forward_distance_m)
         self._turn_radians = float(turn_radians)
+        # precision-axis overrides: the frozen protocol uses 0.30 m / 0.175 rad,
+        # but the P2 study sweeps them to test how much of the success is
+        # carried by the tolerance rather than by the controller
+        self._position_tolerance_m = float(position_tolerance_m)
+        self._heading_tolerance_rad = float(heading_tolerance_rad)
         self._stage = 0
         self._start_x = 0.0
         self._start_y = 0.0
@@ -76,6 +83,14 @@ class SequenceStageMachine:
     @property
     def stage(self) -> int:
         return self._stage
+
+    @property
+    def position_tolerance_m(self) -> float:
+        return self._position_tolerance_m
+
+    @property
+    def heading_tolerance_rad(self) -> float:
+        return self._heading_tolerance_rad
 
     @property
     def completed(self) -> bool:
@@ -107,6 +122,10 @@ class SequenceStageMachine:
         """Public accessor for (P1, P2) — the S4 evaluator needs P2 as the
         commanded-integral target of the terminal-position success check."""
         return self._targets()
+
+    def heading_error(self, heading: float) -> float:
+        """Public wrapper: signed heading error vs the post-turn target."""
+        return self._heading_error(heading)
 
     def _heading_error(self, heading: float) -> float:
         return wrap(self._heading0 + self._turn_radians - heading)
@@ -161,11 +180,13 @@ class SequenceStageMachine:
             self._stop_steps = 0.0
 
         advanced = False
-        if self._stage == 0 and math.hypot(p1[0] - pos_x, p1[1] - pos_y) <= POSITION_TOLERANCE_M:
+        if (self._stage == 0
+                and math.hypot(p1[0] - pos_x, p1[1] - pos_y) <= self._position_tolerance_m):
             advanced = True
-        elif self._stage == 1 and abs_heading_error <= HEADING_TOLERANCE_RAD:
+        elif self._stage == 1 and abs_heading_error <= self._heading_tolerance_rad:
             advanced = True
-        elif self._stage == 2 and math.hypot(p2[0] - pos_x, p2[1] - pos_y) <= POSITION_TOLERANCE_M:
+        elif (self._stage == 2
+              and math.hypot(p2[0] - pos_x, p2[1] - pos_y) <= self._position_tolerance_m):
             advanced = True
         elif self._stage == 3 and self._stop_steps >= STOP_HOLD_STEPS:
             advanced = True

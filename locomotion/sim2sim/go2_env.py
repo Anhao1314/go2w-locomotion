@@ -213,10 +213,13 @@ class Go2Sim2SimEnv:
             self.model.body_inertia[self._base_body_id] *= scale
             self._base_payload_added = self.payload_kg
 
-        geometry = (
-            {"forward_distance_m": sequence_geometry[0], "turn_radians": sequence_geometry[1]}
-            if sequence_geometry is not None else {}
-        )
+        if sequence_geometry is None:
+            geometry: dict[str, float] = {}
+        elif isinstance(sequence_geometry, dict):
+            geometry = dict(sequence_geometry)
+        else:
+            geometry = {"forward_distance_m": sequence_geometry[0],
+                        "turn_radians": sequence_geometry[1]}
         self._stage = SequenceStageMachine(**geometry)
         self._rng = np.random.default_rng(self.seed)
         self._step_count = 0

@@ -205,7 +205,10 @@ def run_sequence_episode(
             break
     _, p2 = env._stage.targets()
     terminal = env.base_position[0:2]
-    within_target = bool(float(np.linalg.norm(terminal - np.asarray(p2))) <= SEQUENCE_TARGET_TOLERANCE_M)
+    miss = float(np.linalg.norm(terminal - np.asarray(p2)))
+    stage = env._stage
+    heading_err = float(abs(stage.heading_error(_heading(env))))
+    tolerance = float(stage.position_tolerance_m)
     return {
         "seed": env.seed,
         "steps": env.step_count,
@@ -214,7 +217,13 @@ def run_sequence_episode(
         "max_stage": int(max_stage),
         "terminal_pos": [float(terminal[0]), float(terminal[1])],
         "target_p2": [float(p2[0]), float(p2[1])],
-        "within_target": within_target,
+        "within_target": bool(miss <= SEQUENCE_TARGET_TOLERANCE_M),
+        # 连续指标（P2）：精度不是二值的，这里记录实际落点误差与航向误差
+        "terminal_miss_m": miss,
+        "terminal_heading_error_rad": heading_err,
+        "position_tolerance_m": tolerance,
+        "heading_tolerance_rad": float(stage.heading_tolerance_rad),
+        "within_position_tolerance": bool(miss <= tolerance),
     }
 
 
@@ -380,12 +389,24 @@ def evaluate_sequence_group(
     group_label: str,
     checkpoint_label: str,
     seeds: tuple[int, ...] = EVAL_SEEDS,
+    position_tolerance_m: float | None = None,
+    heading_tolerance_rad: float | None = None,
 ) -> dict[str, Any]:
-    """Sequence-task summary; success uses the shared ``success_rate``."""
+    """Sequence-task summary.
+
+    ``position_tolerance_m`` / ``heading_tolerance_rad`` override the frozen
+    protocol tolerances (0.30 m / 0.175 rad) for the P2 precision sweep; the
+    default run reproduces the frozen protocol exactly.
+    """
     started = _time.time()
+    geometry: dict[str, float] = {}
+    if position_tolerance_m is not None:
+        geometry["position_tolerance_m"] = float(position_tolerance_m)
+    if heading_tolerance_rad is not None:
+        geometry["heading_tolerance_rad"] = float(heading_tolerance_rad)
     episodes = []
     for seed in seeds:
-        env = Go2Sim2SimEnv("sequence", seed=int(seed))
+        env = Go2Sim2SimEnv("sequence", seed=int(seed), sequence_geometry=geometry or None)
         episodes.append(run_sequence_episode(env, policy))
 
     no_fall = [not bool(row["fall"]) for row in episodes]
@@ -404,6 +425,12 @@ def evaluate_sequence_group(
         "mean_steps_to_finish": float(np.mean(finished_steps)) if finished_steps else None,
         "fall_rate": fall_rate([bool(row["fall"]) for row in episodes]),
         "episode_length_steps": Go2Sim2SimEnv("sequence", seed=0).episode_steps,
+        "position_tolerance_m": float(episodes[0]["position_tolerance_m"]),
+        "heading_tolerance_rad": float(episodes[0]["heading_tolerance_rad"]),
+        "terminal_miss_mean_m": float(np.mean([r["terminal_miss_m"] for r in episodes])),
+        "terminal_miss_max_m": float(np.max([r["terminal_miss_m"] for r in episodes])),
+        "terminal_heading_error_mean_rad": float(
+            np.mean([r["terminal_heading_error_rad"] for r in episodes])),
         "checkpoint": checkpoint_label,
         "task": "Go2Loco-Sequence-v0",
         "method": "mujoco",

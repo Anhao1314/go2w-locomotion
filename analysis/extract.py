@@ -131,6 +131,24 @@ def s2_run() -> tuple[str, list[dict[str, Any]], dict[str, Any]]:
                                             "force_n": s2["summary"]["push"]["force_n"]}
 
 
+def tolerance_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
+    """S4 序列精度轴：位置容差 0.30 → 0.05 m。"""
+    out = []
+    for tag in ("030", "025", "020", "015", "010", "005"):
+        path = EVID / "m2-campaign-2026-11-16" / f"tolerance_{tag}.json"
+        if not path.exists():
+            continue
+        data = load(path)
+        rows = [{"entity": f"seed{e['seed']}", "success": e.get("success"),
+                 "fall": e.get("fall"), "steps": e.get("steps"),
+                 "terminal_miss": e.get("terminal_miss_m"),
+                 "tolerance": e.get("position_tolerance_m")}
+                for e in data["episodes"]]
+        out.append((f"s4_sequence_tol_{tag}", rows,
+                    {"position_tolerance_m": data["summary"]["position_tolerance_m"]}))
+    return out
+
+
 def payload_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
     """S2 载荷轴：0/1/2/3 kg 各一个 run（同一批种子）。"""
     out = []
@@ -403,6 +421,7 @@ def main(argv: list[str] | None = None) -> int:
     run_inputs.append(s2_run())
     run_inputs.extend(c0_runs())
     run_inputs.extend(payload_runs())
+    run_inputs.extend(tolerance_runs())
     run_inputs.extend(vla_closed_runs())
 
     runs: list[dict[str, Any]] = []

@@ -157,6 +157,48 @@ def chart_vla_failure_traces(out: pathlib.Path) -> None:
     plt.close(fig)
 
 
+def chart_tolerance(out: pathlib.Path) -> None:
+    tols, miss, steps, succ = [], [], [], []
+    for tag in ("030", "025", "020", "015", "010", "005"):
+        d = load(EVID / "m2-campaign-2026-11-16" / f"tolerance_{tag}.json")["summary"]
+        tols.append(d["position_tolerance_m"])
+        miss.append(d["terminal_miss_mean_m"])
+        steps.append(d["mean_steps_to_finish"])
+        succ.append(d["success_rate"])
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.6, 3.9))
+    ax1.plot([0, 0.32], [0, 0.32], "--", color=GRAY, lw=1, label="终点误差 = 容差")
+    ax1.plot(tols, miss, "o-", color=BLUE, lw=2, ms=8, label="实测终点误差")
+    for x, y in zip(tols, miss):
+        if x < 0.06:
+            dx, dy, ha, va = 0, 10, "center", "bottom"
+        elif x > 0.26:
+            dx, dy, ha, va = -34, -3, "right", "center"
+        else:
+            dx, dy, ha, va = 9, -3, "left", "center"
+        ax1.annotate(f"{y:.3f}", (x, y), textcoords="offset points", xytext=(dx, dy),
+                     ha=ha, va=va, fontsize=8.5, color=BLUE)
+    ax1.set_xlabel("位置容差（m）")
+    ax1.set_ylabel("终点误差（m）")
+    ax1.set_title("收紧容差后终点误差随之下降")
+    ax1.set_xlim(0, 0.34)
+    ax1.set_ylim(0, 0.33)
+    ax1.legend(loc="upper left", fontsize=8)
+
+    ax2.plot(tols, steps, "o-", color=ORANGE, lw=2, ms=8)
+    for x, y in zip(tols, steps):
+        ax2.annotate(f"{y:.0f}", (x, y), textcoords="offset points", xytext=(0, 8),
+                     ha="center", fontsize=8.5)
+    ax2.set_xlabel("位置容差（m）")
+    ax2.set_ylabel("完成步数")
+    ax2.margins(y=0.14)
+    ax2.set_title("代价：多花 9% 时间（474 → 517 步）")
+
+    fig.suptitle("P2 精度轴：容差从 0.30 m 收紧到 0.05 m（6×），成功仍是 20/20", y=1.03, fontsize=11)
+    fig.savefig(out / "s4_tolerance_sweep.png")
+    plt.close(fig)
+
+
 def chart_payload(out: pathlib.Path) -> None:
     kgs, vx, fall = [], [], []
     for kg in (0, 1, 2, 3):
@@ -521,6 +563,7 @@ def main(argv: list[str] | None = None) -> int:
     chart_suite_tasks(out)
     chart_e1_vs_base(out)
     chart_payload(out)
+    chart_tolerance(out)
     chart_vla_failure_traces(out)
     chart_openloop(out)
     chart_generalization(out)

@@ -48,6 +48,8 @@ def build_parser() -> argparse.ArgumentParser:
                         help="checkpoint label recorded in the summary and report")
     parser.add_argument("--payload-kg", type=float, default=0.0,
                         help="base payload in kg (protocol S2: up to +3 kg)")
+    parser.add_argument("--pos-tolerance", type=float, default=None,
+                        help="override the frozen 0.30 m position tolerance (P2 sweep)")
     parser.add_argument("--seeds", type=int, default=20,
                         help="number of frozen seeds (default 20 = E={0..19})")
     parser.add_argument("--out", type=pathlib.Path, default=None,
@@ -79,7 +81,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.policy == "s0":
             raise SystemExit("sequence task requires --policy layered or single")
         result = evaluate_sequence_group(
-            policy, group_label=args.policy, checkpoint_label=args.label, seeds=seeds
+            policy, group_label=args.policy, checkpoint_label=args.label, seeds=seeds,
+            position_tolerance_m=args.pos_tolerance,
         )
         actor_files = (
             {"s0_flat": s0, "s1_layered": s1}
