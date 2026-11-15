@@ -69,10 +69,11 @@ def main() -> int:
     print("=" * 70)
     b_steps = [bmap[k]["steps"] for k in keys if bmap[k]["success"]]
     e_steps = [emap[k]["steps"] for k in keys if emap[k]["success"]]
-    print(f"基线：n={len(b_steps)} 均值 {mean(b_steps):.1f} 步  中位 {statistics.median(b_steps):.0f}")
-    print(f"E1  ：n={len(e_steps)} 均值 {mean(e_steps):.1f} 步  中位 {statistics.median(e_steps):.0f}")
-    if b_steps and e_steps:
-        print(f"差值：{mean(e_steps) - mean(b_steps):+.1f} 步")
+    b_mean, e_mean = mean(b_steps), mean(e_steps)
+    if b_mean is not None and e_mean is not None:
+        print(f"基线：n={len(b_steps)} 均值 {b_mean:.1f} 步  中位 {statistics.median(b_steps):.0f}")
+        print(f"E1  ：n={len(e_steps)} 均值 {e_mean:.1f} 步  中位 {statistics.median(e_steps):.0f}")
+        print(f"差值：{e_mean - b_mean:+.1f} 步")
 
     print()
     print("=" * 70)
