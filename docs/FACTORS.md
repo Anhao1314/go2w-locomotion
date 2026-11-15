@@ -118,8 +118,9 @@
 | `s2_disturbance_push100N` | 20 | — | — | — | 1 | — | — | — | — |
 | `baseline_c0_flat` | 20 | 0.6064 | — | — | 0 | — | — | — | — |
 | `baseline_c0_push` | 20 | 0.5759 | — | — | 1 | — | — | — | — |
-| `vla_closed_fps10` | 10 | — | — | — | — | 0 | — | — | — |
-| `vla_closed_fps20` | 10 | — | — | — | — | 0.7 | 101.4 | 0.3303 | — |
+| `vla_closed_fps20_seeded_n20` | 20 | — | — | — | — | 0.5 | 99.1 | 0.5705 | — |
+| `vla_closed_fps10_unseeded` | 10 | — | — | — | — | 0 | — | — | — |
+| `vla_closed_fps20_unseeded` | 10 | — | — | — | — | 0.7 | 101.4 | 0.3303 | — |
 | `vla_openloop_060k` | 40 | — | — | — | — | — | — | — | — |
 | `gen_geometry_fit` | 4 | — | — | — | — | — | — | — | — |
 | `vla_libero_setup` | 1 | — | — | — | — | — | — | — | — |

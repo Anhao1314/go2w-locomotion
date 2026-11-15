@@ -29,7 +29,7 @@
 | **C0 脚本基线（RQ2 下界）** | 与 RL 同任务同指标 | vx_rmse **0.606** vs RL **0.077** → 误差降低 **7.8×** | ✅ |
 | **ROS2 真 DDS 闭环**（Go2 桥，ROS-R1 级） | 独立探针验证指令→状态回传 | **`ROS2_R1_PASS`**：582 消息/话题（含 TF），前进 1.24 m，转向 +1.59 rad | ✅ |
 | **VLA 模仿学习**（SmolVLA 450M，LIBERO 自洽路线） | 模型能否复现演示动作（开环检查） | **MSE 0.0656 vs 基线 0.2117（0.31×）**，七维相关 +0.58~+0.91，夹爪判断 93%，遮图后动作偏移 0.489 | ✅ |
-| **VLA 闭环成功率**（LIBERO-Spatial 任务 0） | 仿真成功率（10 episodes，14 s 预算） | **7/10 = 0.70**（fps=20）；同任务 fps=10 为 **0/10** | ✅ |
+| **VLA 闭环成功率**（LIBERO-Spatial 任务 0） | 仿真成功率（**20 episodes**，14 s 预算） | **10/20 = 0.50**（fps=20，两批 7/10 + 3/10）；fps=10 为 **0/10** | ✅ |
 
 所有数字由冻结协议（[EXPERIMENT_DESIGN.md](docs/EXPERIMENT_DESIGN.md) v1.0，2026-10-22 预注册）判定：评估种子 `E={0..19}`、指标单一实现（[locomotion/eval/metrics.py](locomotion/eval/metrics.py)）、反樱桃采摘规则、负结果留档。**逐条数字与证据文件见 [docs/RESULTS.md](docs/RESULTS.md)**。
 
@@ -88,11 +88,13 @@ S0 locomotion 策略（PPO，冻结复用）──┘
 
 **开环复现检查**（60K checkpoint，40 帧，8 段 × 5 帧）：动作 MSE **0.0656** vs 平均动作基线 **0.2117**（**0.31×**）；七维相关 +0.82/+0.91/+0.78/+0.64/+0.58/+0.58/+0.85；夹爪开合判断 **93%**；遮住图像后动作偏移 L2 **0.489**。
 
-**闭环评测（LIBERO-Spatial 任务 0，10 episodes，14 s 预算）**：**7/10 = 0.70 成功**，成功 episode 平均 101 步（5.1 s）。同一 checkpoint 在 `fps=10` 下 **0/10**（全部超时）——数据集元数据里的 `fps=10` 不是控制契约。
+**闭环评测（LIBERO-Spatial 任务 0，20 episodes，14 s 预算）**：**10/20 = 0.50 成功**（批 A 7/10、批 B 3/10），成功 episode 平均 82 步（4.1 s）。同一 checkpoint 在 `fps=10` 下 **0/10**（全部超时）——数据集元数据里的 `fps=10` 不是控制契约。
+
+**关于测量**：策略动作由 flow matching 采样，逐种子**不保证跨运行一致**（seed 1003 在两次运行里分别是 70 步成功和 280 步超时，GPU 数值非确定性在闭环中被放大）。所以单批 10 集给出的 7/10 **不能**对外当作成功率，表中 0.50 是 20 集合并值。
 
 > **这一条来之不易**：此前闭环一直是 0，根因不是模型也不是训练，而是**观测契约**——评测把 robosuite 的 uint8 HWC `(1,360,360,3)` 图像、带 batch 维的状态和元组任务串直接喂给了按 float32 CHW `[0,1]` 训练的模型。统一格式后同一个 checkpoint 从 0/3 变成 7/10。细节见 [vla/README](vla/README.md)，数字见 [RESULTS.md](docs/RESULTS.md)，因子见 [FACTORS.md](docs/FACTORS.md)。
 
-演示：[LIBERO 抓取成功片段](media/training/libero_fps20_success.mp4)
+演示：[2×2 成败对照](media/training/libero_quad.mp4) · [双视角 + 夹爪曲线](media/training/libero_dual.mp4)
 
 ## 量化分析（可视化）
 
@@ -132,7 +134,7 @@ S0 locomotion 策略（PPO，冻结复用）──┘
 - **仿真限定**：无真机实验；S4 跨引擎结论适用于 Isaac Sim 5.1 与 MuJoCo 3.11 两引擎
 - **S0 预训练成本**：分层优势部分来自动作抽象与 S0 复用（未训练的 S1 已有 75% 成功率）——已在报告中归因
 - **闭环指令含任务知识**：规则层的转向修正编码了部分任务先验——这正是分层设计的取舍，正文有讨论
-- **VLA 覆盖窄**：闭环成功率 0.70 来自 `libero_spatial` 单个任务 × 10 episodes，不能外推到整个 suite；跨域证据只有 1 个 episode（0/4 方块），仅作定性
+- **VLA 覆盖窄**：闭环成功率 0.50 来自 `libero_spatial` 单个任务 × 20 episodes，不能外推到整个 suite；单批 10 集会给出 0.30–0.70 的波动，跨域证据只有 1 个 episode（0/4 方块），仅作定性
 - 每组 3 个训练种子；真机验证列为后续工作
 
 ## 仓库结构

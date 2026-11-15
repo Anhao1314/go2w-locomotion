@@ -86,6 +86,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-steps", type=int, default=None,
                         help="override the derived step cap")
     parser.add_argument("--seed-base", type=int, default=1000)
+    parser.add_argument("--seeds", type=str, default=None,
+                        help="explicit comma-separated seeds (overrides --seed-base)")
     parser.add_argument("--video", action="store_true", help="record the first episode")
     parser.add_argument("--out", type=pathlib.Path,
                         default=PROJECT_ROOT / "logs" / "vla" / "libero_eval")
@@ -126,10 +128,20 @@ def main(argv: list[str] | None = None) -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     results: list[dict[str, Any]] = []
-    video_frames: list[np.ndarray] = []
+    seeds = ([int(x) for x in args.seeds.split(",")] if args.seeds
+             else [args.seed_base + i for i in range(args.episodes)])
+    video_dir = out / "video"
+    if args.video:
+        import imageio  # pyright: ignore[reportMissingImports]
 
-    for episode in range(args.episodes):
-        seed = args.seed_base + episode
+        video_dir.mkdir(parents=True, exist_ok=True)
+
+    for episode, seed in enumerate(seeds):
+        # SmolVLA 的动作由 flow matching 采样得到。只在每集开头设种不够：
+        # 录像路径（imageio 导入/写帧）会扰动全局 RNG 流，实测同一 seed 会从
+        # 70 步变成 280 步。因此改成**每步**用 (seed, step) 派生种子，使动作噪声
+        # 只取决于 (episode seed, step)，与录像/日志等副作用完全解耦。
+        np.random.seed(seed)
         obs, info = env.reset(seed=[seed])
         policy.reset()
         task = _as_task(info if isinstance(info, dict) else {})
@@ -138,6 +150,19 @@ def main(argv: list[str] | None = None) -> int:
         success = False
         action_sum = np.zeros(7, dtype=np.float64)
         gripper_closed_steps = 0
+        front_writer: Any = None
+        wrist_writer: Any = None
+        if args.video:
+            import imageio  # pyright: ignore[reportMissingImports]
+
+            front_writer = imageio.get_writer(
+                video_dir / f"ep{episode}_front.mp4", fps=args.fps,
+                codec="libx264", quality=8)
+            wrist_writer = imageio.get_writer(
+                video_dir / f"ep{episode}_wrist.mp4", fps=args.fps,
+                codec="libx264", quality=8)
+        trace: dict[str, list[float]] = {"gripper_action": [], "state_z": [],
+                                         "action_norm": []}
         while steps < max_steps:
             batch = {
                 "observation.images.image": _as_image(obs["observation.images.image"]),
@@ -146,6 +171,10 @@ def main(argv: list[str] | None = None) -> int:
                 "task": task,
             }
             processed = preprocessor(batch)
+            step_seed = (seed * 100003 + steps) % (2**31 - 1)
+            torch.manual_seed(step_seed)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(step_seed)
             with torch.inference_mode():
                 action = policy.select_action(processed)
             if action.ndim == 1:
@@ -160,18 +189,29 @@ def main(argv: list[str] | None = None) -> int:
             if float(action_np[0][6]) > 0.0:
                 gripper_closed_steps += 1
 
+            trace["gripper_action"].append(float(action_np[0][6]))
+            trace["action_norm"].append(float(np.linalg.norm(action_np[0][:6])))
             obs, reward, terminated, truncated, info = env.step(action_np)
             steps += 1
-            if args.video and episode == 0:
-                raw = np.asarray(obs["observation.images.image"])
-                frame = raw[0] if raw.ndim == 4 else raw
-                video_frames.append(frame.astype(np.uint8).copy())
+            if args.video:
+                raw_front = np.asarray(obs["observation.images.image"])
+                raw_wrist = np.asarray(obs["observation.images.image2"])
+                frame_front = raw_front[0] if raw_front.ndim == 4 else raw_front
+                frame_wrist = raw_wrist[0] if raw_wrist.ndim == 4 else raw_wrist
+                front_writer.append_data(frame_front.astype(np.uint8))
+                wrist_writer.append_data(frame_wrist.astype(np.uint8))
+                state = np.asarray(obs["observation.state"], dtype=np.float32)
+                state = state[0] if state.ndim == 2 else state
+                trace["state_z"].append(float(state[2]))
             if isinstance(info, dict) and _flag(info.get("is_success")):
                 success = True
                 break
             if _flag(terminated) or _flag(truncated):
                 break
 
+        if args.video:
+            front_writer.close()
+            wrist_writer.close()
         results.append({
             "episode": episode,
             "seed": seed,
@@ -180,20 +220,13 @@ def main(argv: list[str] | None = None) -> int:
             "time_s": steps / args.fps,
             "mean_abs_action": (action_sum / max(1, steps)).round(4).tolist(),
             "gripper_closed_fraction": gripper_closed_steps / max(1, steps),
+            "video": {"front": f"video/ep{episode}_front.mp4",
+                      "wrist": f"video/ep{episode}_wrist.mp4"} if args.video else None,
+            "trace": trace,
         })
         print(f"[eval] fps={args.fps} episode {episode} seed {seed}: "
               f"{'SUCCESS' if success else 'incomplete'} "
               f"({steps} steps / {steps / args.fps:.1f}s sim)", flush=True)
-
-    if args.video and video_frames:
-        import imageio  # pyright: ignore[reportMissingImports]
-
-        video_path = out / "libero_eval_episode0.mp4"
-        writer: Any = imageio.get_writer(video_path, fps=args.fps, codec="libx264", quality=8)
-        for frame in video_frames:
-            writer.append_data(frame)
-        writer.close()
-        print(f"      video: {video_path}", flush=True)
 
     successes = sum(1 for r in results if r["success"])
     summary = {
@@ -203,9 +236,11 @@ def main(argv: list[str] | None = None) -> int:
         "fps": args.fps,
         "time_budget_s": args.time_budget_s,
         "max_steps": max_steps,
-        "episodes": args.episodes,
+        "episodes": len(results),
+        "seeds": seeds,
+        "policy_seeded": True,
         "successes": successes,
-        "success_rate": successes / max(1, args.episodes),
+        "success_rate": successes / max(1, len(results)),
         "mean_steps": float(np.mean([r["steps"] for r in results])),
         "results": results,
         "obs_contract": {
