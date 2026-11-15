@@ -336,3 +336,19 @@ class SO101TabletopSession:
         if frame is None:
             raise RuntimeError("env observation missing front camera")
         return frame
+
+
+def make_libero_env(suite: str = "libero_spatial", task_ids=None, **overrides):
+    """Create the LIBERO benchmark env (robosuite-based, via lerobot[libero])."""
+    from lerobot.envs.factory import make_env
+    from lerobot.envs.configs import LiberoEnvConfig
+
+    cfg = LiberoEnvConfig(task=suite)
+    cfg.init_states = True
+    if task_ids is not None:
+        cfg.task_ids = task_ids
+    for key, value in overrides.items():
+        setattr(cfg, key, value)
+    envs = make_env(cfg)
+    suite_envs = envs[suite]
+    return suite_envs[0] if isinstance(suite_envs, dict) else suite_envs[0]
