@@ -76,10 +76,15 @@ def load(path: pathlib.Path) -> dict:
 
 # --------------------------------------------------------------------------- #
 def chart_fps_ab(out: pathlib.Path) -> None:
-    runs = {}
-    for fps in (20, 10):
-        data = load(EVID / "vla-2026-11-15" / f"libero_ab_fps{fps}_n10.json")
-        runs[fps] = data
+    batch_a = load(EVID / "vla-2026-11-15" / "libero_seeded_a.json")
+    batch_b = load(EVID / "vla-2026-11-15" / "libero_seeded_b.json")
+    runs: dict[int, dict] = {
+        20: {"results": batch_a["results"] + batch_b["results"],
+             "successes": batch_a["successes"] + batch_b["successes"],
+             "episodes": batch_a["episodes"] + batch_b["episodes"]},
+        10: load(EVID / "vla-2026-11-15" / "libero_ab_fps10_n10.json"),
+    }
+    runs[20]["success_rate"] = runs[20]["successes"] / runs[20]["episodes"]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.2, 4.0),
                                    gridspec_kw={"width_ratios": [1, 1.35]})
@@ -96,8 +101,12 @@ def chart_fps_ab(out: pathlib.Path) -> None:
         if ok == 0:  # 零高度柱子不可见，补一条基线
             ax1.hlines(0.008, i - 0.26, i + 0.26, color=RED, lw=5)
     ax1.set_ylim(0, 1.0)
+    ax1.set_xticks([0, 1])
+    ax1.set_xticklabels(["fps=20", "fps=10"])
+    ax1.set_xlabel("批 A 7/10 · 批 B 3/10（fps=20 合计 10/20）", fontsize=8.5,
+                   color=GRAY)
     ax1.set_ylabel("成功率（libero_spatial 任务 0）")
-    ax1.set_title("控制频率 A/B：10 episodes 每档")
+    ax1.set_title("控制频率 A/B（种子固定，fps=20 共 20 集）")
 
     for i, fps in enumerate(fps_list):
         results = runs[fps]["results"]
