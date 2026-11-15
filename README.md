@@ -8,7 +8,7 @@
 
 **受控对比研究：分层强化学习架构 vs 端到端单层**——同一任务、同一观测、同一冻结种子，唯一变量是有没有显式分层。在此基础上延伸出三条已验证的工程线：**跨引擎迁移（S4 Sim2Sim）**、**ROS2 真 DDS 闭环**、**VLA 模仿学习**。
 
-[English](README.en.md) · [文档索引](docs/README.md) · [实验协议](docs/EXPERIMENT_DESIGN.md) · [研究报告](docs/PHASE1_REPORT.md) · [过程日志](docs/journal/)
+[English](README.en.md) · [文档索引](docs/README.md) · [量化方法论](docs/METHOD.md) · [实验协议](docs/EXPERIMENT_DESIGN.md) · [研究报告](docs/PHASE1_REPORT.md) · [过程日志](docs/journal/)
 
 ---
 
@@ -127,6 +127,7 @@ S0 locomotion 策略（PPO，冻结复用）──┘
 
 | 设施 | 说明 |
 | --- | --- |
+| **量化方法论** | [八步流程](docs/METHOD.md)：定义 → 口径 → 噪声底线 → 拆解 → 组内归因 → 可证伪假设 → 配对复测 → 留档；附六个常见错误与检查清单 |
 | 预注册协议 | 冻结评估种子 E={0..19}、指标与阈值先于训练冻结（[EXPERIMENT_DESIGN](docs/EXPERIMENT_DESIGN.md)） |
 | 每 run 证据束 | `run_config.json`（git SHA/依赖版本/命令行）+ 全文件 SHA-256 清单，训练结束自动生成 |
 | 收敛即停 | 训练中每 50 迭代做一次 2048 环境确定性评估，连续达标自动早停并记录收敛点 |
