@@ -162,6 +162,18 @@ def vla_closed_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
                 "success": r["success"],
                 "steps": r["steps"],
             } for r in data["results"])
+    suite_path = EVID / "vla-2026-11-15" / "libero_suite_5tasks.json"
+    if suite_path.exists():
+        data = load(suite_path)
+        rows = [{"entity": f"task{r['task']}_seed{r['seed']}",
+                 "success": r["success"], "steps": r["steps"]}
+                for r in data["results"]]
+        out.append(("vla_closed_suite_5tasks", rows, {
+            "fps": 20, "control_dt": 1.0 / 20, "suite": data.get("suite"),
+            "tasks": data.get("tasks"), "seeds": data.get("seeds"),
+            "wilson95": data.get("wilson95"), "policy_seeded": True,
+        }))
+
     if seeded:
         out.append(("vla_closed_fps20_seeded_n20", seeded, {
             "fps": 20, "control_dt": 1.0 / 20, "suite": "libero_spatial",

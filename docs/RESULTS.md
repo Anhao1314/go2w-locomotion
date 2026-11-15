@@ -45,14 +45,16 @@
 | 11 | 跨域评测（真机策略 → 仿真孪生） | **n = 1 episode**，3 600 步 | 放置 **0/4** 个方块 | ❌（样本量 1，仅作定性） |
 | 12 | LIBERO 自洽微调 | `lerobot/libero`（1 693 段 / 273 465 帧 / **10 Hz** / 256×256 / state 8 / action 7），batch 32 × accum 2 | 62 000 / 100 000 步，loss **0.380**（20K 时 0.394），lr 已退火至 2.5e-6 | 🚧 中断 |
 | 13 | **开环复现检查**（60K checkpoint） | 40 帧（8 段 × 5 帧，覆盖 10%–90% 进度） | MSE **0.0656** vs 平均动作基线 0.2117（**比值 0.31**）；七维相关 +0.82/+0.91/+0.78/+0.64/+0.58/+0.58/+0.85；夹爪符号一致 **0.93**；遮图后动作偏移 L2 **0.489** | ✅ 模型已学会 |
-| 14 | **LIBERO 闭环成功率（fps = 20，种子固定）** | `libero_spatial` 任务 0，**20 episodes**（两批各 10），14 s 预算 | **10/20 = 0.50**（批 A 7/10、批 B 3/10）；成功 episode 平均 **82 步（4.1 s）** | ✅ 权威数字 |
+| 14 | **LIBERO 闭环成功率（fps = 20，种子固定）** | `libero_spatial` **5 个任务 × 20 种子 = 100 集**，14 s 预算 | **50/100 = 0.50**（95% CI **0.40–0.60**）；逐任务 0.40–0.60（9/20、12/20、9/20、8/20、12/20） | ✅ 权威数字 |
 | 15 | **控制频率 A/B** | 同任务、同种子 | **fps=20 → 0.50（10/20）；fps=10 → 0.00（0/10，全部超时）** → 数据集元数据 `fps=10` **不是**控制契约 | ✅ |
 | 16 | **测量波动（必须记录）** | 同一 checkpoint、同一 10 个种子 | 未固定策略种子时单批为 **7/10**；固定种子后两批为 **7/10、3/10**。逐种子不保证可复现（seed 1003：70 步成功 vs 280 步超时）→ 单批数字不可外推 | ⚠️ 方法学 |
+| 17 | **评测耗时分解与并行** | 单集 280 步 | `env.step` **111.8 ms/步**（物理子步主导，渲染分辨率 360→224 几乎无影响）；单集 34.4 s。2 进程 → **14.8 s/集（2.3×）**；4 进程在 WSL/EGL 下跑到第 4 集即卡死，6 进程被 OOM 杀 | 🔧 工程 |
 
 开环检查的含义：策略在训练帧上能复现演示动作、依赖视觉、夹爪时机正确 →
 **"模型没学会"已被排除**；剩余嫌疑转向评测链路（见下）。
 
-证据：[`openloop_060k.json`](../reports/evidence/vla-2026-11-15/openloop_060k.json)、
+证据：[`libero_suite_5tasks.json`](../reports/evidence/vla-2026-11-15/libero_suite_5tasks.json)、
+[`openloop_060k.json`](../reports/evidence/vla-2026-11-15/openloop_060k.json)、
 [`libero_seeded_a.json`](../reports/evidence/vla-2026-11-15/libero_seeded_a.json)、
 [`libero_seeded_b.json`](../reports/evidence/vla-2026-11-15/libero_seeded_b.json)、
 [`libero_ab_fps10_n10.json`](../reports/evidence/vla-2026-11-15/libero_ab_fps10_n10.json)
@@ -93,6 +95,12 @@
 | --- | --- |
 | [`libero_quad.mp4`](../media/training/libero_quad.mp4) | 2×2：2 条成功（seed 1000/1006）与 2 条超时（seed 1003/1001），每格标注 seed/结局/步数 |
 | [`libero_dual.mp4`](../media/training/libero_dual.mp4) | 前视 + 腕部双视角，底部同步夹爪指令曲线（−1 张开 → +1 闭合）与实时末端高度 |
+
+### LIBERO-Spatial 五任务成功率
+
+![五任务成功率](../media/analysis/vla_suite_tasks.png)
+
+5 任务 × 20 种子 = 100 集，合计 **0.50**（95% CI 0.40–0.60），任务间 0.40–0.60。
 
 ### VLA 闭环：控制频率 A/B
 

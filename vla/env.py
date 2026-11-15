@@ -351,4 +351,9 @@ def make_libero_env(suite: str = "libero_spatial", task_ids=None, **overrides):
         setattr(cfg, key, value)
     envs = make_env(cfg)
     suite_envs = envs[suite]
-    return suite_envs[0] if isinstance(suite_envs, dict) else suite_envs[0]
+    if isinstance(suite_envs, dict):
+        # 传 task_ids 时返回的映射按 task id 建键（[4] → {4: env}），不能假定键是 0
+        if task_ids:
+            return suite_envs[task_ids[0]]
+        return next(iter(suite_envs.values()))
+    return suite_envs[0]

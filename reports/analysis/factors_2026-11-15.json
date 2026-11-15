@@ -886,6 +886,68 @@
       }
     },
     {
+      "run_id": "vla_closed_suite_5tasks",
+      "n": 100,
+      "factors": {
+        "task_success_rate": 0.5,
+        "task_steps": 111.54,
+        "task_steps_cv": 0.36668880612299454,
+        "task_time_s": 5.577000000000001
+      },
+      "detail": {
+        "task_steps": {
+          "n": 50,
+          "mean": 111.54,
+          "std": 40.900469434958815,
+          "min": 69.0,
+          "max": 248.0,
+          "p10": 75.9,
+          "p90": 147.70000000000007,
+          "cv": 0.36668880612299454,
+          "ci95": 11.337031722139619
+        }
+      },
+      "meta": {
+        "fps": 20,
+        "control_dt": 0.05,
+        "suite": "libero_spatial",
+        "tasks": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "seeds": [
+          1000,
+          1001,
+          1002,
+          1003,
+          1004,
+          1005,
+          1006,
+          1007,
+          1008,
+          1009,
+          1010,
+          1011,
+          1012,
+          1013,
+          1014,
+          1015,
+          1016,
+          1017,
+          1018,
+          1019
+        ],
+        "wilson95": [
+          0.4038,
+          0.5962
+        ],
+        "policy_seeded": true
+      }
+    },
+    {
       "run_id": "vla_closed_fps20_seeded_n20",
       "n": 20,
       "factors": {
@@ -1351,6 +1413,13 @@
         "gate": 0.9,
         "pass": false,
         "margin": 0.0
+      }
+    },
+    "vla_closed_suite_5tasks": {
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.5555555555555556
       }
     },
     "vla_closed_fps20_seeded_n20": {

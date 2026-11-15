@@ -118,6 +118,7 @@
 | `s2_disturbance_push100N` | 20 | — | — | — | 1 | — | — | — | — |
 | `baseline_c0_flat` | 20 | 0.6064 | — | — | 0 | — | — | — | — |
 | `baseline_c0_push` | 20 | 0.5759 | — | — | 1 | — | — | — | — |
+| `vla_closed_suite_5tasks` | 100 | — | — | — | — | 0.5 | 111.5 | 0.3667 | — |
 | `vla_closed_fps20_seeded_n20` | 20 | — | — | — | — | 0.5 | 99.1 | 0.5705 | — |
 | `vla_closed_fps10_unseeded` | 10 | — | — | — | — | 0 | — | — | — |
 | `vla_closed_fps20_unseeded` | 10 | — | — | — | — | 0.7 | 101.4 | 0.3303 | — |

@@ -131,6 +131,32 @@ def chart_fps_ab(out: pathlib.Path) -> None:
     plt.close(fig)
 
 
+def chart_suite_tasks(out: pathlib.Path) -> None:
+    data = load(EVID / "vla-2026-11-15" / "libero_suite_5tasks.json")
+    tasks = [str(t) for t in data["tasks"]]
+    rates = [data["per_task"][t]["success_rate"] for t in tasks]
+    ns = [data["per_task"][t]["episodes"] for t in tasks]
+    overall = data["success_rate"]
+    lo, hi = data["wilson95"]
+
+    fig, ax = plt.subplots(figsize=(7.6, 4.0))
+    bars = ax.bar([f"task {t}" for t in tasks], rates, color=BLUE, alpha=0.85, width=0.6)
+    for bar, r, n in zip(bars, rates, ns):
+        label = f"{r:.2f} ({int(round(r * n))}/{n})"
+        ax.text(bar.get_x() + bar.get_width() / 2, r + 0.02, label,
+                ha="center", va="bottom", fontsize=8.5)
+    ax.axhline(overall, color=ORANGE, lw=1.6, ls="--")
+    ax.fill_between([-0.5, len(tasks) - 0.5], lo, hi, color=ORANGE, alpha=0.12)
+    note = f"合计 {overall:.2f}  95% CI [{lo:.2f}, {hi:.2f}]"
+    ax.text((len(tasks) - 1) / 2, 0.93, note,
+            ha="center", va="center", fontsize=9, color=ORANGE)
+    ax.set_ylim(0, 1.0)
+    ax.set_ylabel("成功率")
+    ax.set_title(f"LIBERO-Spatial 五个任务 × 20 种子（共 {data['episodes']} 集）")
+    fig.savefig(out / "vla_suite_tasks.png")
+    plt.close(fig)
+
+
 def chart_openloop(out: pathlib.Path) -> None:
     data = load(EVID / "vla-2026-11-15" / "openloop_060k.json")
     recs = data["records"]
@@ -392,6 +418,7 @@ def main(argv: list[str] | None = None) -> int:
 
     setup_style()
     chart_fps_ab(out)
+    chart_suite_tasks(out)
     chart_openloop(out)
     chart_generalization(out)
     chart_s2(out)
