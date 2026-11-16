@@ -57,6 +57,12 @@
 
 协议备注：载荷只改基础体质量与惯性，其余参数不变；与推力轴（100 N × 0.5 s）是两个独立轴。
 
+## vla-2026-11-17/
+
+| 文件 | 实验 | 关键结论 |
+|---|---|---|
+| `latch_smoke.json` | 夹爪锁存冒烟（2 稳定成功 + 2 稳定失败，task 0） | 抖动 22→1 次但失败仍超时；破坏 1 个稳定成功（放置需松开释放）→ **假设证伪**，抖动是症状非病因 |
+
 ## s4-attribution-2026-11-16/
 
 来源：`logs/s4/sequence_{oracle,zero}/evaluation.json`、`logs/s4/generalization_oracle/evaluation.json`

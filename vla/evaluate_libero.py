@@ -91,6 +91,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seeds", type=str, default=None,
                         help="explicit comma-separated seeds (overrides --seed-base)")
     parser.add_argument("--video", action="store_true", help="record the first episode")
+    parser.add_argument("--gripper-latch", action="store_true",
+                        help="夹爪锁存：抓稳（闭合+抬升≥2cm）后强制保持闭合，抑制反复重抓")
     parser.add_argument("--trace", action="store_true",
                         help="记录物体/目标/末端位置（仅评测用，绝不喂给策略）")
     parser.add_argument("--out", type=pathlib.Path,
@@ -195,6 +197,7 @@ def main(argv: list[str] | None = None) -> int:
                 codec="libx264", quality=8)
         trace: dict[str, list[float]] = {"gripper_action": [], "state_z": [],
                                          "action_norm": []}
+        latch = {"on": False, "z0": None, "steps": 0}
         while steps < max_steps:
             batch = {
                 "observation.images.image": _as_image(obs["observation.images.image"]),
@@ -222,6 +225,22 @@ def main(argv: list[str] | None = None) -> int:
                 gripper_closed_steps += 1
 
             grip_cmd = float(action_np[0][6])
+            if args.gripper_latch:
+                state_now = np.asarray(obs["observation.state"], dtype=np.float32)
+                state_now = state_now[0] if state_now.ndim == 2 else state_now
+                ee_z = float(state_now[2])
+                if not latch["on"]:
+                    if grip_cmd > 0.5:
+                        if latch["z0"] is None:
+                            latch["z0"] = ee_z
+                        elif ee_z - latch["z0"] >= 0.02:
+                            latch["on"] = True
+                    else:
+                        latch["z0"] = None
+                if latch["on"]:
+                    action_np[0][6] = 1.0  # 锁存：强制闭合
+                grip_cmd = float(action_np[0][6])
+                latch["steps"] += 1
             trace["gripper_action"].append(grip_cmd)
             trace["action_norm"].append(float(np.linalg.norm(action_np[0][:6])))
             obs, reward, terminated, truncated, info = env.step(action_np)
