@@ -42,7 +42,7 @@ ACTOR_DIR = PROJECT_ROOT / "logs" / "s4" / "actors"
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=(__doc__ or "usage").splitlines()[0])
     parser.add_argument("--task", choices=["velocity", "sequence"], required=True)
-    parser.add_argument("--policy", choices=["s0", "single", "layered"], required=True,
+    parser.add_argument("--policy", choices=["s0", "single", "layered", "oracle", "zero"], required=True,
                         help="s0: 48-dim velocity policy; single: 53->12; layered: S1+S0 chain")
     parser.add_argument("--label", required=True,
                         help="checkpoint label recorded in the summary and report")
@@ -71,13 +71,17 @@ def main(argv: list[str] | None = None) -> int:
         policy = Sim2SimPolicy(mode="s0", s0_path=s0)
     elif args.policy == "single":
         policy = Sim2SimPolicy(mode="single", single_path=single)
+    elif args.policy == "oracle":
+        policy = Sim2SimPolicy(mode="oracle", s0_path=s0)
+    elif args.policy == "zero":
+        policy = Sim2SimPolicy(mode="zero", s0_path=s0)
     else:
         policy = Sim2SimPolicy(mode="layered", s0_path=s0, s1_path=s1)
 
     seeds = tuple(range(args.seeds))
     if args.task == "velocity":
-        if args.policy != "s0":
-            raise SystemExit("velocity task requires --policy s0")
+        if args.policy not in ("s0", "oracle", "zero"):
+            raise SystemExit("velocity task requires --policy s0/oracle/zero")
         result = evaluate_velocity(policy, seeds=seeds, checkpoint_label=args.label,
                                    payload_kg=args.payload_kg,
                                    friction_scale=args.friction_scale,

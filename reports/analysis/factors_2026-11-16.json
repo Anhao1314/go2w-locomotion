@@ -1046,6 +1046,76 @@
       }
     },
     {
+      "run_id": "s4_sequence_oracle",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0,
+        "task_success_rate": 1.0,
+        "task_steps": 501.0,
+        "task_steps_cv": 0.0,
+        "task_time_s": 10.02
+      },
+      "detail": {
+        "task_steps": {
+          "n": 20,
+          "mean": 501.0,
+          "std": 0.0,
+          "min": 501.0,
+          "max": 501.0,
+          "p10": 501.0,
+          "p90": 501.0,
+          "cv": 0.0,
+          "ci95": 0.0
+        }
+      },
+      "meta": {
+        "policy": "oracle"
+      }
+    },
+    {
+      "run_id": "s4_sequence_zero",
+      "n": 20,
+      "factors": {
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0,
+        "task_success_rate": 0.0
+      },
+      "detail": {},
+      "meta": {
+        "policy": "zero"
+      }
+    },
+    {
+      "run_id": "s4_gen_oracle",
+      "n": 80,
+      "factors": {
+        "stab_fall_rate": 0.0,
+        "stab_no_fall_rate": 1.0,
+        "task_success_rate": 1.0,
+        "task_steps": 545.25,
+        "task_steps_cv": 0.14827453706764462,
+        "task_time_s": 10.905,
+        "task_stage_reached": 4.0
+      },
+      "detail": {
+        "task_steps": {
+          "n": 80,
+          "mean": 545.25,
+          "std": 80.84669133613323,
+          "min": 478.0,
+          "max": 683.0,
+          "p10": 478.0,
+          "p90": 683.0,
+          "cv": 0.14827453706764462,
+          "ci95": 17.716312363186645
+        }
+      },
+      "meta": {
+        "policy": "oracle"
+      }
+    },
+    {
       "run_id": "s4_sequence_tol_030",
       "n": 20,
       "factors": {
@@ -2076,6 +2146,57 @@
         "gate": 0.9,
         "pass": false,
         "margin": 0.8333333333333333
+      }
+    },
+    "s4_sequence_oracle": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      }
+    },
+    "s4_sequence_zero": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": false,
+        "margin": 0.0
+      }
+    },
+    "s4_gen_oracle": {
+      "stab_fall_rate": {
+        "gate": 0.1,
+        "pass": true,
+        "margin": null
+      },
+      "stab_no_fall_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
+      },
+      "task_success_rate": {
+        "gate": 0.9,
+        "pass": true,
+        "margin": 1.1111111111111112
       }
     },
     "s4_sequence_tol_030": {

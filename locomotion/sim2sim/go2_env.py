@@ -548,7 +548,9 @@ class Sim2SimPolicy:
             raise ValueError("single mode requires single_path")
         if self.mode == "s0" and self._s0 is None:
             raise ValueError("s0 mode requires s0_path")
-        if self.mode not in ("s0", "single", "layered"):
+        if self.mode in ("oracle", "zero") and self._s0 is None:
+            raise ValueError(f"{self.mode} mode requires s0_path")
+        if self.mode not in ("s0", "single", "layered", "oracle", "zero"):
             raise ValueError(f"unknown mode {self.mode!r}")
 
     def act(self, observation: np.ndarray) -> np.ndarray:
@@ -557,6 +559,17 @@ class Sim2SimPolicy:
             return self._s0.run(None, {"observation": observation})[0].ravel()
         if self.mode == "single":
             return self._single.run(None, {"observation": observation})[0].ravel()
+        if self.mode in ("oracle", "zero"):
+            # attribution ablations (R0 audit): oracle feeds the rule layer's
+            # stage_command (obs[9:11]) straight to frozen S0, bypassing S1;
+            # zero feeds a standstill command.  Same S0 weights as layered.
+            command = observation[0][9:11].astype(np.float32) if self.mode == "oracle"                 else np.zeros(2, dtype=np.float32)
+            command3 = np.array([command[0], 0.0, command[1]], dtype=np.float32)
+            obs53 = observation[0]
+            s0_obs = np.concatenate(
+                [obs53[0:9], command3, obs53[11:35], obs53[35:47]]
+            ).astype(np.float32)[None, :]
+            return self._s0.run(None, {"observation": s0_obs})[0].ravel()
         # layered: S1 emits the (vx, wz) command; S0 executes it
         command = self._s1.run(None, {"observation": observation})[0].ravel()
         command = np.clip(command, -1.0, 1.0)

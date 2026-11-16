@@ -164,6 +164,29 @@ def tolerance_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
     return out
 
 
+def attribution_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
+    """S4 归因消融：Oracle（规则直连 S0）与 Zero 对照。"""
+    out = []
+    for tag in ("oracle", "zero"):
+        path = EVID / "s4-attribution-2026-11-16" / f"sequence_{tag}.json"
+        if not path.exists():
+            continue
+        data = load(path)
+        rows = [{"entity": f"seed{e['seed']}", "success": e.get("success"),
+                 "fall": e.get("fall"), "steps": e.get("steps")}
+                for e in data["episodes"]]
+        out.append((f"s4_sequence_{tag}", rows, {"policy": tag}))
+    gen = EVID / "s4-attribution-2026-11-16" / "generalization_oracle.json"
+    if gen.exists():
+        data = load(gen)
+        rows = [{"entity": f"{e['variant']}_seed{e['seed']}", "success": e.get("success"),
+                 "fall": e.get("fall"), "steps": e.get("steps"),
+                 "stage_reached": e.get("max_stage")}
+                for e in data["episodes"]]
+        out.append(("s4_gen_oracle", rows, {"policy": "oracle"}))
+    return out
+
+
 def payload_runs() -> list[tuple[str, list[dict[str, Any]], dict[str, Any]]]:
     """S2 载荷轴：0/1/2/3 kg 各一个 run（同一批种子）。"""
     out = []
@@ -436,6 +459,7 @@ def main(argv: list[str] | None = None) -> int:
     run_inputs.append(s2_run())
     run_inputs.extend(c0_runs())
     run_inputs.extend(payload_runs())
+    run_inputs.extend(attribution_runs())
     run_inputs.extend(tolerance_runs())
     run_inputs.extend(friction_runs())
     run_inputs.extend(vla_closed_runs())

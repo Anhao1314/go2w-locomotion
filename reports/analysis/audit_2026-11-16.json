@@ -1,15 +1,15 @@
 {
   "rollout": {
-    "rows": 520,
+    "rows": 800,
     "factors": {
       "track_vx_rmse": {
-        "coverage": 0.11538461538461539,
-        "n": 60,
-        "std": 0.24309359204623116,
-        "unique": 22,
+        "coverage": 0.275,
+        "n": 220,
+        "std": 0.2021264459727903,
+        "unique": 142,
         "constant": false,
         "binary": false,
-        "min": 0.0321215,
+        "min": 0.0304386,
         "max": 0.606358,
         "lever": "速度跟踪奖励权重 / 指令滤波",
         "registered": true,
@@ -20,21 +20,21 @@
         "outcome_like": false
       },
       "track_wz_rmse": {
-        "coverage": 0.038461538461538464,
-        "n": 20,
-        "std": 0.06912364695324946,
-        "unique": 20,
+        "coverage": 0.225,
+        "n": 180,
+        "std": 0.06636406767607031,
+        "unique": 140,
         "constant": false,
         "binary": false,
-        "min": 0.0505338,
-        "max": 0.315833,
+        "min": 0.0279,
+        "max": 0.344546,
         "lever": "转向奖励权重 / 角速度限幅",
         "registered": true,
         "within_run_dead": [],
         "outcome_like": false
       },
       "track_vx_bias": {
-        "coverage": 0.038461538461538464,
+        "coverage": 0.025,
         "n": 20,
         "std": 0.0495715480036753,
         "unique": 20,
@@ -48,9 +48,9 @@
         "outcome_like": false
       },
       "stab_fall": {
-        "coverage": 0.5384615384615384,
-        "n": 280,
-        "std": 0.4999872447352624,
+        "coverage": 0.7,
+        "n": 560,
+        "std": 0.44917370282121644,
         "unique": 2,
         "constant": false,
         "binary": true,
@@ -70,13 +70,21 @@
           "gen_single_unseen_2m_60deg",
           "gen_single_unseen_3m_90deg",
           "s2_disturbance_push100N",
+          "s2_friction_05",
+          "s2_friction_07",
           "s4_sequence_layered",
-          "s4_sequence_single"
+          "s4_sequence_single",
+          "s4_sequence_tol_005",
+          "s4_sequence_tol_010",
+          "s4_sequence_tol_015",
+          "s4_sequence_tol_020",
+          "s4_sequence_tol_025",
+          "s4_sequence_tol_030"
         ],
         "outcome_like": true
       },
       "stab_recovery_time_s": {
-        "coverage": 0.038461538461538464,
+        "coverage": 0.025,
         "n": 20,
         "std": 0.04794788837894741,
         "unique": 2,
@@ -90,7 +98,7 @@
         "outcome_like": false
       },
       "stab_fall_after_push_s": {
-        "coverage": 0.038461538461538464,
+        "coverage": 0.025,
         "n": 20,
         "std": 1.1209478132366377,
         "unique": 13,
@@ -104,9 +112,9 @@
         "outcome_like": false
       },
       "task_success": {
-        "coverage": 0.8461538461538461,
-        "n": 440,
-        "std": 0.49997933841607417,
+        "coverage": 0.7,
+        "n": 560,
+        "std": 0.48758829655640373,
         "unique": 2,
         "constant": false,
         "binary": true,
@@ -125,15 +133,21 @@
           "gen_single_unseen_3m_90deg",
           "s4_sequence_layered",
           "s4_sequence_single",
+          "s4_sequence_tol_005",
+          "s4_sequence_tol_010",
+          "s4_sequence_tol_015",
+          "s4_sequence_tol_020",
+          "s4_sequence_tol_025",
+          "s4_sequence_tol_030",
           "vla_closed_fps10_unseeded"
         ],
         "outcome_like": true
       },
       "task_steps": {
-        "coverage": 0.4269230769230769,
-        "n": 222,
-        "std": 209.14362553852962,
-        "unique": 70,
+        "coverage": 0.4275,
+        "n": 342,
+        "std": 196.38862907642792,
+        "unique": 75,
         "constant": false,
         "binary": false,
         "min": 68.0,
@@ -145,15 +159,21 @@
           "gen_layered_unseen_2m_120deg",
           "gen_layered_unseen_2m_60deg",
           "gen_layered_unseen_3m_90deg",
-          "s4_sequence_layered"
+          "s4_sequence_layered",
+          "s4_sequence_tol_005",
+          "s4_sequence_tol_010",
+          "s4_sequence_tol_015",
+          "s4_sequence_tol_020",
+          "s4_sequence_tol_025",
+          "s4_sequence_tol_030"
         ],
         "outcome_like": false
       },
       "task_time_s": {
-        "coverage": 0.4269230769230769,
-        "n": 222,
-        "std": 4.182872510770593,
-        "unique": 70,
+        "coverage": 0.4275,
+        "n": 342,
+        "std": 3.9277725815285587,
+        "unique": 75,
         "constant": false,
         "binary": false,
         "min": 1.36,
@@ -165,45 +185,63 @@
           "gen_layered_unseen_2m_120deg",
           "gen_layered_unseen_2m_60deg",
           "gen_layered_unseen_3m_90deg",
-          "s4_sequence_layered"
+          "s4_sequence_layered",
+          "s4_sequence_tol_005",
+          "s4_sequence_tol_010",
+          "s4_sequence_tol_015",
+          "s4_sequence_tol_020",
+          "s4_sequence_tol_025",
+          "s4_sequence_tol_030"
         ],
         "outcome_like": false
       },
       "task_terminal_miss_m": {
-        "coverage": 0.07692307692307693,
-        "n": 40,
-        "std": 1.1263275000000001,
-        "unique": 2,
+        "coverage": 0.2,
+        "n": 160,
+        "std": 0.7819569617167957,
+        "unique": 7,
         "constant": false,
-        "binary": true,
-        "min": 0.231645,
+        "binary": false,
+        "min": 0.0333017,
         "max": 2.4843,
         "lever": "停止容差 / 终点收敛奖励",
         "registered": true,
         "within_run_dead": [
           "s4_sequence_layered",
-          "s4_sequence_single"
+          "s4_sequence_single",
+          "s4_sequence_tol_005",
+          "s4_sequence_tol_010",
+          "s4_sequence_tol_015",
+          "s4_sequence_tol_020",
+          "s4_sequence_tol_025",
+          "s4_sequence_tol_030"
         ],
         "outcome_like": true
       },
       "task_miss_ratio": {
-        "coverage": 0.038461538461538464,
-        "n": 20,
-        "std": 0.0,
-        "unique": 1,
-        "constant": true,
+        "coverage": 0.175,
+        "n": 140,
+        "std": 0.25961313418662796,
+        "unique": 6,
+        "constant": false,
         "binary": false,
-        "min": 0.772151,
+        "min": 0.111006,
         "max": 0.772151,
         "lever": "停止容差 / 终点收敛奖励",
         "registered": true,
         "within_run_dead": [
-          "s4_sequence_layered"
+          "s4_sequence_layered",
+          "s4_sequence_tol_005",
+          "s4_sequence_tol_010",
+          "s4_sequence_tol_015",
+          "s4_sequence_tol_020",
+          "s4_sequence_tol_025",
+          "s4_sequence_tol_030"
         ],
         "outcome_like": true
       },
       "task_stage_reached": {
-        "coverage": 0.38461538461538464,
+        "coverage": 0.25,
         "n": 200,
         "std": 2.0,
         "unique": 2,
@@ -230,31 +268,10 @@
     },
     "redundant_pairs": [
       [
-        "stab_fall",
-        "task_terminal_miss_m",
-        1.0,
-        40,
-        "结果同源"
-      ],
-      [
-        "task_success",
-        "task_terminal_miss_m",
-        -1.0,
-        40,
-        "结果同源"
-      ],
-      [
         "task_terminal_miss_m",
         "task_stage_reached",
         -1.0,
         40,
-        "结果同源"
-      ],
-      [
-        "stab_fall",
-        "task_success",
-        -0.9999999999999999,
-        200,
         "结果同源"
       ],
       [
@@ -269,13 +286,69 @@
         "task_stage_reached",
         0.9999999999999999,
         200,
+        "结果同源"
+      ],
+      [
+        "stab_fall",
+        "task_success",
+        -0.9999999999999998,
+        320,
         "结果同源"
       ],
       [
         "task_steps",
         "task_time_s",
-        0.9999999999999999,
-        222,
+        0.9999999999999998,
+        342,
+        "构造别名"
+      ],
+      [
+        "task_terminal_miss_m",
+        "task_miss_ratio",
+        0.999999999999703,
+        140,
+        "结果同源"
+      ],
+      [
+        "stab_fall",
+        "task_terminal_miss_m",
+        0.9956503686797653,
+        160,
+        "结果同源"
+      ],
+      [
+        "task_success",
+        "task_terminal_miss_m",
+        -0.9956503686797653,
+        160,
+        "结果同源"
+      ],
+      [
+        "task_steps",
+        "task_miss_ratio",
+        -0.9905732000136253,
+        140,
+        "真冗余"
+      ],
+      [
+        "task_time_s",
+        "task_miss_ratio",
+        -0.9905732000136253,
+        140,
+        "构造别名"
+      ],
+      [
+        "task_steps",
+        "task_terminal_miss_m",
+        -0.9905731126641395,
+        140,
+        "真冗余"
+      ],
+      [
+        "task_time_s",
+        "task_terminal_miss_m",
+        -0.9905731126641394,
+        140,
         "构造别名"
       ]
     ],
@@ -308,7 +381,7 @@
         "d_within": null,
         "runs_used": [],
         "d_pooled": null,
-        "n_outcome_1": 100,
+        "n_outcome_1": 220,
         "n_outcome_0": 100,
         "confounded": true
       },
@@ -332,7 +405,7 @@
         "d_within": null,
         "runs_used": [],
         "d_pooled": null,
-        "n_outcome_1": 222,
+        "n_outcome_1": 342,
         "n_outcome_0": 0,
         "confounded": true
       },
@@ -340,15 +413,15 @@
         "d_within": null,
         "runs_used": [],
         "d_pooled": null,
-        "n_outcome_1": 222,
+        "n_outcome_1": 342,
         "n_outcome_0": 0,
         "confounded": true
       },
       "task_terminal_miss_m": {
         "d_within": null,
         "runs_used": [],
-        "d_pooled": null,
-        "n_outcome_1": 20,
+        "d_pooled": -32.225862059930805,
+        "n_outcome_1": 140,
         "n_outcome_0": 20,
         "confounded": true
       },
@@ -356,7 +429,7 @@
         "d_within": null,
         "runs_used": [],
         "d_pooled": null,
-        "n_outcome_1": 20,
+        "n_outcome_1": 140,
         "n_outcome_0": 0,
         "confounded": true
       },
@@ -371,20 +444,28 @@
     },
     "discrimination_fall": {
       "track_vx_rmse": {
-        "d_within": null,
-        "runs_used": [],
-        "d_pooled": 0.9096252301252618,
-        "n_outcome_1": 21,
-        "n_outcome_0": 39,
-        "confounded": true
+        "d_within": -0.11816679647336074,
+        "runs_used": [
+          "s2_payload_1kg",
+          "s2_payload_2kg",
+          "s2_payload_3kg"
+        ],
+        "d_pooled": 1.1424433519441068,
+        "n_outcome_1": 37,
+        "n_outcome_0": 183,
+        "confounded": false
       },
       "track_wz_rmse": {
-        "d_within": null,
-        "runs_used": [],
-        "d_pooled": null,
-        "n_outcome_1": 1,
-        "n_outcome_0": 19,
-        "confounded": true
+        "d_within": 0.6513691402421217,
+        "runs_used": [
+          "s2_payload_1kg",
+          "s2_payload_2kg",
+          "s2_payload_3kg"
+        ],
+        "d_pooled": 0.8903828769337109,
+        "n_outcome_1": 17,
+        "n_outcome_0": 163,
+        "confounded": false
       },
       "track_vx_bias": {
         "d_within": null,
@@ -415,7 +496,7 @@
         "runs_used": [],
         "d_pooled": null,
         "n_outcome_1": 100,
-        "n_outcome_0": 100,
+        "n_outcome_0": 220,
         "confounded": true
       },
       "task_steps": {
@@ -423,7 +504,7 @@
         "runs_used": [],
         "d_pooled": null,
         "n_outcome_1": 0,
-        "n_outcome_0": 100,
+        "n_outcome_0": 220,
         "confounded": true
       },
       "task_time_s": {
@@ -431,15 +512,15 @@
         "runs_used": [],
         "d_pooled": null,
         "n_outcome_1": 0,
-        "n_outcome_0": 100,
+        "n_outcome_0": 220,
         "confounded": true
       },
       "task_terminal_miss_m": {
         "d_within": null,
         "runs_used": [],
-        "d_pooled": null,
+        "d_pooled": 32.225862059930805,
         "n_outcome_1": 20,
-        "n_outcome_0": 20,
+        "n_outcome_0": 140,
         "confounded": true
       },
       "task_miss_ratio": {
@@ -447,7 +528,7 @@
         "runs_used": [],
         "d_pooled": null,
         "n_outcome_1": 0,
-        "n_outcome_0": 20,
+        "n_outcome_0": 140,
         "confounded": true
       },
       "task_stage_reached": {
@@ -461,12 +542,12 @@
     }
   },
   "run": {
-    "rows": 25,
+    "rows": 39,
     "factors": {
       "n": {
         "coverage": 1.0,
-        "n": 25,
-        "std": 24.425429371865707,
+        "n": 39,
+        "std": 19.599474023185824,
         "unique": 6,
         "constant": false,
         "binary": false,
@@ -478,7 +559,7 @@
         "outcome_like": false
       },
       "gen_fixed_overhead_steps": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -492,7 +573,7 @@
         "outcome_like": false
       },
       "gen_per_metre_steps": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -506,7 +587,7 @@
         "outcome_like": false
       },
       "gen_turn_cost_per_deg": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -520,7 +601,7 @@
         "outcome_like": false
       },
       "stab_fall_after_push_s": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -534,10 +615,10 @@
         "outcome_like": false
       },
       "stab_fall_rate": {
-        "coverage": 0.56,
-        "n": 14,
-        "std": 0.4965827098833608,
-        "unique": 3,
+        "coverage": 0.717948717948718,
+        "n": 28,
+        "std": 0.4205309751022012,
+        "unique": 5,
         "constant": false,
         "binary": false,
         "min": 0.0,
@@ -548,10 +629,10 @@
         "outcome_like": false
       },
       "stab_no_fall_rate": {
-        "coverage": 0.56,
-        "n": 14,
-        "std": 0.4965827098833608,
-        "unique": 3,
+        "coverage": 0.717948717948718,
+        "n": 28,
+        "std": 0.4205309751022012,
+        "unique": 5,
         "constant": false,
         "binary": false,
         "min": 0.0,
@@ -562,7 +643,7 @@
         "outcome_like": false
       },
       "stab_recovery_time_s": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -576,13 +657,13 @@
         "outcome_like": false
       },
       "task_miss_ratio": {
-        "coverage": 0.04,
-        "n": 1,
-        "std": 0.0,
-        "unique": 1,
+        "coverage": 0.1794871794871795,
+        "n": 7,
+        "std": 0.14446090090938454,
+        "unique": 6,
         "constant": false,
         "binary": false,
-        "min": 0.772151,
+        "min": 0.333017,
         "max": 0.772151,
         "lever": "停止容差 / 终点收敛奖励",
         "registered": true,
@@ -590,7 +671,7 @@
         "outcome_like": true
       },
       "task_stage_reached": {
-        "coverage": 0.4,
+        "coverage": 0.2564102564102564,
         "n": 10,
         "std": 2.0,
         "unique": 2,
@@ -604,10 +685,10 @@
         "outcome_like": true
       },
       "task_steps": {
-        "coverage": 0.36,
-        "n": 9,
-        "std": 209.6721253425317,
-        "unique": 8,
+        "coverage": 0.38461538461538464,
+        "n": 15,
+        "std": 182.5283941843813,
+        "unique": 13,
         "constant": false,
         "binary": false,
         "min": 99.1,
@@ -618,9 +699,9 @@
         "outcome_like": false
       },
       "task_steps_cv": {
-        "coverage": 0.36,
-        "n": 9,
-        "std": 0.2030680629568858,
+        "coverage": 0.38461538461538464,
+        "n": 15,
+        "std": 0.17680491149952693,
         "unique": 5,
         "constant": false,
         "binary": false,
@@ -632,9 +713,9 @@
         "outcome_like": false
       },
       "task_success_rate": {
-        "coverage": 0.6,
-        "n": 15,
-        "std": 0.43114833745346726,
+        "coverage": 0.5384615384615384,
+        "n": 21,
+        "std": 0.4327311357270983,
         "unique": 5,
         "constant": false,
         "binary": false,
@@ -646,13 +727,13 @@
         "outcome_like": false
       },
       "task_terminal_miss_m": {
-        "coverage": 0.08,
-        "n": 2,
-        "std": 1.1263275000000001,
-        "unique": 2,
+        "coverage": 0.20512820512820512,
+        "n": 8,
+        "std": 0.7819569617167957,
+        "unique": 7,
         "constant": false,
-        "binary": true,
-        "min": 0.231645,
+        "binary": false,
+        "min": 0.0333017,
         "max": 2.4843,
         "lever": "停止容差 / 终点收敛奖励",
         "registered": true,
@@ -660,10 +741,10 @@
         "outcome_like": true
       },
       "task_time_s": {
-        "coverage": 0.36,
-        "n": 9,
-        "std": 2.740110439313003,
-        "unique": 8,
+        "coverage": 0.38461538461538464,
+        "n": 15,
+        "std": 2.3450903616582073,
+        "unique": 13,
         "constant": false,
         "binary": false,
         "min": 4.955,
@@ -674,21 +755,21 @@
         "outcome_like": false
       },
       "track_axis_ratio_wz_vx": {
-        "coverage": 0.04,
-        "n": 1,
-        "std": 0.0,
-        "unique": 1,
+        "coverage": 0.23076923076923078,
+        "n": 9,
+        "std": 0.18929019601176614,
+        "unique": 7,
         "constant": false,
         "binary": false,
-        "min": 1.79921,
-        "max": 1.79921,
+        "min": 1.25322,
+        "max": 1.91086,
         "lever": "",
         "registered": true,
         "within_run_dead": [],
         "outcome_like": false
       },
       "track_vx_bias": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -702,13 +783,13 @@
         "outcome_like": false
       },
       "track_vx_rmse": {
-        "coverage": 0.12,
-        "n": 3,
-        "std": 0.24253787870655494,
-        "unique": 3,
+        "coverage": 0.28205128205128205,
+        "n": 11,
+        "std": 0.198354993660163,
+        "unique": 9,
         "constant": false,
         "binary": false,
-        "min": 0.0773078,
+        "min": 0.0616362,
         "max": 0.606358,
         "lever": "速度跟踪奖励权重 / 指令滤波",
         "registered": true,
@@ -716,49 +797,49 @@
         "outcome_like": false
       },
       "track_vx_rmse_cv": {
-        "coverage": 0.12,
-        "n": 3,
-        "std": 0.1735018480905907,
-        "unique": 2,
+        "coverage": 0.28205128205128205,
+        "n": 11,
+        "std": 0.2513163968726022,
+        "unique": 8,
         "constant": false,
-        "binary": true,
+        "binary": false,
         "min": 3.15889e-14,
-        "max": 0.368053,
+        "max": 1.01453,
         "lever": "",
         "registered": true,
         "within_run_dead": [],
         "outcome_like": false
       },
       "track_wz_rmse": {
-        "coverage": 0.04,
-        "n": 1,
-        "std": 0.0,
-        "unique": 1,
+        "coverage": 0.23076923076923078,
+        "n": 9,
+        "std": 0.0173068239149964,
+        "unique": 7,
         "constant": false,
         "binary": false,
-        "min": 0.139093,
-        "max": 0.139093,
+        "min": 0.100402,
+        "max": 0.153981,
         "lever": "转向奖励权重 / 角速度限幅",
         "registered": true,
         "within_run_dead": [],
         "outcome_like": false
       },
       "track_wz_rmse_cv": {
-        "coverage": 0.04,
-        "n": 1,
-        "std": 0.0,
-        "unique": 1,
+        "coverage": 0.23076923076923078,
+        "n": 9,
+        "std": 0.04849440793216634,
+        "unique": 7,
         "constant": false,
         "binary": false,
-        "min": 0.496961,
-        "max": 0.496961,
+        "min": 0.387571,
+        "max": 0.548605,
         "lever": "",
         "registered": true,
         "within_run_dead": [],
         "outcome_like": false
       },
       "train_grad_norm": {
-        "coverage": 0.12,
+        "coverage": 0.07692307692307693,
         "n": 3,
         "std": 0.60362022524174,
         "unique": 3,
@@ -772,7 +853,7 @@
         "outcome_like": false
       },
       "train_loss_decay_per_10k": {
-        "coverage": 0.12,
+        "coverage": 0.07692307692307693,
         "n": 3,
         "std": 0.3423128859979732,
         "unique": 3,
@@ -786,7 +867,7 @@
         "outcome_like": false
       },
       "train_lr_end": {
-        "coverage": 0.12,
+        "coverage": 0.07692307692307693,
         "n": 3,
         "std": 6.835365551469959e-06,
         "unique": 2,
@@ -800,7 +881,7 @@
         "outcome_like": false
       },
       "train_mem_gb": {
-        "coverage": 0.12,
+        "coverage": 0.07692307692307693,
         "n": 3,
         "std": 1.5459063211448345,
         "unique": 3,
@@ -814,7 +895,7 @@
         "outcome_like": false
       },
       "train_plateau_ratio": {
-        "coverage": 0.12,
+        "coverage": 0.07692307692307693,
         "n": 3,
         "std": 0.06972285911867228,
         "unique": 3,
@@ -828,7 +909,7 @@
         "outcome_like": false
       },
       "train_smp_per_s": {
-        "coverage": 0.12,
+        "coverage": 0.07692307692307693,
         "n": 3,
         "std": 2.875818427663486,
         "unique": 3,
@@ -842,7 +923,7 @@
         "outcome_like": false
       },
       "train_step_s": {
-        "coverage": 0.12,
+        "coverage": 0.07692307692307693,
         "n": 3,
         "std": 0.20423874132223024,
         "unique": 3,
@@ -856,7 +937,7 @@
         "outcome_like": false
       },
       "vla_control_freq_ratio": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -870,7 +951,7 @@
         "outcome_like": false
       },
       "vla_ol_gripper_sign_acc": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -884,7 +965,7 @@
         "outcome_like": false
       },
       "vla_ol_mse": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -898,7 +979,7 @@
         "outcome_like": false
       },
       "vla_ol_mse_ratio": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -912,7 +993,7 @@
         "outcome_like": false
       },
       "vla_ol_vision_delta": {
-        "coverage": 0.04,
+        "coverage": 0.02564102564102564,
         "n": 1,
         "std": 0.0,
         "unique": 1,
@@ -929,21 +1010,28 @@
     "redundant_pairs": [
       [
         "stab_fall_rate",
-        "stab_no_fall_rate",
+        "task_success_rate",
         -1.0,
-        14,
+        16,
+        "真冗余"
+      ],
+      [
+        "stab_no_fall_rate",
+        "task_success_rate",
+        1.0,
+        16,
+        "真冗余"
+      ],
+      [
+        "stab_fall_rate",
+        "stab_no_fall_rate",
+        -0.9999999999999998,
+        28,
         "真冗余"
       ],
       [
         "stab_fall_rate",
         "task_stage_reached",
-        -0.9999999999999998,
-        10,
-        "真冗余"
-      ],
-      [
-        "stab_fall_rate",
-        "task_success_rate",
         -0.9999999999999998,
         10,
         "真冗余"
@@ -956,18 +1044,18 @@
         "真冗余"
       ],
       [
-        "stab_no_fall_rate",
+        "task_stage_reached",
         "task_success_rate",
         0.9999999999999998,
         10,
         "真冗余"
       ],
       [
-        "task_stage_reached",
-        "task_success_rate",
-        0.9999999999999998,
-        10,
-        "真冗余"
+        "task_steps",
+        "task_time_s",
+        0.9890984440904877,
+        15,
+        "构造别名"
       ]
     ],
     "discrimination_success": {

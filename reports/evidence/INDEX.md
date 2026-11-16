@@ -57,6 +57,19 @@
 
 协议备注：载荷只改基础体质量与惯性，其余参数不变；与推力轴（100 N × 0.5 s）是两个独立轴。
 
+## s4-attribution-2026-11-16/
+
+来源：`logs/s4/sequence_{oracle,zero}/evaluation.json`、`logs/s4/generalization_oracle/evaluation.json`
+（MuJoCo，冻结种子 E={0..19}；同一 S0 checkpoint，sha f0fd77…）
+
+| 文件 | 实验 | 关键结论 |
+|---|---|---|
+| `sequence_oracle.json` | 规则 stage_command 直连冻结 S0（跳过 S1） | **20/20 = 1.00**，501 步 vs Trained S1 474 步（S1 快 5.4%） |
+| `generalization_oracle.json` | Oracle 在 4 几何 × 20 种子（含 3 个未见） | **80/80 = 1.00**（683/478/519 步）——规则层独立泛化 |
+| `sequence_zero.json` | 零指令对照 | **0/20**——进度由指令驱动，sanity 通过 |
+
+结论：分层收益归属 = **动作抽象（S0）+ 规则任务知识（阶段机）**；S1 学习只贡献效率微调。
+
 ## ros2-r1-2026-11-13/
 
 来源：`logs/s4/ros_live/attempt_007/probe_receipt.json`（真 DDS，两独立进程）
