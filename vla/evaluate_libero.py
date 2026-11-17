@@ -91,6 +91,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seeds", type=str, default=None,
                         help="explicit comma-separated seeds (overrides --seed-base)")
     parser.add_argument("--video", action="store_true", help="record the first episode")
+    parser.add_argument("--skill-conditioning", action="store_true",
+                        help="推理时按自身夹爪/高度推断当前技能并加前缀（训练用技能条件化时配套）")
     parser.add_argument("--gripper-latch", action="store_true",
                         help="夹爪锁存：抓稳（闭合+抬升≥2cm）后强制保持闭合，抑制反复重抓")
     parser.add_argument("--trace", action="store_true",
@@ -198,12 +200,28 @@ def main(argv: list[str] | None = None) -> int:
         trace: dict[str, list[float]] = {"gripper_action": [], "state_z": [],
                                          "action_norm": []}
         latch = {"on": False, "z0": None, "steps": 0}
+        # 技能阶段机 v2：逐帧镜像训练标签规则——闭合帧=transport，释放后的
+        # 张开帧=retreat，其余=approach（无抬升门、无滞回；训练里 transport
+        # 就是闭合瞬间开始，v1 的 5 步+抬升门会造成关键段错标）
+        skill = {"phase": "approach", "closed_once": False, "timeline": []}
         while steps < max_steps:
+            task_now = task
+            if args.skill_conditioning:
+                prev_grip = (trace["gripper_action"][-1] if trace["gripper_action"] else 0.0)
+                if skill["phase"] == "approach" and prev_grip > 0.5:
+                    skill["phase"] = "transport"
+                    skill["closed_once"] = True
+                # v3：transport 后不再发 retreat——训练里 retreat 只出现在
+                # 成功释放后的短尾段（均 18 帧），评测里一次误开就永久发
+                # "retreat |" 等于命令策略放弃任务（实测卡死 183–241 步）
+                # 保持 transport：语义是"继续执行搬运目标"
+                task_now = f"{skill['phase']} | {task}" if task else skill["phase"]
+                skill["timeline"].append(skill["phase"])
             batch = {
                 "observation.images.image": _as_image(obs["observation.images.image"]),
                 "observation.images.image2": _as_image(obs["observation.images.image2"]),
                 "observation.state": _as_state(obs["observation.state"]),
-                "task": task,
+                "task": task_now,
             }
             processed = preprocessor(batch)
             step_seed = (seed * 100003 + steps) % (2**31 - 1)
@@ -298,6 +316,7 @@ def main(argv: list[str] | None = None) -> int:
             "video": {"front": f"video/ep{episode}_front.mp4",
                       "wrist": f"video/ep{episode}_wrist.mp4"} if args.video else None,
             "trace": trace,
+            "phase_timeline": (skill["timeline"] if args.skill_conditioning else None),
             "trace_summary": ({
                 "obj_start_dist": obj_start_dist,
                 "obj_min_dist": obj_min,
@@ -322,6 +341,7 @@ def main(argv: list[str] | None = None) -> int:
         "max_steps": max_steps,
         "n_action_steps": int(getattr(policy_config, "n_action_steps", 0)),
         "chunk_size": int(getattr(policy_config, "chunk_size", 0)),
+        "skill_conditioning": bool(args.skill_conditioning),
         "episodes": len(results),
         "seeds": seeds,
         "policy_seeded": True,

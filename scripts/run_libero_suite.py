@@ -60,6 +60,7 @@ def main() -> int:
     parser.add_argument("--n-action-steps", type=int, default=None)
     parser.add_argument("--trace", action="store_true")
     parser.add_argument("--gripper-latch", action="store_true")
+    parser.add_argument("--skill-conditioning", action="store_true")
     parser.add_argument("--out", type=pathlib.Path,
                         default=PROJECT_ROOT / "logs/vla/libero_suite")
     args = parser.parse_args()
@@ -101,6 +102,8 @@ def main() -> int:
                 cmd += ["--trace"]
             if args.gripper_latch:
                 cmd += ["--gripper-latch"]
+            if args.skill_conditioning:
+                cmd += ["--skill-conditioning"]
             if args.n_action_steps is not None:
                 cmd += ["--n-action-steps", str(args.n_action_steps)]
             cmd += ["--out", str(job_dir)]

@@ -57,6 +57,22 @@
 
 协议备注：载荷只改基础体质量与惯性，其余参数不变；与推力轴（100 N × 0.5 s）是两个独立轴。
 
+## vla-2026-11-18/
+
+来源：`logs/vla/skillcond*/`（MuJoCo，task 0 × 20 冻结种子；新 checkpoint = 60K + 5K 步技能条件化微调，lr 1e-5）
+
+| 文件 | 实验 | 关键结论 |
+|---|---|---|
+| `skillcond_plain_t0_suite.json` | 新 checkpoint **裸跑**（无条件化） | 0.40 ≈ 基线 0.45 → 5K 步重训无害 |
+| `latch_v1_partial*.json` | v1 阶段机（5 步+抬升门）条件化 | 0.15 → 有害 |
+| `skillcond_v2_t0_suite.json` | v2 逐帧镜像训练规则 | 0.20 → 仍有害 |
+| `skillcond_v3_t0_suite.json` | v3 无 retreat | 0.10 → 最有害 |
+| `skill_labels.json` | 逐帧技能标签（69.1% 模板 episode） | 标签质量经冒烟验证，非失败原因 |
+
+结论：**技能条件化在推理时全变体有害**。条件化自身行为形成反馈环，评测期标签序列
+（含误开合）偏离训练时的干净示范分布；"retreat" 前缀成为放弃陷阱。文献正道
+（Long-VLA 阶段感知、GIFT 目标图像、RL-SFT）需要架构级改动或 RL 基建，超出单卡预算。
+
 ## vla-2026-11-17/
 
 | 文件 | 实验 | 关键结论 |
