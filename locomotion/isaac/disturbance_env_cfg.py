@@ -16,6 +16,8 @@ from __future__ import annotations
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from isaaclab.managers import EventTermCfg as EventTerm
 from isaaclab.managers import SceneEntityCfg
+import isaaclab.terrains as terrain_gen
+from isaaclab.terrains import TerrainGeneratorCfg
 from isaaclab.utils import configclass
 from isaaclab_tasks.manager_based.locomotion.velocity.config.go2.rough_env_cfg import (
     UnitreeGo2RoughEnvCfg,
@@ -90,6 +92,33 @@ class Go2S2DisturbanceEnvCfg(Go2BlindVelocityEnvCfg):
         self.events.physics_material.params["static_friction_range"] = FRICTION_STEP_RANGE
 
 
+# S2b light-terrain generator (protocol: noise 2-5 cm, slopes <= 15 deg = 0.262 rad).
+# Built from Isaac Lab's own BSD-3 terrain generator (rough.py preset) with scaled-down
+# difficulty; stairs/boxes stay out (they are the S3 rung).  Proportions: 50% low-noise
+# height-field, 25%+25% gentle up/down slopes.
+LIGHT_TERRAIN_CFG = TerrainGeneratorCfg(
+    size=(8.0, 8.0),
+    border_width=20.0,
+    num_rows=10,
+    num_cols=20,
+    horizontal_scale=0.1,
+    vertical_scale=0.005,
+    slope_threshold=0.75,
+    use_cache=False,
+    sub_terrains={
+        "random_rough": terrain_gen.HfRandomUniformTerrainCfg(
+            proportion=0.5, noise_range=(0.02, 0.05), noise_step=0.01, border_width=0.25
+        ),
+        "hf_pyramid_slope": terrain_gen.HfPyramidSlopedTerrainCfg(
+            proportion=0.25, slope_range=(0.0, 0.26), platform_width=2.0, border_width=0.25
+        ),
+        "hf_pyramid_slope_inv": terrain_gen.HfInvertedPyramidSlopedTerrainCfg(
+            proportion=0.25, slope_range=(0.0, 0.26), platform_width=2.0, border_width=0.25
+        ),
+    },
+)
+
+
 @configclass
 class Go2S2bLightTerrainEnvCfg(UnitreeGo2RoughEnvCfg):
     """S2b: light rough terrain, still blind (no height scanner, 48-dim obs)."""
@@ -112,5 +141,7 @@ class Go2S2bLightTerrainEnvCfg(UnitreeGo2RoughEnvCfg):
         self.commands.base_velocity.ranges.lin_vel_y = (0.0, 0.0)
         self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
 
-        # TODO(M2): replace the official rough terrain generator with the
-        # light-terrain spec (height noise 2-5 cm, slopes <= 15 deg)
+        # protocol S2b: swap the official rough generator for the light spec
+        self.scene.terrain.terrain_generator = LIGHT_TERRAIN_CFG
+        self.scene.terrain.terrain_generator.curriculum = False
+        self.scene.terrain.max_init_terrain_level = 0
