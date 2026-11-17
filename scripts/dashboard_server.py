@@ -370,7 +370,7 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(PAGE.encode("utf-8"))
 
-    def log_message(self, *a):  # 静默访问日志
+    def log_message(self, format: str, *args: object) -> None:  # 静默访问日志
         pass
 
 

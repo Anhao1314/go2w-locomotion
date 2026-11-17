@@ -143,9 +143,10 @@ def run_loop(args) -> None:
         # 逐集录制 MP4 → latest_episode.mp4（面板定时加载）
         try:
             rec_path = out_dir / f"ep{ep + 1:03d}_{('SUCCESS' if success else 'TIMEOUT')}.mp4"
-            with imageio.get_writer(rec_path, fps=20, codec="libx264", quality=7) as w:
-                for fr in frames:
-                    w.append_data(fr)
+            writer: Any = imageio.get_writer(rec_path, fps=20, codec="libx264", quality=7)
+            for fr in frames:
+                writer.append_data(fr)
+            writer.close()
             latest = out_dir / "latest_episode.mp4"
             latest.write_bytes(rec_path.read_bytes())
             (out_dir / "latest_status.json").write_text(json.dumps({
@@ -196,7 +197,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
 
-    def log_message(self, *a):
+    def log_message(self, format: str, *args: object) -> None:
         pass
 
 
