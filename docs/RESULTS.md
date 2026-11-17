@@ -14,7 +14,7 @@
 
 | # | 实验 | 判据（预注册） | 结果 | 状态 | 证据 |
 |---|---|---|---|---|---|
-| 1 | **L3 分层 vs 单层 A/B**（3 训练种子 × 20 冻结种子） | 分层成功率 > 单层 | 分层 3/3 种子 100%（100 迭代收敛）；单层 1/3（450 迭代），2 种子 1500 迭代全败 | ✅ | [EXPERIMENTS.md](EXPERIMENTS.md)、[reports/training/](../reports/training/) |
+| 1 | **L3 分层 vs 单层 A/B**（3 训练种子 × 20 冻结种子） | 分层成功率 > 单层 | 分层 3/3 种子 100%（100 迭代收敛）；单层 1/3（450 迭代），2 种子 1500 迭代全败。**统计限定**：n=3 的 Fisher p=0.486，成功率维度为方向性证据；主支点为收敛迭代与组内确定性 | ✅（方向性） | [EXPERIMENTS.md](EXPERIMENTS.md)、[reports/training/](../reports/training/) |
 | 2 | **S4 速度跟踪**（Isaac 策略零改动 → MuJoCo） | `vx_rmse ≤ 0.15` | **0.0773 ± 0.0285**（20 种子）；wz_rmse 0.1391 ± 0.0691；fall 0.05 | ✅ | [`velocity_s0.json`](../reports/evidence/s4-sim2sim-2026-11-13/velocity_s0.json) |
 | 3 | **S4 四阶段序列（分层）** | 成功率 `≥ 0.90` | **20/20 = 1.00**；平均 474 步；4 阶段到达率均 1.0；fall 0 | ✅ | [`sequence_layered.json`](../reports/evidence/s4-sim2sim-2026-11-13/sequence_layered.json) |
 | 3b | **S4 序列精度轴**（位置容差 0.30 → 0.05 m，分层，20 种子） | 收紧判据后成功率不塌 | **6 档全部 20/20**；终点误差 0.232 → **0.036 m**；完成步数 474 → 517（+9%） | ✅ 判据不虚 |
