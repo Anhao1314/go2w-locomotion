@@ -10,7 +10,7 @@ import sys
 labels = json.loads(pathlib.Path("logs/vla/skill_labels.json").read_text(encoding="utf-8"))
 table = labels["labels"]
 
-from lerobot.datasets.lerobot_dataset import LeRobotDataset  # noqa: E402
+from lerobot.datasets.lerobot_dataset import LeRobotDataset  # pyright: ignore[reportMissingImports]
 
 SNAP = pathlib.Path(
     "/root/.cache/huggingface/lerobot/hub/datasets--lerobot--libero/snapshots/"
