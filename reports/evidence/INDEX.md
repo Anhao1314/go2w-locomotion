@@ -57,6 +57,13 @@
 
 协议备注：载荷只改基础体质量与惯性，其余参数不变；与推力轴（100 N × 0.5 s）是两个独立轴。
 
+## vla-2026-11-18/（续：目标图像）
+
+| 文件 | 实验 | 关键结论 |
+|---|---|---|
+| `goalcond_stacked_t0a/t0b/t1a/t1b.json` | 目标图像拼接评测（GIFT-lite，task 0/1，共 40 集） | **1/40**——拼接使工作视野减半 + 条件分布偏移，接触操作精度崩塌 |
+| `goalcond_plain_t0_suite.json` | 同 checkpoint 裸跑（task 0 × 20） | 0.40 ≈ 基线 0.45 → 5K 重训中性，**拼接是唯一凶器** |
+
 ## vla-2026-11-18/
 
 来源：`logs/vla/skillcond*/`（MuJoCo，task 0 × 20 冻结种子；新 checkpoint = 60K + 5K 步技能条件化微调，lr 1e-5）

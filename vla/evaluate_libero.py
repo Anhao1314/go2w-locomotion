@@ -91,6 +91,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seeds", type=str, default=None,
                         help="explicit comma-separated seeds (overrides --seed-base)")
     parser.add_argument("--video", action="store_true", help="record the first episode")
+    parser.add_argument("--goal-image", action="store_true",
+                        help="GIFT-lite：把任务目标图像拼进视野（训练用 VLA_GOAL_IMAGES 时配套）")
+    parser.add_argument("--flow-steps", type=int, default=None,
+                        help="流匹配积分步数（默认沿用 checkpoint 的 10）——测试时计算扩展")
     parser.add_argument("--skill-conditioning", action="store_true",
                         help="推理时按自身夹爪/高度推断当前技能并加前缀（训练用技能条件化时配套）")
     parser.add_argument("--gripper-latch", action="store_true",
@@ -118,6 +122,8 @@ def main(argv: list[str] | None = None) -> int:
     ckpt = pathlib.Path(args.checkpoint)
     policy_config = PreTrainedConfig.from_pretrained(str(ckpt))
     policy_config.pretrained_path = str(ckpt)
+    if args.flow_steps is not None:
+        policy_config.num_steps = args.flow_steps
     if args.n_action_steps is not None:
         if args.n_action_steps > policy_config.chunk_size:
             raise SystemExit(f"--n-action-steps 不能大于 chunk_size={policy_config.chunk_size}")
@@ -200,6 +206,17 @@ def main(argv: list[str] | None = None) -> int:
         trace: dict[str, list[float]] = {"gripper_action": [], "state_z": [],
                                          "action_norm": []}
         latch = {"on": False, "z0": None, "steps": 0}
+        goal_img = None
+        if args.goal_image:
+            from PIL import Image
+
+            import torch
+
+            gpath = (PROJECT_ROOT / "logs" / "vla" / "goal_images"
+                     / f"task{task_ids[0]}.png")
+            if gpath.exists():
+                arr = np.asarray(Image.open(gpath).convert("RGB")).astype("float32") / 255.0
+                goal_img = torch.from_numpy(arr).permute(2, 0, 1)
         # 技能阶段机 v2：逐帧镜像训练标签规则——闭合帧=transport，释放后的
         # 张开帧=retreat，其余=approach（无抬升门、无滞回；训练里 transport
         # 就是闭合瞬间开始，v1 的 5 步+抬升门会造成关键段错标）
@@ -217,8 +234,16 @@ def main(argv: list[str] | None = None) -> int:
                 # 保持 transport：语义是"继续执行搬运目标"
                 task_now = f"{skill['phase']} | {task}" if task else skill["phase"]
                 skill["timeline"].append(skill["phase"])
+            img_front = _as_image(obs["observation.images.image"])
+            if goal_img is not None:
+                import torch
+
+                cur = torch.nn.functional.interpolate(
+                    img_front[None], size=(256, 256), mode="bilinear",
+                    align_corners=False)[0]
+                img_front = torch.cat([cur, goal_img.to(cur.device, cur.dtype)], dim=1)
             batch = {
-                "observation.images.image": _as_image(obs["observation.images.image"]),
+                "observation.images.image": img_front,
                 "observation.images.image2": _as_image(obs["observation.images.image2"]),
                 "observation.state": _as_state(obs["observation.state"]),
                 "task": task_now,
@@ -342,6 +367,8 @@ def main(argv: list[str] | None = None) -> int:
         "n_action_steps": int(getattr(policy_config, "n_action_steps", 0)),
         "chunk_size": int(getattr(policy_config, "chunk_size", 0)),
         "skill_conditioning": bool(args.skill_conditioning),
+        "goal_image": bool(args.goal_image),
+        "flow_steps": int(getattr(policy_config, "num_steps", 0)),
         "episodes": len(results),
         "seeds": seeds,
         "policy_seeded": True,
