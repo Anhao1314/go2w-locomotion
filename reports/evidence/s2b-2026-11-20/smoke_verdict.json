@@ -1,0 +1,16 @@
+{
+ "checks": {
+  "light_terrain_keys": true,
+  "noise_2_5cm": true,
+  "slope_le_15deg": true,
+  "blind": true,
+  "roll_200_steps": true,
+  "sim_screenshot": false
+ },
+ "all_ok": false,
+ "base_z_last": 0.26270830631256104,
+ "base_z_range": [
+  0.21486659348011017,
+  0.37254753708839417
+ ]
+}
