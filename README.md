@@ -49,7 +49,7 @@
 | 样本效率曲线（3 种子） | [A/B 对比曲线](media/training/sweep_ab_comparison.png) |
 | 收敛统计 | [全种子收敛图](media/training/convergence_all_seeds.png) |
 | VLA：抓放任务的成败对照（2×2） | [LIBERO 成败对照](media/training/libero_quad.mp4) |
-| S2b：轻地形建模预览 | [地形高度场](logs/s2b_preview/s2b_terrain_preview.png) |
+| S2b：轻地形建模预览 | [地形高度场](media/analysis/s2b_terrain_preview.png) |
 
 **S4 Sim2Sim 直观对比**（同种子、同任务：分层完成 vs 单层即摔）：
 

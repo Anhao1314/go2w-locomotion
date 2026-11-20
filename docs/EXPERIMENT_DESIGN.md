@@ -65,7 +65,7 @@ A scenario that is not in here has not been executed, regardless of being listed
 | S2 · payload 0 / 1 / 2 / 3 kg | ✅ executed (MuJoCo, 20 seeds each): fall rate 0.05 → 0.20 / 0.20 / 0.25, vx_rmse 0.077 → 0.082 | `reports/evidence/m2-campaign-2026-11-16/payload_{0,1,2,3}kg.json` |
 | S2 · friction step | ✅ executed (friction ×0.7/0.5/0.3 at t = 5 s): vx_rmse 0.077 → 0.062 / 0.064 / 0.102, fall rate 0.05 → 0.00 / 0.00 / 0.05 | `reports/evidence/m2-campaign-2026-11-16/friction_{100,07,05,03}.json` |
 | S2 · DR ablation A1–A3 | ⚠️ partially: the isolation study isolates passive joint damping and foot solref, but the DR-on retraining was never run | `locomotion/sim2sim/README.md` |
-| **S2b · light terrain** | ❌ **not executed**. `Go2S2bLightTerrainEnvCfg` is a placeholder that inherits the official rough-terrain generator; the promised light spec (2–5 cm noise, ≤15°) is still a `TODO(M2)` in `locomotion/isaac/disturbance_env_cfg.py`, and no training/eval log exists | — |
+| **S2b · light terrain** | 🏗️ **implemented + smoke-passed** (2026-11-20): `LIGHT_TERRAIN_CFG` filled with the protocol spec (noise 2–5 cm, slopes ≤ 15°) using Isaac Lab's BSD-3 generator; smoke on real Isaac env: sub-terrains mounted, blind confirmed, 200-step rollout stable, base heights vary across envs. **Training in progress** (seed 0, 2048 envs) | `reports/evidence/s2b-2026-11-20/` |
 | S3 · stairs | ❌ not executed (budget-gated by design) | — |
 | S4 · Sim2Sim | ✅ executed (velocity + sequence + unseen geometry) | `reports/evidence/s4-sim2sim-2026-11-13/` |
 

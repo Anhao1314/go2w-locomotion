@@ -32,3 +32,4 @@ data/vla/
 # scratch and extra venvs
 .s4_scratch/
 .venv312/
+ucode.elf
