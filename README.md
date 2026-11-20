@@ -1,216 +1,259 @@
-# 分层具身智能：从四足运动控制到机械臂 VLA 的受控验证
+<div align="center">
 
-**基于分层强化学习的四足机器人运动控制系统设计与仿真验证**（毕业设计项目仓库）
+# 基于分层强化学习的四足机器人运动控制系统：受控对比、归因与跨引擎验证
+
+**毕业设计项目仓库** · 本 README 按论文结构组织——每个结论都可经链接追溯至原始证据
 
 [![CI](https://github.com/Anhao1314/go2w-locomotion/actions/workflows/ci.yml/badge.svg)](https://github.com/Anhao1314/go2w-locomotion/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11–3.13](https://img.shields.io/badge/python-3.11--3.13-blue)](pyproject.toml)
 
-**受控对比研究：分层强化学习架构 vs 端到端单层**——同一任务、同一观测、同一冻结种子，唯一变量是有没有显式分层。在此基础上延伸出三条已验证的工程线：**跨引擎迁移（S4 Sim2Sim）**、**ROS2 真 DDS 闭环**、**VLA 模仿学习**。
+[English](README.en.md) · [文档索引](docs/README.md) · [量化方法论](docs/METHOD.md) · [实验协议](docs/EXPERIMENT_DESIGN.md) · [结果总表](docs/RESULTS.md) · [论文骨架](docs/THESIS_OUTLINE.md)
 
-[English](README.en.md) · [文档索引](docs/README.md) · [量化方法论](docs/METHOD.md) · [实验协议](docs/EXPERIMENT_DESIGN.md) · [研究报告](docs/PHASE1_REPORT.md) · [过程日志](docs/journal/)
+</div>
 
 ---
 
-## 一句话结果
+## 摘要
 
-> 在同一长程任务、同一观测、同一训练预算下，**四阶段长程任务上分层架构在全部 5 个训练种子以恰好 100 迭代收敛到 100% 成功率；端到端单层仅 1/5 种子成功（450 迭代），其余 4 个 1500 迭代完全失败**。分层把"最好 450 迭代 / 最差永不"压缩成稳定的 100 迭代，且 5/5 种子的收敛节奏完全一致。失败可归因：单层不收敛的种子死在"行走→原地转向"的步态切换处，且三个失败种子有三种不同死法（详见 RESULTS.md）。
+端到端强化学习策略在四足机器人的单技能运动控制上已高度成熟，但在**长程多阶段任务**上面临两个结构性困难：跨阶段异质奖励使探索难以命中，且黑箱策略失败后无法区分"决策错误"与"执行失败"。尽管分层架构是工程界的普遍应对，**公开文献中缺少同任务、同观测、同预算的受控对照**，分层收益的量化和归因因此缺乏证据。本工作设计并实现了一套分层四足运动控制系统（规则阶段层 S2 → 指令策略层 S1 → 运动策略层 S0），并以受控实验回答三个问题：**分层是否优于端到端、收益归属哪一层、结论能否跨仿真引擎成立**。在预注册协议（冻结评估种子、单一指标实现、反樱桃采摘规则）下，我们在四阶段长程任务上得到：分层在 **5/5 个训练种子**以恰好 100 迭代收敛至 100% 成功率，端到端单层仅 1/5（Fisher 精确检验 p = 0.048）；**三臂归因消融**表明该收益来自动作抽象与规则先验而非高层策略学习——规则层直连底层即可完整复现分层成功率；同样的策略**零改动**迁移至另一物理引擎后，在更严格的任务语义下保持 20/20，且成功判据收紧 6 倍不失效。全部结论附 33 份原始证据、48 个因子的量化体系与一份七项杠杆的系统性证伪记录。
 
-**方法论注脚**：只跑 seed 2 会得出"单层也行只是慢 4.5 倍"，只跑 seed 0/1 会得出"单层完全不可行"——都错。多种子不是锦上添花，是结论正确性的前提。
-**统计限定**：训练种子补至 5 个后，**Fisher 精确检验 p = 0.048 < 0.05**——成功率的组间差异达到显著水平；结论的另一个支点是**收敛迭代**（分层 5/5 恰在 100 迭代收敛、组内 20/20 确定性与极小方差 vs 单层最好 450 迭代、其余永不）。三个失败种子有三种不同死法（阶段到达率可归因）。
+---
 
-## 三条验证线 · 核心数字
+## 1. 引言
 
-| 验证线 | 判据（冻结协议） | 结果 | 状态 |
-| --- | --- | --- | --- |
-| **L3 分层 A/B 对比**（Isaac Lab 2.7，**5 训练种子** × 20 冻结种子） | 分层成功率 vs 单层 | 分层 **5/5 种子 100%**（全部恰在 100 迭代收敛）；单层 1/5（450 迭代），4 个 1500 迭代全败且冻结评测确认 0% | ✅ |
-| **Oracle 归因消融**（规则指令直连冻结 S0，跳过 S1） | 三臂归因：规则先验 vs 高层学习 | 规则层单独 **20/20 + 未见几何 80/80**——完整复现分层成功率；S1 学习仅贡献 5.4% 速度 | ✅ 归因定案 |
-| **S4 Sim2Sim**（RQ4：零策略改动 Isaac → MuJoCo） | 序列成功率 ≥ 0.90 | **20/20（1.00）**；vx_rmse 0.077 ≤ 0.15 ✅；容差收紧 6 倍（0.30→0.05 m）仍 **20/20**，终点误差 **3.6 cm** | ✅ |
-| **M2 泛化矩阵**（4 几何 × 20 冻结种子） | 分层成功率 ≥ 0.90 | **80/80 = 1.00**，含 3 个训练时未见几何（3 m/90°、2 m/60°、2 m/120°）；单层 **0/80** | ✅ |
-| **S2 扰动鲁棒性**（100 N × 0.5 s 侧推） | 无摔倒率 ≥ 0.90 | **0/20**；脚本基线 C0 同样 0/20 → 该档位对无 DR 训练者普遍超限 | ❌ 负结果 |
-| **S2 载荷轴**（+1/2/3 kg，MuJoCo 20 种子） | 载荷下仍可控 | 跟踪误差几乎不变（0.077 → 0.082），但摔倒率 **0.05 → 0.25** | ⚠️ 稳定性缺口 |
-| **S2 摩擦阶跃轴**（第 5 秒摩擦 ×0.7/0.5/0.3，20 种子） | 降摩擦下不失效 | vx_rmse **0.077 → 0.062 / 0.064 / 0.102**；摔倒率 0.05 → **0 / 0 / 0.05**——中等降摩擦反而更准 | ✅ 反直觉发现 |
-| **C0 脚本基线（RQ2 下界）** | 与 RL 同任务同指标 | vx_rmse **0.606** vs RL **0.077** → 误差降低 **7.8×** | ✅ |
-| **ROS2 真 DDS 闭环**（Go2 桥，ROS-R1 级） | 独立探针验证指令→状态回传 | **`ROS2_R1_PASS`**：582 消息/话题（含 TF），前进 1.24 m，转向 +1.59 rad | ✅ |
-| **VLA 模仿学习**（SmolVLA 450M，LIBERO 自洽路线） | 模型能否复现演示动作（开环检查） | **MSE 0.0656 vs 基线 0.2117（0.31×）**，七维相关 +0.58~+0.91，夹爪判断 93%，遮图后动作偏移 0.489 | ✅ |
-| **VLA 闭环成功率**（LIBERO-Spatial，5 任务） | 仿真成功率（**5 任务 × 20 种子 = 100 集**，14 s 预算） | **50/100 = 0.50**（95% CI 0.40–0.60）；逐任务 0.40–0.60；fps=10 为 **0/10** | ✅ |
-| **VLA 提升杠杆 ×7 系统性证伪** | 每个杠杆：单变量配对实验 + 预注册阈值 | fps=10 ❌ · 提示工程 ❌ · 重规划频率 ❌(p=0.57) · 夹爪锁存 ❌ · 技能条件化 ❌(3 变体) · 目标图像拼接 ❌(1/40) · 续训 ❌(收敛衰减 190×) | ❌ 全负结果，机制已定位 |
+### 1.1 背景与困难
 
-所有数字由冻结协议（[EXPERIMENT_DESIGN.md](docs/EXPERIMENT_DESIGN.md) v1.0，2026-10-22 预注册）判定：评估种子 `E={0..19}`、指标单一实现（[locomotion/eval/metrics.py](locomotion/eval/metrics.py)）、反樱桃采摘规则、负结果留档。**逐条数字与证据文件见 [docs/RESULTS.md](docs/RESULTS.md)**。
+四足机器人的运动控制已进入"GPU 大规模并行仿真 + RL"的时代：策略在数千并行环境中训练数小时即可获得稳定步态，经域随机化迁移至真机。然而当任务从单技能（平地行走）扩展到**长程多阶段序列**（行走 → 转向 → 行走 → 停靠）时，端到端范式暴露两个结构性困难：
 
-## 演示
+1. **跨阶段异质奖励**：行走与转向的成功判据、最优行为完全不同，单一奖励信号下探索难以命中完整行为序列；
+2. **失败不可归因**：黑箱策略训练失败时，无法区分问题出在"高层决策"还是"底层执行"——诊断成本极高。
 
-| 场景 | 视频/图 |
-| --- | --- |
-| 分层：四阶段长程任务成功（Isaac 训练侧） | [分层完成 L3](media/training/robot_motion_l3_layered.mp4) |
-| 端到端：同任务在转向处摔倒（Isaac 训练侧） | [单层失败](media/training/robot_motion_l3_single_fail.mp4) |
-| **S4：分层策略零改动在 MuJoCo 完成四阶段** | [MuJoCo 分层序列](media/training/s4_layered_sequence.mp4) |
-| **S4：单层策略在 MuJoCo 同种子即摔** | [MuJoCo 单层失败](media/training/s4_single_fail.mp4) |
-| 样本效率曲线（3 种子） | [A/B 对比曲线](media/training/sweep_ab_comparison.png) |
-| 收敛统计 | [全种子收敛图](media/training/convergence_all_seeds.png) |
-| VLA：抓放任务的成败对照（2×2） | [LIBERO 成败对照](media/training/libero_quad.mp4) |
-| S2b：轻地形建模预览 | [地形高度场](media/analysis/s2b_terrain_preview.png) |
+### 1.2 研究缺口
 
-**S4 Sim2Sim 直观对比**（同种子、同任务：分层完成 vs 单层即摔）：
+分层架构（高层输出语义指令、底层执行）是工程界的普遍应对，也有 Options/Feudal 等理论支撑。但现有分层四足工作**大多只报告自身架构的成功率**，不提供同任务、同观测、同训练预算的端到端单层对照。"分层到底带来什么、代价是什么、收益归属哪一层"因此缺乏量化证据。
 
-![分层在 MuJoCo 完成四阶段序列](media/training/s4_layered_sequence.gif)
+### 1.3 本文贡献
 
-## 系统组成
+- **C1（受控对比）**：预注册协议下的分层 vs 端到端 A/B——5 训练种子 × 20 冻结评估种子，成功率维度 Fisher 精确检验 p = 0.048，收敛迭代维度 5/5 恰在 100 迭代收敛 vs 最好 450/其余永不；
+- **C2（三臂归因）**：引入 Oracle 臂（规则指令直连冻结底层）与 Zero 臂，将分层收益**拆解**为动作抽象 + 规则先验 + 高层学习三部分，证明前两者贡献了全部成功率、后者仅贡献 5.4% 的时间效率；
+- **C3（跨引擎 + 精度轴）**：策略权重零改动迁移至另一物理引擎，在更严格的任务语义下 20/20，成功判据收紧 6 倍不失效；
+- **C4（鲁棒性三轴 + 反直觉发现）**：侧推/载荷/摩擦三轴系统性测量，包括"中等降摩擦反而提升跟踪与稳定性"的反直觉结果；
+- **C5（可迁移方法论）**：预注册协议、48 因子量化体系、因子体检器与八步分析流程，全部开源且附原始证据。
+
+---
+
+## 2. 相关工作
+
+**大规模并行 RL 运动控制**：Hwangbo 等（Science Robotics）确立"仿真训练 + 学习执行器模型"范式；Rudin 等的大规模并行方法将四足策略训练压缩至 20 分钟级；Walk These Ways 的行为参数化为高层指令接口提供参照。**分层 RL**：Options 框架与 Option-Critic 完成时间抽象动作的理论化；Feudal Networks 确立"经理—工人"形态。**具身记忆与目标条件**（与本文延伸线相关）：MoRA（Agentic-Native，主张把目标持续性、多粒度记忆、进度认知内化进 System 1——本系统即其三层职责的受控实现，见 [MoRA 研究](docs/MORA_RESEARCH.md)）；Long-VLA 的阶段感知输入掩码；GIFT 的目标图像注入；RL-SFT 的强化微调（76.5%→97.1%）。**公开缺口**：以上分层工作均未提供同预算端到端对照——本文 C1/C2 直接针对该缺口。
+
+---
+
+## 3. 系统设计
+
+### 3.1 分层架构
 
 ```text
-任务/阶段管理（规则层：闭环速度指令 + 阶段判定）
+S2 任务/阶段层（规则：闭环速度指令 + 阶段判定 + 成功判据）
    │  [vx, wz] 指令
    ▼
-S1 指令策略（PPO，2 维动作）──分层组──┐
-                                      ├→ 12 维关节 → Unitree Go2（Isaac Sim 5.1）
-S0 locomotion 策略（PPO，冻结复用）──┘
+S1 指令策略（PPO，53 维观测 → 2 维动作）──分层组──┐
+                                                  ├→ 12 维关节 → Unitree Go2（Isaac Sim 5.1）
+S0 运动策略（PPO，48 维观测 → 12 关节，冻结复用）──┘
    ▲
-48 维本体观测（M1 预训练：vx_rmse 0.057 m/s，三种子）
+本体观测：线/角速度、投影重力、关节位置/速度、上一动作
 ```
 
-- **单层组**：53 维观测直接输出 12 维关节——与分层组完全相同的观测与任务信息
-- **分层组**：S1 在 2 维指令空间学习，执行委托给预训练并冻结的 S0
+- **对照系统（单层）**：53 维观测（与分层组完全相同的任务信息）→ 12 维关节，端到端；
+- **关键设计**：规则层生成的阶段指令是**闭环**的（带航向修正与限速），并且**同时进入单层组的观测**——两组唯一差异是动作空间。
 
-## S4 Sim2Sim：零策略改动跨引擎迁移（RQ4）
+### 3.2 任务设计
 
-把 Isaac 训练的策略**原封不动**（ONNX 导出，权重逐位一致 + SHA-256 锚定）搬进 MuJoCo：
+四阶段长程序列（Go2Loco-Sequence-v0）：**直行 2 m → 原地转 90° → 直行 2 m → 站定保持**。任务刻意保持平地、盲感知（48/53 维纯本体），使归因不受感知策略混杂；每阶段判据独立，失败可定位到阶段。泛化考题含训练未见的 3 m、60°、120° 几何。
 
-| 指标 | Isaac（训练引擎） | MuJoCo（迁移后） | 冻结阈值 |
-| --- | --- | --- | --- |
+### 3.3 评估协议（预注册）
+
+- **冻结评估种子** E = {0..19}，先于训练冻结（[协议 v1.0](docs/EXPERIMENT_DESIGN.md)，2026-10-22）；
+- **指标单一实现**（[metrics.py](locomotion/eval/metrics.py)），反樱桃采摘规则，负结果强制留档；
+- **量化体系**：48 个因子（定义/方向/阈值/来源，[FACTORS.md](docs/FACTORS.md)）+ 因子体检器（退化/冗余/组内判别力，防辛普森悖论）+ [八步分析流程](docs/METHOD.md)；
+- **证据链**：每 run 生成 run_config（git SHA/依赖/命令行）+ SHA-256 清单；33 份原始评测 JSON 入库（[证据索引](reports/evidence/INDEX.md)）。
+
+---
+
+## 4. 实验
+
+### 4.1 主实验：分层 vs 端到端（n = 5 训练种子 × 20 冻结评估种子）
+
+| 训练种子 | A 单层 | B 分层 | B 收敛迭代 |
+|---|---|---|---|
+| 0 | **0%**（1500 迭代未收敛，摔于转向）| 100% | 100 |
+| 1 | **0%**（未收敛）| 100% | 100 |
+| 2 | 100%（450 迭代收敛）| 100% | 100 |
+| 3 | **0%**（未收敛，阶段 0 未过）| 100% | 100 |
+| 4 | **0%**（未收敛，阶段 0 未过）| 100% | 100 |
+
+**Fisher 精确检验 p = 0.048 < 0.05**；分层 5/5 种子 100%、全部恰在 100 迭代收敛（365–412 步，方差极小）；单层 1/5 收敛、4 个失败种子呈现**四种不同死法**（种子依赖性本身是发现）。完整报告：[l3_ab_comparison.md](reports/training/l3_ab_comparison.md)。
+
+![样本效率曲线](media/training/sweep_ab_comparison.png)
+
+### 4.2 归因消融：收益归属哪一层？
+
+引入两臂对照（[Oracle 消融](docs/RESULTS.md)）：
+
+| 臂 | 定义 | 序列任务 | 未见几何 |
+|---|---|---|---|
+| **Trained S1** | 训练的高层策略 → 冻结 S0 | 20/20 | 80/80 |
+| **Oracle** | 规则指令直连冻结 S0（跳过 S1） | **20/20**（501 步） | **80/80**（683/478/519 步） |
+| **Zero** | 零指令 → 冻结 S0 | 0/20（对照） | — |
+
+**归因结论**：规则层单独即可完整复现分层成功率——**收益归属 = 动作抽象（S0）+ 规则任务知识（S2），而非高层策略学习**；Trained S1 的贡献仅是 5.4% 的时间效率。这一负结果与 MoRA 的"Agentic-Native 内化"主张相互印证，并直接指出 v2 方向（见第 6 节）。
+
+### 4.3 跨引擎迁移与精度轴
+
+策略**零改动**（ONNX 导出，SHA-256 锚定）迁移至 MuJoCo 3.11：
+
+| 指标 | Isaac（训练引擎） | MuJoCo（迁移后） | 门禁 |
+|---|---|---|---|
 | vx_rmse | 0.0569 ± 0.0011 | **0.0773 ± 0.0285** | ≤ 0.15 ✅ |
-| 序列成功率（分层组） | 1.00（20/20） | **1.00（20/20）** | ≥ 0.90 ✅ |
-| 序列成功率（单层组） | 0.00 | **0.00（全摔）** | 失败模式一致 |
+| 序列成功率（分层） | 1.00 | **1.00**（20/20） | ≥ 0.90 ✅ |
+| 序列成功率（单层） | 0.00 | **0.00** | 失败模式一致 |
 
-**结论**：分层 vs 端到端的成败差异**跨物理引擎成立**；量化差距（vx +35%、转向 -62%）与单因素归因（被动关节参数、扭转摩擦敏感性）已记录于 [S4 文档](locomotion/sim2sim/README.md)。
-**语义限定**：Isaac 侧阶段机每控制步推进两次（奖励+终止各调一次 `_advance`），stop 保持实际 ≈0.5 s；MuJoCo 移植每步一次，实现名义 1 s——**移植版更严格，20/20 是在更严条件下取得**（详见 `locomotion/sequence/stage_logic.py` 模块 docstring 与 9 项 parity 测试）。实现细节：[导出链](scripts/export_s4_policy.py) · [评测器](scripts/eval_s4_sim2sim.py)。
+**语义限定**：Isaac 侧阶段机每步推进两次（stop 保持实际 ≈0.5 s），MuJoCo 移植实现名义 1 s——**迁移版更严格，20/20 在更严条件下取得**（9 项 parity 测试钉住常数与推进条件）。
 
-![S4 Sim2Sim 对比](media/training/s4_sim2sim_results.png)
+**精度轴**：成功判据（位置容差 0.30 m，实际终点误差 0.232 m，用掉 77% 预算）收紧至 **0.05 m（6×）**后仍 20/20，终点误差 **3.6 cm**，代价仅 +9% 步数——判据不虚，精度有余量。
 
-## ROS2 在线桥：真 DDS 闭环（ROS-R1 级）
+![S4 对比](media/training/s4_sim2sim_results.png)
 
-[`ros2/go2_bridge/`](ros2/go2_bridge/README.md)：双向闭环——`/go2/cmd_vel` 进（限幅 + 0.5 s deadman 安全门），`/clock + /joint_states + /base_pose + /tf + session_info` 出（50 Hz，全部标准消息类型）。**真 DDS 验收 `ROS2_R1_PASS`**（两个独立进程，582 消息/话题含 TF，前进 1.24 m，转向 +1.59 rad），CI 硬门禁 [ros2-live-r1](.github/workflows/ros2-live-r1.yml)。7 次验收尝试含 6 次负证据全部留档（[acceptance.md](ros2/go2_bridge/acceptance.md)）。
+### 4.4 泛化：未见几何与成本模型
 
-## VLA 模仿学习（闭环已验证）
-
-路线：自建脚本专家（[vla/](vla/README.md)，WIP 保留——示范生成的可靠性问题已如实记录）→ 官方真机遥操作数据集 `lerobot/svla_so101_pickplace` 微调（20K 步，loss 0.112）→ 跨域评测：**1 个 episode、3600 步、放置 0/4 方块**（sim/real gap，样本量 1 仅作定性）→ 转 LIBERO 自洽路线（`lerobot/libero`，1693 段 / 273K 帧 / 10 Hz）微调至 **62K / 100K 步**。
-
-**开环复现检查**（60K checkpoint，40 帧，8 段 × 5 帧）：动作 MSE **0.0656** vs 平均动作基线 **0.2117**（**0.31×**）；七维相关 +0.82/+0.91/+0.78/+0.64/+0.58/+0.58/+0.85；夹爪开合判断 **93%**；遮住图像后动作偏移 L2 **0.489**。
-
-**闭环评测（LIBERO-Spatial 5 个任务 × 20 种子 = 100 集，14 s 预算）**：**50/100 = 0.50 成功**（95% CI 0.40–0.60），逐任务 0.40–0.60。同一 checkpoint 在 `fps=10` 下 **0/10**（全部超时）——数据集元数据里的 `fps=10` 不是控制契约。
-
-**关于测量**：策略动作由 flow matching 采样，逐种子**不保证跨运行一致**（seed 1003 在两次运行里分别是 70 步成功和 280 步超时，GPU 数值非确定性在闭环中被放大）。所以单批 10 集给出的 7/10 **不能**对外当作成功率，表中 0.50 是 20 集合并值。
-
-> **这一条来之不易**：此前闭环一直是 0，根因不是模型也不是训练，而是**观测契约**——评测把 robosuite 的 uint8 HWC `(1,360,360,3)` 图像、带 batch 维的状态和元组任务串直接喂给了按 float32 CHW `[0,1]` 训练的模型。统一格式后同一个 checkpoint 从 0/3 变成 7/10。细节见 [vla/README](vla/README.md)，数字见 [RESULTS.md](docs/RESULTS.md)，因子见 [FACTORS.md](docs/FACTORS.md)。
-
-演示：[2×2 成败对照](media/training/libero_quad.mp4) · [双视角 + 夹爪曲线](media/training/libero_dual.mp4)
-
-### 提升杠杆的系统性证伪（负结果矩阵）
-
-围绕"如何提高 0.50"做过 7 次单变量配对实验，**全部证伪**——机制均已定位并留档：
-
-| 杠杆 | 实验 | 结果 | 死因 |
-| --- | --- | --- | --- |
-| 控制频率 10 Hz | 同种子 A/B | 0/10 | 元数据 fps 不是控制契约 |
-| 提示工程（技能词） | 开环逐阶段比对 | 接近段 −8.8%，搬运段 +6.3% | 通道是活的但没学过含义 |
-| 重规划频率 50→25 | 100 集配对，McNemar | +5pp，p=0.57 | 49/100 集结局翻转，噪声主导 |
-| 夹爪锁存 | 门 1 冒烟 | 破坏 1 个稳定成功 | 放置需要松开释放 |
-| 技能条件化（训练） | 3 变体 × 20 集 | 0.10–0.20 vs 裸跑 0.40 | 条件化自身行为 = 反馈环 |
-| 目标图像拼接（GIFT-lite） | 40 集配对 | 1/40 | 工作视野减半 + 分布偏移 |
-| 续训至 100K | 收敛速率分析 | 每 10k 步降幅塌陷 190× | 边际收益 ≈ 0 |
-
-**共同根因**：在接触操作上，任何让评测输入偏离训练分布的"廉价注入"通道，代价都大于增益。文献中有效的版本（GIFT 特征注入、RL-SFT 强化微调）需要架构改动或 RL 基建——列为 future work（见 [RESULTS.md](docs/RESULTS.md) 未解问题节）。
-
-## 量化分析（可视化）
-
-所有图表由 `python scripts/make_factor_charts.py` 从 `reports/evidence/` 的原始 JSON 直接重绘。
-完整目录见 [docs/FACTORS.md](docs/FACTORS.md)（48 个因子的定义、方向、阈值、来源），
-体检结论见 [docs/RESULTS.md](docs/RESULTS.md)。
-
-**LIBERO-Spatial 五任务成功率**：5 任务 × 20 种子 = 100 集，合计 0.50（95% CI 0.40–0.60）。
-
-![五任务成功率](media/analysis/vla_suite_tasks.png)
-
-**VLA 闭环 A/B**：同一个 checkpoint，只有控制频率不同 —— 20 Hz 7/10，10 Hz 0/10。
-
-![VLA 控制频率 A/B](media/analysis/vla_fps_ab.png)
-
-**泛化几何成本**：距离每多 1 米 ≈ +181 步；转向每 30° ≈ +28 步（约 6%）—— 距离贵、转向便宜。
+分层 80/80（含 3 个未见几何），单层 0/80。几何成本可拟合为线性模型：**固定开销 112 步（24%）+ 181 步/米 + 0.92 步/度**——距离贵、转向便宜。
 
 ![泛化几何成本](media/analysis/generalization_cost.png)
 
-**S2 失效时间窗**：20/20 全部在侧推后 1.19 s 内摔倒（含 1 例 10.8 s 的异常晚倒）。
+### 4.5 鲁棒性三轴
+
+| 轴 | 设置 | 结果 |
+|---|---|---|
+| 侧推（100 N × 0.5 s） | 第 5 秒侧推 | ❌ **0/20**（脚本基线同样 0/20 → 训练分布缺失，非实现缺陷）；全部在推后 1.19 s 内摔倒 |
+| 载荷（+1/2/3 kg） | 基座质量+惯性缩放 | ⚠️ 跟踪几乎不变（+6% @3 kg），摔倒率 **0.05 → 0.25**——载荷吃稳定性不吃精度 |
+| 摩擦阶跃（×0.7/0.5/0.3） | 第 5 秒摩擦骤降 | ✅ 中等降摩擦反而更准（0.062/0.064）、零摔倒；×0.3 才退化——**名义摩擦偏"抓地"的反直觉发现** |
 
 ![S2 失效时间窗](media/analysis/s2_failure_window.png)
 
-**因子体检**：12 个 rollout 因子中只有 5 个可跨配置使用，5 个"结局指标"其实是同一个二值信号。
+---
 
-![因子体检](media/analysis/factor_health.png)
+## 5. 延伸线：VLA 操作（SmolVLA × LIBERO）
 
-**VLA 成败轨迹对照**：同一任务，失败集夹爪反复开合 22–23 次（成功集 1–4 次）——"反复重抓"失效签名直接可见。
+同一架构思想向操作域的初步延伸：LeRobot + SmolVLA-450M 在 LIBERO 演示（1693 段/273K 帧）上微调至 62K 步，**闭环 5 任务 × 20 种子 = 50/100 = 0.50**（95% CI 0.40–0.60）。
 
-![VLA 成败轨迹](media/analysis/vla_failure_traces.png)
+- **开环诊断**：动作 MSE 0.0656 vs 基线 0.2117（0.31×），夹爪判断 93%，视觉依赖实证——模型已学会，瓶颈不在感知；
+- **失败解剖**：失败集均成功抓取并抬升物体，卡在搬运/放置段且夹爪反复开合 22–23 次（成功集 1–4 次）——"重抓"失效签名；
+- **测量陷阱实录**：观测契约错误（uint8 HWC 喂给 float CHW 模型，静默失败）、元数据 fps 与控制契约不符、flow matching 采样不可复现——三项均已定位并写入文档；
+- **七项提升杠杆系统性证伪**（单变量配对 + 预注册阈值）：控制频率 ❌、提示工程 ❌、重规划频率 ❌（p=0.57）、夹爪锁存 ❌、技能条件化 ❌（3 变体）、目标图像拼接 ❌（1/40，工作视野减半）、续训 ❌（收敛塌陷 190×）——**共同根因：让评测输入偏离训练分布的廉价注入，在接触操作上代价大于增益**。
 
+![五任务成功率](media/analysis/vla_suite_tasks.png) ![成败轨迹](media/analysis/vla_failure_traces.png)
 
-## 工程设施（可复现性）
+---
 
-| 设施 | 说明 |
-| --- | --- |
-| **量化方法论** | [八步流程](docs/METHOD.md)：定义 → 口径 → 噪声底线 → 拆解 → 组内归因 → 可证伪假设 → 配对复测 → 留档；附六个常见错误与检查清单 |
-| 预注册协议 | 冻结评估种子 E={0..19}、指标与阈值先于训练冻结（[EXPERIMENT_DESIGN](docs/EXPERIMENT_DESIGN.md)） |
-| 每 run 证据束 | `run_config.json`（git SHA/依赖版本/命令行）+ 全文件 SHA-256 清单，训练结束自动生成 |
-| 收敛即停 | 训练中每 50 迭代做一次 2048 环境确定性评估，连续达标自动早停并记录收敛点 |
-| CI | 374 测试（Python/C++/pybind/ROS2 契约）+ **ROS2 真 DDS 门禁**（[ros2-live-r1](.github/workflows/ros2-live-r1.yml)） |
-| 实时观察面板 | `python scripts/dashboard_server.py` → localhost:8765：训练进度/loss 曲线/最近评测/仿真录像，只读零侵入 |
-| 过程日志 | [docs/journal/](docs/journal/)：按日记录目标、决策、失败与修正 |
+## 6. 讨论
 
-## 诚实边界
+**归因的方法论价值**：C2 的 Oracle 消融回答了一个文献里常被回避的问题——"分层的收益到底来自高层学习还是来自接口设计"。本实验的答案（规则先验 + 动作抽象）与 MoRA"数据质量第一、架构第二"的表述及 Long-VLA 的阶段感知分析相互印证。
 
-- **仿真限定**：无真机实验；S4 跨引擎结论适用于 Isaac Sim 5.1 与 MuJoCo 3.11 两引擎
-- **C++ 栈不在闭环内**：ROS2 节点跑的是 Python + ONNX 推理；`cpp/` 是独立数值验证产物（见 [ROS2 README](ros2/go2_bridge/README.md#scope-boundary-the-c-stack-is-not-in-this-loop)）
-- **S0 预训练成本**：分层优势部分来自动作抽象与 S0 复用（未训练的 S1 在 **L1 简化任务**上已有 75% 成功率；L3 四阶段任务未测 iter-0）——已在报告中归因；**Oracle 消融进一步定案**：规则层直连 S0 即可完整复现分层成功率（见 docs/RESULTS.md 归因节）
-- **闭环指令含任务知识**：规则层的转向修正编码了部分任务先验——这正是分层设计的取舍，正文有讨论
-- **VLA 覆盖有限**：闭环成功率 0.50 覆盖 `libero_spatial` 的 5 个任务 × 20 种子（该 suite 共 10 个任务），不外推到其他 suite；单批 10 集会给出 0.30–0.70 的波动，跨域证据只有 1 个 episode（0/4 方块），仅作定性
-- 分层组 5 个训练种子；单层组 5 个训练种子；真机验证列为后续工作
+**种子依赖性作为发现**：单层 4 个失败种子呈现四种不同死法（摔于转向/未过阶段 0/未收敛未摔/全 0 到达率）——若只跑单种子会得出完全不同的错误结论。这正是预注册多种子的价值例证。
 
-## 仓库结构
+**与 MoRA 内化路线的关系**：本系统的 S1 接收拆解好的阶段指令（MoRA 口径明确反对的方案），实验证明其退化为规则读出器。这为 v2 指明方向：把目标、记忆、进度**内化**进 S1（进度头、记忆 token），即"Agentic-Native"的受控验证——详见 [MoRA 研究](docs/MORA_RESEARCH.md)。
+
+---
+
+## 7. 局限
+
+- **仿真限定**：无真机；跨引擎结论限于 Isaac Sim 5.1 与 MuJoCo 3.11；
+- **任务范围**：主任务为平地盲感知（归因需要）；地形阶梯 S2b 已实现（冒烟通过，[训练中](docs/RESULTS.md)）；
+- **统计功效**：n = 5 训练种子，Fisher p = 0.048 处于显著边缘；收敛迭代一致性是第二支点；
+- **VLA 覆盖**：LIBERO-Spatial 5/10 任务；单批波动 0.30–0.70 已记录；
+- **C++ 栈**：独立数值验证产物，不在 ROS2 闭环内；
+- **One-exception 拖累**：单层 seed 2 的成功使 Fisher 检验保守——这正是真实世界种子依赖性的体现。
+
+---
+
+## 8. 结论与未来工作
+
+本工作给出了一份**可追溯的受控证据**：分层架构在长程四足任务上带来可靠性（5/5 vs 1/5，p = 0.048）与收敛效率（100 迭代 vs 450/永不）的双重优势，且该优势跨物理引擎、跨未见几何成立；同时通过 Oracle 消融诚实定位了收益来源。未来工作按优先级：
+
+1. **地形阶梯**：轻地形（S2b，已实现，训练中）→ 楼梯（S3，感知阶梯）上重跑 A/B 与归因；
+2. **鲁棒性闭环**：推力 DR 重训（当前 0/20 的修复实验）；
+3. **MoRA-inspired 内化**：S1 进度头 + 记忆 token（单卡可行的 v2 首选），验证"内化后 S1 是否产生真实规划能力"；
+4. **VLA 目标条件**：特征级注入（GIFT 正版机制）替代失败的帧拼接。
+
+---
+
+## 附录
+
+| 附录 | 内容 |
+|---|---|
+| [结果总表](docs/RESULTS.md) | 全部结论 + 判据 + 证据链接（单一事实源） |
+| [证据索引](reports/evidence/INDEX.md) | 33+ 份原始评测 JSON 的出处与口径 |
+| [因子库](docs/FACTORS.md) | 48 个量化因子的定义、方向、阈值、来源 |
+| [量化方法论](docs/METHOD.md) | 八步流程 + 六个常见错误 + 检查清单 |
+| [实验协议](docs/EXPERIMENT_DESIGN.md) | 预注册协议 + 场景阶梯执行状态表 |
+| [论文骨架](docs/THESIS_OUTLINE.md) | 毕设论文章节 ↔ 仓库资产映射（写作期使用） |
+| [仓库结构](#附录仓库结构) | 目录 → 职责 |
+
+<details open>
+<summary><b>附录：仓库结构</b></summary>
 
 | 目录 | 内容 |
 | --- | --- |
-| [`locomotion/`](locomotion/README.md) | Phase-2 代码：任务环境、A/B 训练器、评估、动作映射 |
-| [`locomotion/sim2sim/`](locomotion/sim2sim/README.md) | **S4**：ONNX 导出链、MuJoCo rollout、冻结种子评测、证据束 |
-| [`ros2/go2_bridge/`](ros2/go2_bridge/README.md) | **ROS2 桥**：核心层、50 Hz 闭环节点、独立探针、验收门禁 |
-| [`vla/`](vla/README.md) | **VLA 链**：SO-101 环境封装、脚本专家（WIP）、数据/训练/评测 |
-| [`mora/`](docs/MORA_TRAIN.md) | 分层运行时系统层（S2→S1→S0 契约、记忆、进度闭环） |
-| [`cpp/`](cpp/README.md) | C++ 控制栈（FK/IK/MPC 数值验证）+ guardrail 运动学核心 |
-| [`reports/`](reports/training/ab_comparison.md) | 训练报告、对比报告、扫描数据（全部自动生成） |
-| [`analysis/`](analysis/factors.py) | **量化因子库**：48 个因子定义 + 体检器 + 提取器（`docs/FACTORS.md` 自动生成） |
-| [`docs/`](docs/README.md) | 协议、架构、方法论（八步量化流程）、路线图、每日日志、ADR 决策记录 |
+| [`locomotion/`](locomotion/README.md) | 任务环境、A/B 训练器、评估、动作映射 |
+| [`locomotion/sim2sim/`](locomotion/sim2sim/README.md) | S4：ONNX 导出链、MuJoCo rollout、冻结种子评测 |
+| [`ros2/go2_bridge/`](ros2/go2_bridge/README.md) | ROS2 桥：50 Hz 闭环节点、独立探针、验收门禁 |
+| [`vla/`](vla/README.md) | VLA 链：数据/微调/评测/诊断工具 |
+| [`analysis/`](analysis/factors.py) | 量化因子库 + 体检器 + 提取器 |
+| [`mora/`](docs/MORA_TRAIN.md) | MoRA-inspired 运行时系统层（adapter API/记忆/进度） |
+| [`cpp/`](cpp/README.md) | C++ 控制栈（FK/IK/MPC 数值验证，独立于闭环） |
+| [`reports/`](reports/training/l3_ab_comparison.md) | 训练/对比报告（自动生成） |
+| [`docs/`](docs/README.md) | 协议、方法论、结果总表、日志、ADR |
 
-## Phase-1：Go2W 轮足导航（已完成归档）
+</details>
 
-本仓库此前完成了 Unitree Go2W 轮式四足的长程导航研究（MoRA-Train 第一个 adapter：弯道 20/20、多段 A→B 20/20、岔路 40/40，C++ S0 数值验证），完整研究报告见 [docs/PHASE1_REPORT.md](docs/PHASE1_REPORT.md)。Phase-2 的分层对比方法与工程设施均由该阶段演进而来。
-
-## 复现
+<details>
+<summary><b>附录：复现</b></summary>
 
 ```powershell
 $env:PYTHONPATH = "$PWD"; $env:OMNI_KIT_ACCEPT_EULA = "YES"
 
-# 训练分层组（L3）
+# 分层组训练（L3；单层组 --mode single）
 .venv311\Scripts\python.exe scripts\train_ab.py --mode layered `
-    --s0-checkpoint <S0 checkpoint> --num_envs 2048 --max_iterations 1500 --seed 0
+    --s0-checkpoint logs\rsl_rl\go2_loco_s1_flat\2026-10-23_01-15-02\model_1499.pt `
+    --num_envs 2048 --max_iterations 1500 --seed 0
 
 # S4 Sim2Sim 评测（MuJoCo，无需 Isaac）
-.venv312\Scripts\python.exe scripts\export_s4_policy.py --preset s0_flat `
-    --checkpoint logs/rsl_rl/go2_loco_s1_flat/2026-10-23_01-15-02/model_1499.pt `
-    --out logs/s4/actors/s0_flat.onnx
 .venv312\Scripts\python.exe scripts\eval_s4_sim2sim.py --task sequence --policy layered --label layered_B
 
-# ROS2 真 DDS 验收（Jazzy 容器或 WSL2）
+# ROS2 真 DDS 验收
 bash ros2/go2_bridge/run_r1_acceptance.sh logs/s4/ros_live/attempt_NNN
+
+# 量化因子表 + 图表重绘
+.venv312\Scripts\python.exe analysis\extract.py
+.venv312\Scripts\python.exe scripts\make_factor_charts.py
 ```
 
-环境：Python 3.11（Isaac Lab 2.7.0 + Isaac Sim 5.1）与 Python 3.12（MuJoCo 3.11 / LeRobot / ROS2 桥契约测试），RTX 5060 Ti 16 GB（详见 [locomotion/README](locomotion/README.md) 的版本锁定表）。
+环境：Python 3.11（Isaac Lab 2.7.0 + Isaac Sim 5.1）与 Python 3.12（MuJoCo 3.11 / LeRobot / ROS2 桥），RTX 5060 Ti 16 GB。版本锁定详见 [locomotion/README](locomotion/README.md)。
 
-## 许可与引用
+</details>
+
+<details>
+<summary><b>附录：许可</b></summary>
 
 代码与文档见 [LICENSE](LICENSE)。第三方组件许可见 [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md)。
+
+</details>
+
+---
+
+<details>
+<summary><b>Phase-1 归档：Go2W 轮足导航（MoRA-Train 第一个 adapter）</b></summary>
+
+本仓库此前完成了 Unitree Go2W 轮式四足的长程导航研究（弯道 20/20、多段 A→B 20/20、岔路 40/40，C++ S0 数值验证），完整研究报告见 [docs/PHASE1_REPORT.md](docs/PHASE1_REPORT.md)。Phase-2 的分层对比方法与工程设施均由该阶段演进而来。
+
+</details>
