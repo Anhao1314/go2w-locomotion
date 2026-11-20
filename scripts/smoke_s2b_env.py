@@ -27,7 +27,7 @@ from isaaclab.app import AppLauncher  # pyright: ignore[reportMissingImports]
 app_launcher = AppLauncher(headless=True)  # enable_cameras 在 Windows headless 下段错误，截图改用离线高度场预览
 simulation_app = app_launcher.app
 
-import gymnasium as gym  # noqa: E402
+import gymnasium as gym  # pyright: ignore[reportMissingImports]
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
@@ -89,7 +89,7 @@ def main() -> int:
                 arr = np.asarray(frame)
                 if arr.ndim == 4:  # tiled camera (num_envs, H, W, C)
                     arr = arr[0]
-                import imageio
+                import imageio  # pyright: ignore[reportMissingImports]
 
                 out_dir = os.path.join(PROJECT_ROOT, "logs", "s2b_preview")
                 os.makedirs(out_dir, exist_ok=True)
