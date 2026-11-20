@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import os
 import sys
+from typing import Any
 
 os.environ.setdefault("OMNI_KIT_ACCEPT_EULA", "YES")
 
@@ -21,7 +22,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from isaaclab.app import AppLauncher  # noqa: E402
+from isaaclab.app import AppLauncher  # pyright: ignore[reportMissingImports]
 
 app_launcher = AppLauncher(headless=True)  # enable_cameras 在 Windows headless 下段错误，截图改用离线高度场预览
 simulation_app = app_launcher.app
@@ -33,16 +34,16 @@ import torch  # noqa: E402
 
 
 def main() -> int:
-    import isaaclab_tasks  # noqa: F401
+    import isaaclab_tasks  # noqa: F401  # pyright: ignore[reportMissingImports]
     import locomotion.isaac  # noqa: F401
     import locomotion.sequence  # noqa: F401
-    from isaaclab_tasks.utils import parse_env_cfg
+    from isaaclab_tasks.utils import parse_env_cfg  # pyright: ignore[reportMissingImports]
 
     device = "cuda:0"
     env_cfg = parse_env_cfg("Go2Loco-S2b-LightTerrain-v0", device=device,
                             num_envs=16, use_fabric=True)
     env = gym.make("Go2Loco-S2b-LightTerrain-v0", cfg=env_cfg, render_mode="rgb_array")
-    inner = env.unwrapped
+    inner: Any = env.unwrapped  # pyright: ignore[reportUnknownMemberType]
 
     checks: dict[str, bool] = {}
 
